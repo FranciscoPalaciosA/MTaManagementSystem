@@ -17,31 +17,47 @@
     <link href="{% static 'css/admin-materialize.min.cs' %}s" rel="stylesheet">
     <!-- Material Icons-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  {% block addhead %}{% endblock addhead %}
   </head>
-  <body class="has-fixed-sidenav">
-    <header>
-      <div class="navbar-fixed">
-        <nav class="navbar white">
-          <div class="nav-wrapper"><a href="#!" class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
-
+  <body>
+    <main class="valign-wrapper">
+      <div class="container">
+        <div class="row">
+          <div class="col s8 offset-s2">
+            <div class="card card-login">
+              <div class="card-login-splash">
+                <div class="wrapper">
+                  <h3>Account</h3>
+                  <a class="btn" href="#!">Sign In</a>
+                  <a class="btn" href="#!">Register</a>
+                </div>
+                <img src="{% static 'img/geometric-cave.jpg' %}" alt="">
+              </div>
+              <div class="card-content">
+                <span class="card-title">Log In</span>
+                <form method="post">
+                  <!-- <div class="input-field">
+                    <input id="username" type="text" class="validate">
+                    <label for="username">Username</label>
+                  </div>
+                  <div class="input-field">
+                    <input id="password" type="password" class="validate">
+                    <label for="password">Password</label>
+                  </div>-->
+                  {% csrf_token %}
+                  {{ form }}
+                  <a href="#!">Forgot Password?</a>
+                  <br><br>
+                  <div>
+                    <input class="btn right" type="submit" value="Log In">
+                    <a href="#!" class="btn-flat">Back</a>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
-        </nav>
+        </div>
       </div>
-      <ul id="sidenav-left" class="sidenav sidenav-fixed">
-        <li><a href="dashboard.html" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
-        <li class="no-padding">
-          <ul class="collapsible collapsible-accordion">
-            {% block nav_tabs %}{% endblock nav_tabs %}
-          </ul>
-        </li>
-      </ul>
-    </header>
-    <main class="main">
-      {% block content %}
-      {% endblock content %}
     </main>
-    {% block bottom_nav %}{% endblock bottom_nav %}
 <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="{%static 'js/materialize.js' %}"></script>
@@ -49,12 +65,12 @@
 
 <!-- External libraries -->
 
-<!-- jqvmap -->
+  <!-- jqvmap -->
     <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.min.js' %}"></script>
     <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.world.js' %}" charset="utf-8"></script>
     <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.sampledata.js' %}"></script>
 
-<!-- ChartJS -->
+    <!-- ChartJS -->
     <script type="text/javascript" src="{%static 'js/Chart.js' %}"></script>
     <script type="text/javascript" src="{%static 'js/Chart.Financial.js' %}"></script>
 
@@ -67,26 +83,9 @@
 
 <!-- Initialization script -->
     <script src="{%static 'js/admin.js' %}"></script>
-    {% block init_scripts %}{% endblock init_scripts %}
     <script src="{%static 'js/init.js' %}"></script>
-    {% block js %}{% endblock js %}
-    <script type="text/javascript">
-    $(document).ready(function(){
-      //CSRF Token para peticiones POST
-      var csrftoken = $.cookie('csrftoken');
-      function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-      }
-        $.ajaxSetup({
-          beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-          }
-        });
-      });
-    </script>
+
+<!-- Error Messages -->
     {% if messages %}
     <script type="text/javascript">
       {%for message in messages %}
@@ -96,5 +95,6 @@
       {% endfor %}
     </script>
     {% endif %}
+
   </body>
 </html>
