@@ -26,30 +26,29 @@
             <div class="card card-login">
               <div class="card-login-splash">
                 <div class="wrapper">
-                  <h3>Account</h3>
-                  <a class="btn" href="#!">Sign In</a>
-                  <a class="btn" href="#!">Register</a>
+                  <h3>MTA</h3>
                 </div>
                 <img src="{% static 'img/geometric-cave.jpg' %}" alt="">
               </div>
               <div class="card-content">
                 <span class="card-title">Log In</span>
                 <form method="post">
-                  <!-- <div class="input-field">
-                    <input id="username" type="text" class="validate">
-                    <label for="username">Username</label>
+                  {% csrf_token %}
+                  {% if form.errors %}
+                  <span class="helper-text red-text" data-error="wrong">El usuario y/o contraseña son incorrectos.</span>
+                  {% endif %}
+                  <div class="input-field">
+                    <input required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate">
+                    <label for="{{form.username.id_for_label}}">Usuario</label>
                   </div>
                   <div class="input-field">
-                    <input id="password" type="password" class="validate">
-                    <label for="password">Password</label>
-                  </div>-->
-                  {% csrf_token %}
-                  {{ form }}
-                  <a href="#!">Forgot Password?</a>
+                    <input required id="{{form.password.id_for_label}}" name="{{form.password.html_name}}" type="password" class="validate">
+                    <label for="{{form.password.id_for_label}}">Contraseña</label>
+                  </div>
+                  <a href="#!">Olvidaste tu contraseña?</a>
                   <br><br>
                   <div>
-                    <input class="btn right" type="submit" value="Log In">
-                    <a href="#!" class="btn-flat">Back</a>
+                    <input class="btn right" type="submit" value="Iniciar Sesión">
                   </div>
                 </form>
               </div>
@@ -84,7 +83,11 @@
 <!-- Initialization script -->
     <script src="{%static 'js/admin.js' %}"></script>
     <script src="{%static 'js/init.js' %}"></script>
-
+    <script type="text/javascript">
+      $(document).ready(function() {
+        // M.updateTextFields();
+      });
+    </script>
 <!-- Error Messages -->
     {% if messages %}
     <script type="text/javascript">
