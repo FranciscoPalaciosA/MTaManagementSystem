@@ -105,6 +105,9 @@
       </div>
     </main>
 {% endblock content %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+{% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
