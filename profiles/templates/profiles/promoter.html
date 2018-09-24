@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Inicio{% endblock %}
+
+{% block nav_title %}Inicio{% endblock %}
+{% block nav_tabs %}
+<!-- Should be doing this based on the current logged user -->
+<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
+      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
+      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
+      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
+      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
+      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
+      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
+      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
+      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
+      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
+      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
+      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
+      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+{% endblock nav_tabs %}
+
+{% block content %}
+    <main>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
+          <i class="large material-icons">add_alert</i>
+        </a>
+      </div>
+      <!-- Modal Structure -->
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+          <h4>Nueva Alerta</h4>
+          <form action="/profiles/new_alert/" method="post">
+            {% csrf_token %}
+            <div class="input-field">
+              <input required id="{{alert_form.name.id_for_label}}" name="{{alert_form.name.html_name}}" type="text" class="validate">
+              <label for="{{alert_form.name.id_for_label}}">Título</label>
+            </div>
+            <div class="input-field">
+              <input required id="{{alert_form.description.id_for_label}}" name="{{alert_form.description.html_name}}" type="text" class="validate">
+              <label for="{{alert_form.description.id_for_label}}">Descripción</label>
+            </div>
+            <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+              <i class="material-icons right">send</i>
+            </button>
+            <br><br>
+            <!-- <input   type="submit" value="Submit"> -->
+          </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div> -->
+      </div>
+    </main>
+{% endblock content %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('.fixed-action-btn').floatingActionButton();
+  });
+</script>
+{% endblock js %}
