@@ -8,12 +8,21 @@ class BaseUser(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
     last_name_maternal = models.CharField(max_length=50)
-    profile_picture = models.ImageField(upload_to='images/profiles/%Y/%m/%d', blank=False)
+    profile_picture = models.ImageField(upload_to='images/profiles/%Y/%m/%d', blank=True)
+    phone_number = models.CharField(max_length=50)
+    address = models.CharField(max_length=200)
+    email = models.EmailField(max_length=200)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
 
+class AdminUser(models.Model):
+    base_user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
 
 class Promoter(models.Model):
     base_user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
-    
+    contact_name = models.CharField(max_length=50)
+    contact_phone_number = models.CharField(max_length=50)
+
+class Beneficiary(models.Model):
+    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
