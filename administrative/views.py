@@ -12,8 +12,9 @@ def index(request):
 def fill_Production_Report(request):
     return render(request, 'administrative/Production_Report.html')
 
+@login_required
 def add_beneficiary(request):
     if request.method == 'GET':
-        form =
+        form = BeneficiaryForm()
         context = {'form': form}
-        return render(request, 'path/to/tempate.html', context)
+        return render(request, 'administrative/beneficiaries.html')
