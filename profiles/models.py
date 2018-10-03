@@ -29,8 +29,6 @@ class Promoter(models.Model):
     def __str__(self):
         return self.base_user.name + " " + self.base_user.last_name_paternal
 
-class Beneficiary(models.Model):
-    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
 
 class HelpAlert(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
