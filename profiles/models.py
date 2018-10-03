@@ -31,6 +31,8 @@ class Promoter(models.Model):
 
 class Beneficiary(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
 
 class HelpAlert(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
