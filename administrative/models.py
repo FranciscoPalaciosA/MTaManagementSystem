@@ -3,7 +3,9 @@ from django.utils import timezone
 from profiles.models import *
 
 # Create your models here.
+
 class ProductionReport(models.Model):
+    beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     self_seed = models.IntegerField(default=0)
     self_leaf = models.IntegerField(default=0)
     self_flour = models.IntegerField(default=0)
