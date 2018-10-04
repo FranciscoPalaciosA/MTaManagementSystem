@@ -16,9 +16,9 @@ class BeneficiaryForm(forms.ModelForm):
                     'bank_name']
 
 class ProductionReportForm(forms.ModelForm):
-    exch_seed = forms.IntegerField(required=False)
-    exch_leaf = forms.IntegerField(required=False)
-    
+    exch_seed = forms.DecimalField(required=False)
+    exch_leaf = forms.DecimalField(required=False)
+
     class Meta:
         model = ProductionReport
         fields = [  'self_seed',

@@ -73,21 +73,21 @@
               <div class="row">
                 Semilla:
                 <div class="input-field inline">
-                  <input required id="{{production_report_form.self_seed.id_for_label}}" name="{{production_report_form.self_seed.html_name}}" type="number" class="validate">
+                  <input required id="{{production_report_form.self_seed.id_for_label}}" name="{{production_report_form.self_seed.html_name}}" type="number" class="validate" step="0.1">
                   <label for="{{production_report_form.self_seed.id_for_label}}">Kg</label>
                 </div>
               </div>
               <div class="row">
                 Hoja:
                 <div class="input-field inline">
-                  <input required id="{{production_report_form.self_leaf.id_for_label}}" name="{{production_report_form.self_leaf.html_name}}" type="number" class="validate">
+                  <input required id="{{production_report_form.self_leaf.id_for_label}}" name="{{production_report_form.self_leaf.html_name}}" type="number" class="validate" step="0.1">
                   <label for="{{production_report_form.self_leaf.id_for_label}}">Kg</label>
                 </div>
               </div>
               <div class="row">
                 Harina:
                 <div class="input-field inline">
-                  <input required id="{{production_report_form.self_flour.id_for_label}}" name="{{production_report_form.self_flour.html_name}}" type="number" class="validate">
+                  <input required id="{{production_report_form.self_flour.id_for_label}}" name="{{production_report_form.self_flour.html_name}}" type="number" class="validate" step="0.1">
                   <label for="{{production_report_form.self_flour.id_for_label}}">Kg</label>
                 </div>
               </div>
@@ -104,15 +104,15 @@
               <div class="row">
                 Semilla:
                 <div class="input-field inline">
-                  <input id="exch_seed" type="number" class="validate">
-                  <label for="exch_seed">Kg</label>
+                  <input id="{{production_report_form.exch_seed.id_for_label}}" name="{{production_report_form.exch_seed.html_name}}" type="number" class="validate" step="0.1">
+                  <label for="{{production_report_form.exch_seed.id_for_label}}">Kg</label>
                 </div>
               </div>
               <div class="row">
                 Hoja:
                 <div class="input-field inline">
-                  <input id="exch_leaf" type="number" class="validate">
-                  <label for="exch_leaf">Kg</label>
+                  <input id="{{production_report_form.exch_leaf.id_for_label}}" name="{{production_report_form.exch_leaf.html_name}}" type="number" class="validate" step="0.1">
+                  <label for="{{production_report_form.exch_leaf.id_for_label}}">Kg</label>
                 </div>
               </div>
             </div>

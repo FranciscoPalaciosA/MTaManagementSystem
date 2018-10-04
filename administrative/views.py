@@ -18,16 +18,26 @@ def production_report(request):
 def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-        #print(form.data['self_seed'])
+        print("Exch_seed" + form.data['exch_seed'])
         if form.is_valid():
+            if not form.cleaned_data['exch_seed']:
+                exch_seed = 0
+            else:
+                exch_seed = form.cleaned_data['exch_seed']
+
+            if not form.cleaned_data['exch_leaf']:
+                exch_leaf = 0
+            else:
+                exch_leaf = form.cleaned_data['exch_leaf']
+
             newProductionReport = ProductionReport(
                                                     beneficiary = Beneficiary.objects.get(id = 1),
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
                                                     days_per_month = form.cleaned_data['days_per_month'],
-                                                    exch_seed = form.cleaned_data['exch_seed'],
-                                                    exch_leaf = form.cleaned_data['exch_leaf']
+                                                    exch_seed = exch_seed,
+                                                    exch_leaf = exch_leaf
                                                     )
             newProductionReport.save()
             return HttpResponseRedirect('/administrative/')
