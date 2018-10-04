@@ -5,5 +5,4 @@ from .models import *
 admin.site.register(BaseUser)
 admin.site.register(Promoter)
 admin.site.register(HelpAlert)
-admin.site.register(Beneficiary)
 admin.site.register(AdminUser)
