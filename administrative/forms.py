@@ -27,3 +27,12 @@ class ProductionReportForm(forms.ModelForm):
                     'days_per_month',
                     'exch_seed',
                     'exch_leaf']
+   
+class WeeklySessionForm(forms.ModelForm):
+    class Meta:
+        model = WeeklySession
+        fields = ['type', 'topic', 'assistants', 'start_time', 'end_time']
+
+        widgets = {
+            'assistants': forms.CheckboxSelectMultiple,
+        }

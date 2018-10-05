@@ -6,4 +6,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('production_report/', views.production_report, name='production_report'),
     path('new_production_report/', views.add_production_report, name='new_production_report'),
+    path('weekly_sessions/', views.weekly_sessions, name='weekly_sessions'),
 ]
