@@ -1,19 +1,7 @@
-from django.db import models
 from django.utils import timezone
 from profiles.models import *
 
 # Create your models here.
-class ProductionReport(models.Model):
-    self_seed = models.IntegerField(default=0)
-    self_leaf = models.IntegerField(default=0)
-    self_flour = models.IntegerField(default=0)
-    days_per_month = models.IntegerField(default=0)
-    exch_seed = models.IntegerField(default=0)
-    exch_leaf = models.IntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
-    deleted_at = models.DateTimeField(blank=True, null=True)
-
 class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
@@ -35,6 +23,21 @@ class Beneficiary(models.Model):
     def __str__(self):
         return str(self.name)
 
+class ProductionReport(models.Model):
+    beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
+    self_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    self_leaf = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    self_flour = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    days_per_month = models.IntegerField(default=0)
+    exch_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    exch_leaf = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return "Production Report " + str(self.id)
+
 class WeeklySessionEvidence(models.Model):
     path = models.CharField(max_length=100)
 
@@ -45,7 +48,6 @@ class WeeklySession(models.Model):
     assistants = models.ManyToManyField(Beneficiary, verbose_name="list of assistants")
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
-
     #evidences = models.ManyToManyField(WeeklySessionEvidence, verbose_name="evidences")
 
     def __str__(self):
