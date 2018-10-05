@@ -5,4 +5,5 @@ app_name = 'profiles'
 urlpatterns = [
     path('', views.index, name='index'),
     path('new_alert/', views.add_alert, name='new_alert'),
+    path('new_promoter/', views.add_promoter, name='new_promoter'),
 ]

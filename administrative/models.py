@@ -14,14 +14,15 @@ class Beneficiary(models.Model):
     contact_phone = models.IntegerField(default=0)
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
-    promoter = models.ManyToManyField(Promoter)
+    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
     #program = models.ForeignKey(Program, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name)
+        return "Beneficiaries " + str(self.id)
+
 
 class ProductionReport(models.Model):
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
