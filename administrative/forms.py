@@ -18,6 +18,8 @@ class BeneficiaryForm(forms.ModelForm):
 class ProductionReportForm(forms.ModelForm):
     exch_seed = forms.DecimalField(required=False)
     exch_leaf = forms.DecimalField(required=False)
+    want_for_seed = forms.CharField(required=False)
+    want_for_leaf = forms.CharField(required=False)
 
     class Meta:
         model = ProductionReport
@@ -26,8 +28,10 @@ class ProductionReportForm(forms.ModelForm):
                     'self_flour',
                     'days_per_month',
                     'exch_seed',
-                    'exch_leaf']
-   
+                    'want_for_seed',
+                    'exch_leaf',
+                    'want_for_leaf']
+
 class WeeklySessionForm(forms.ModelForm):
     class Meta:
         model = WeeklySession
