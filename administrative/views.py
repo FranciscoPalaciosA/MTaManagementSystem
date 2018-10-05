@@ -29,6 +29,14 @@ def add_production_report(request):
                 exch_leaf = 0
             else:
                 exch_leaf = form.cleaned_data['exch_leaf']
+            if not form.cleaned_data['want_for_seed']:
+                want_for_seed = ' '
+            else:
+                want_for_seed = form.cleaned_data['want_for_seed']
+            if not form.cleaned_data['want_for_leaf']:
+                want_for_leaf = ' '
+            else:
+                want_for_leaf = form.cleaned_data['want_for_leaf']
 
             newProductionReport = ProductionReport(
                                                     beneficiary = Beneficiary.objects.get(id = 1),
@@ -37,7 +45,9 @@ def add_production_report(request):
                                                     self_flour = form.cleaned_data['self_seed'],
                                                     days_per_month = form.cleaned_data['days_per_month'],
                                                     exch_seed = exch_seed,
-                                                    exch_leaf = exch_leaf
+                                                    want_for_seed = want_for_seed,
+                                                    exch_leaf = exch_leaf,
+                                                    want_for_leaf = want_for_leaf
                                                     )
             newProductionReport.save()
             return HttpResponseRedirect('/administrative/')

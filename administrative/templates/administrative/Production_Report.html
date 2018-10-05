@@ -101,7 +101,7 @@
                 Días por mes:
               </div>
               <div class="input-field inline">
-                <input required id="{{production_report_form.days_per_month.id_for_label}}" name="{{production_report_form.days_per_month.html_name}}" type="number" class="validate">
+                <input required id="{{production_report_form.days_per_month.id_for_label}}" name="{{production_report_form.days_per_month.html_name}}" type="number" class="validate" max=31>
                 <label for="{{production_report_form.days_per_month.id_for_label}}">#</label>
               </div>
             </div>
@@ -120,12 +120,12 @@
               <div class="col s3">
                 Por
                 <div class="input-field inline">
-                  <select>
+                  <select id="{{production_report_form.want_for_seed.id_for_label}}" name="{{production_report_form.want_for_seed.html_name}}">
                     <option value="" disabled selected>Selecciona uno</option>
-                    <option value="1">Grano reventado</option>
-                    <option value="2">Hoja congelada</option>
-                    <option value="3">Harina</option>
-                    <option value="3">Efectivo</option>
+                    <option value="Grano reventado">Grano reventado</option>
+                    <option value="Hoja congelada">Hoja congelada</option>
+                    <option value="Harina">Harina</option>
+                    <option value="Efectivo">Efectivo</option>
                   </select>
                 </div>
               </div>
@@ -142,12 +142,12 @@
               <div class="col s3">
                 Por
                 <div class="input-field inline">
-                  <select>
+                  <select id="{{production_report_form.want_for_leaf.id_for_label}}" name="{{production_report_form.want_for_leaf.html_name}}">
                     <option value="" disabled selected>Selecciona uno</option>
-                    <option value="1">Grano reventado</option>
-                    <option value="2">Hoja congelada</option>
-                    <option value="3">Harina</option>
-                    <option value="3">Efectivo</option>
+                    <option value="Grano reventado">Grano reventado</option>
+                    <option value="Hoja congelada">Hoja congelada</option>
+                    <option value="Harina">Harina</option>
+                    <option value="Efectivo">Efectivo</option>
                   </select>
                 </div>
               </div>
