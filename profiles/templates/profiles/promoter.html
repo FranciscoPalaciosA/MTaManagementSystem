@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Directorio{% endblock %}
+{% block title %}MTA - Inicio{% endblock %}
 
-{% block nav_title %}Directorio{% endblock %}
+{% block nav_title %}Inicio{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -65,43 +65,33 @@
     <main>
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
-          <i class="large material-icons">add</i>
+          <i class="large material-icons">add_alert</i>
         </a>
       </div>
-      <div class="row">
-        <div class="col s12">
-          <h2>Contactos</h2>
-        </div>
-        <div class="col l6 m8 s12">
-        {% if contacts %}
-          <ul class="collection">
-          {% for contact in contacts %}
-            <li class="collection-item">
-              <b>{{contact.first_name}} {{contact.last_name}}</b>
-              <span>({{contact.institution}}) - </span>
-              <span>{{contact.phone_number}}</span>
-            </li>
-          {% endfor %}
-          </ul>
-        {% else %}
-          <p>No hay contactos.</p>
-        {% endif %}
-        </div>
-      </div>
-
       <!-- Modal Structure -->
       <div id="modal1" class="modal">
         <div class="modal-content">
-          <h4>Nuevo Contacto</h4>
-          <form action="/directory/" method="post">
+          <h4>Nueva Alerta</h4>
+          <form action="/profiles/new_alert/" method="post">
             {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit">
+            <div class="input-field">
+              <input required id="{{alert_form.name.id_for_label}}" name="{{alert_form.name.html_name}}" type="text" class="validate">
+              <label for="{{alert_form.name.id_for_label}}">Título</label>
+            </div>
+            <div class="input-field">
+              <input required id="{{alert_form.description.id_for_label}}" name="{{alert_form.description.html_name}}" type="text" class="validate">
+              <label for="{{alert_form.description.id_for_label}}">Descripción</label>
+            </div>
+            <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+              <i class="material-icons right">send</i>
+            </button>
+            <br><br>
+            <!-- <input   type="submit" value="Submit"> -->
           </form>
         </div>
-        <div class="modal-footer">
+        <!-- <div class="modal-footer">
           <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
+        </div> -->
       </div>
     </main>
 {% endblock content %}

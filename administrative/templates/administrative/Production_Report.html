@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Directorio{% endblock %}
+{% block title %}Reporte de Producción{% endblock %}
 
-{% block nav_title %}Directorio{% endblock %}
+{% block nav_title %}Reporte de Producción{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -62,49 +62,75 @@
 {% endblock nav_tabs %}
 
 {% block content %}
-    <main>
-      <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
-          <i class="large material-icons">add</i>
-        </a>
+  <main>
+    <div class="row center-align">
+      <div class="col s4">
+        <h3>Autoconsumo</h3>
+        <div class="row">
+          Semilla:
+          <div class="input-field inline">
+            <input id="self_seed" type="number" class="validate">
+            <label for="self_seed">Kg</label>
+          </div>
+        </div>
+        <div class="row">
+          Hoja:
+          <div class="input-field inline">
+            <input id="self_leaf" type="number" class="validate">
+            <label for="self_leaf">Kg</label>
+          </div>
+        </div>
+        <div class="row">
+          Harina:
+          <div class="input-field inline">
+            <input id="self_flour" type="number" class="validate">
+            <label for="self_flour">Kg</label>
+          </div>
+        </div>
+        <div class="row">
+          Días por mes:
+          <div class="input-field inline">
+            <input id="days_per_month" type="number" class="validate">
+            <label for="days_per_month">#</label>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn waves-effect waves-light" type="submit" name="action">Guardar
+            <i class="material-icons right">lock</i>
+          </button>
+        </div>
       </div>
-      <div class="row">
-        <div class="col s12">
-          <h2>Contactos</h2>
+      <div class="col s4">
+        <h3>Trueque MTa</h3>
+        <div class="row">
+          Semilla:
+          <div class="input-field inline">
+            <input id="exch_seed" type="number" class="validate">
+            <label for="exch_seed">Kg</label>
+          </div>
         </div>
-        <div class="col l6 m8 s12">
-        {% if contacts %}
-          <ul class="collection">
-          {% for contact in contacts %}
-            <li class="collection-item">
-              <b>{{contact.first_name}} {{contact.last_name}}</b>
-              <span>({{contact.institution}}) - </span>
-              <span>{{contact.phone_number}}</span>
-            </li>
-          {% endfor %}
-          </ul>
-        {% else %}
-          <p>No hay contactos.</p>
-        {% endif %}
+        <div class="row">
+          Hoja:
+          <div class="input-field inline">
+            <input id="exch_leaf" type="number" class="validate">
+            <label for="exch_leaf">Kg</label>
+          </div>
         </div>
+        <div class="row">
+          <button class="btn waves-effect waves-light" type="submit" name="action">Guardar
+            <i class="material-icons right">lock</i>
+          </button>
+        </div>
+      </div>
+      <div class="col s4">
+        <h3>Recepción</h3>
+
       </div>
 
-      <!-- Modal Structure -->
-      <div id="modal1" class="modal">
-        <div class="modal-content">
-          <h4>Nuevo Contacto</h4>
-          <form action="/directory/" method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit">
-          </form>
-        </div>
-        <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
-      </div>
-    </main>
+    </div>
+  </main>
 {% endblock content %}
+
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
 {% endblock init_scripts %}
