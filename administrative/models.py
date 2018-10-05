@@ -49,4 +49,4 @@ class WeeklySession(models.Model):
     #evidences = models.ManyToManyField(WeeklySessionEvidence, verbose_name="evidences")
 
     def __str__(self):
-        return str(self.topic)
+        return str(self.type) + "-" +str(self.topic)
