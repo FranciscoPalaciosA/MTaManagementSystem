@@ -31,3 +31,22 @@ class Beneficiary(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
+
+class WeeklySessionEvidence(models.Model):
+    path = models.CharField(max_length=100)
+
+class WeeklySession(models.Model):
+    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    type = models.CharField(max_length=50)
+    topic = models.CharField(max_length=50)
+    assistants = models.ManyToManyField(Beneficiary, verbose_name="list of assistants")
+    start_time = models.CharField(max_length=10)
+    end_time = models.CharField(max_length=10)
+
+    #evidences = models.ManyToManyField(WeeklySessionEvidence, verbose_name="evidences")
+
+    def __str__(self):
+        return str(self.topic)
