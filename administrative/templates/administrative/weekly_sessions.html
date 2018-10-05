@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Reporte de Producción{% endblock %}
+{% block title %}Sesiones semanales{% endblock %}
 
-{% block nav_title %}Reporte de Producción{% endblock %}
+{% block nav_title %}Sesiones semanales{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -62,76 +62,68 @@
 {% endblock nav_tabs %}
 
 {% block content %}
-  <main>
-    <div class="row center-align">
-      <form action="/administrative/new_production_report/" method="post">
-        {% csrf_token %}
-        <div class="col s8">
-          <div class="row">
-            <div class="col s6">
-              <h3>Autoconsumo</h3>
-              <div class="row">
-                Semilla:
-                <div class="input-field inline">
-                  <input required id="{{production_report_form.self_seed.id_for_label}}" name="{{production_report_form.self_seed.html_name}}" type="number" class="validate" step="0.1">
-                  <label for="{{production_report_form.self_seed.id_for_label}}">Kg</label>
-                </div>
-              </div>
-              <div class="row">
-                Hoja:
-                <div class="input-field inline">
-                  <input required id="{{production_report_form.self_leaf.id_for_label}}" name="{{production_report_form.self_leaf.html_name}}" type="number" class="validate" step="0.1">
-                  <label for="{{production_report_form.self_leaf.id_for_label}}">Kg</label>
-                </div>
-              </div>
-              <div class="row">
-                Harina:
-                <div class="input-field inline">
-                  <input required id="{{production_report_form.self_flour.id_for_label}}" name="{{production_report_form.self_flour.html_name}}" type="number" class="validate" step="0.1">
-                  <label for="{{production_report_form.self_flour.id_for_label}}">Kg</label>
-                </div>
-              </div>
-              <div class="row">
-                Días por mes:
-                <div class="input-field inline">
-                  <input required id="{{production_report_form.days_per_month.id_for_label}}" name="{{production_report_form.days_per_month.html_name}}" type="number" class="validate">
-                  <label for="{{production_report_form.days_per_month.id_for_label}}">#</label>
-                </div>
-              </div>
-            </div>
-            <div class="col s6">
-              <h3>Trueque MTa</h3>
-              <div class="row">
-                Semilla:
-                <div class="input-field inline">
-                  <input id="{{production_report_form.exch_seed.id_for_label}}" name="{{production_report_form.exch_seed.html_name}}" type="number" class="validate" step="0.1">
-                  <label for="{{production_report_form.exch_seed.id_for_label}}">Kg</label>
-                </div>
-              </div>
-              <div class="row">
-                Hoja:
-                <div class="input-field inline">
-                  <input id="{{production_report_form.exch_leaf.id_for_label}}" name="{{production_report_form.exch_leaf.html_name}}" type="number" class="validate" step="0.1">
-                  <label for="{{production_report_form.exch_leaf.id_for_label}}">Kg</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <button class="btn waves-effect waves-light" type="submit" value="Submit" name="action">Guardar
-              <i class="material-icons right">lock</i>
-            </button>
-          </div>
-        </div>
-      </form>
-      <div class="col s4">
-        <h3>Recepción</h3>
+    <main>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
+          <i class="large material-icons">add</i>
+        </a>
       </div>
+      <!-- Modal Structure -->
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+          <h4>Nueva Sesión</h4>
+          <form action="/administrative/weekly_sessions/" method="POST">
+            {% csrf_token %}
+            <div class="input-field">
+              <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
+              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate">
+            </div>
+            <div class="input-field">
+              <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
+              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate">
+            </div>
+            <div class="input-field">
+              <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
+              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker">
+            </div>
+            <div class="input-field">
+              <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
+              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker">
+            </div>
+            <div class="input-field">
+              <label for="{{weekly_session_form.assistants.id_for_label}}">Asistentes</label>
+              {% for choice in weekly_session_form.assistants.field.queryset %}
+              <br><div class="input-field">
+                <label>
+                  <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}">
+                  <span>{{choice}}</span>
+                </label>
+              </div>
+              {% endfor %}
+              <!--{% for choice in weekly_session_form.assistants.field.queryset %}
+              <br><div class="input-field">
+                <label>
+                  <input type="checkbox" name="assistants[]" value="{{choice.id}}">
+                  <span>{{choice}}</span>
+                </label>
+              </div>
+              {% endfor %}-->
+            </div>
+              <!--<label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
+              {{ weekly_session_form.assistants }}-->
+            <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+              <i class="material-icons right">send</i>
+            </button>
 
-    </div>
-  </main>
+            <br><br>
+          </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div> -->
+      </div>
+    </main>
 {% endblock content %}
-
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
 {% endblock init_scripts %}
@@ -140,6 +132,9 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
+  });
+  $(document).ready(function(){
+    $('.timepicker').timepicker();
   });
 </script>
 {% endblock js %}
