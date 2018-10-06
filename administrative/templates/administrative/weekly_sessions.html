@@ -72,28 +72,29 @@
       <div id="modal1" class="modal">
         <div class="modal-content">
           <h4>Nueva Sesión</h4>
-          <form action="/administrative/weekly_sessions/" method="POST">
+          <form action="/administrative/weekly_sessions/" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="input-field">
               <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
-              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate">
+              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate" value="Clase">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
-              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate">
+              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate" value="Clase">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
-              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker">
+              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker" value="07:15">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
-              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker">
+              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker" value="07:15">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.assistants.id_for_label}}">Asistentes</label>
               {% for choice in weekly_session_form.assistants.field.queryset %}
-              <br><div class="input-field">
+              <br>
+              <div class="input-field">
                 <label>
                   <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}">
                   <span>{{choice}}</span>
@@ -108,6 +109,16 @@
                 </label>
               </div>
               {% endfor %}-->
+            </div>
+            <br><br><br>
+            <div class="file-field input-field">
+              <div class="btn">
+                <span>Evidencia</span>
+                <input type="file" id="{{weekly_session_form.evidence.id_for_label}}" name="{{weekly_session_form.evidence.html_name}}" accept="image/*" multiple>
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Sube una o más evidencias!">
+              </div>
             </div>
               <!--<label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
               {{ weekly_session_form.assistants }}-->

@@ -43,8 +43,6 @@ class ProductionReport(models.Model):
     def __str__(self):
         return "Production Report " + str(self.id)
 
-class WeeklySessionEvidence(models.Model):
-    path = models.CharField(max_length=100)
 
 class WeeklySession(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
@@ -57,3 +55,10 @@ class WeeklySession(models.Model):
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
+
+class WeeklySessionEvidence(models.Model):
+    weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
+    evidence = models.ImageField(upload_to = 'weekly_session_evidence/', default = 'weekly_session_evidence/no-img.jpg')
+
+    def __str__(self):
+        return str(self.weekly_session) + " Ev: " + str(self.evidence)

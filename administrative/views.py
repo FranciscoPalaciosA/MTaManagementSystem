@@ -19,7 +19,7 @@ def production_report(request):
 def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-        
+
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0
@@ -95,15 +95,19 @@ def add_beneficiary(request):
         print(form.errors)
         print("\n\n\n\n\n")
 
-        
+
 @login_required
 def weekly_sessions(request):
     if request.method == 'POST':
-        form = WeeklySessionForm(request.POST)
+        form = WeeklySessionForm(request.POST, request.FILES)
+        evidences = request.FILES.getlist('evidence')
+        #print("\n\n\n getlist('evidence')" + str(request.FILES.getlist('evidence')))
         if form.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
+            #print("\n\n\n form.data: "+str(form.cleaned_data))
+            #print("\n\n\n evidencia: "+str(form.getlist['evidence']))
             base_user = BaseUser.objects.get(user = request.user.id)
             promoter = Promoter.objects.get(base_user = base_user.id)
             newSession = WeeklySession(
@@ -118,6 +122,14 @@ def weekly_sessions(request):
             list = request.POST.getlist("assistants")
             for assistant in list:
                 newSession.assistants.add(Beneficiary.objects.get(id = assistant))
+
+            print("\n\n\n newSession.id = " + str(newSession.id))
+            for e in evidences:
+                newEvidence = WeeklySessionEvidence(
+                                                    weekly_session = newSession,
+                                                    evidence = e
+                                                    )
+                newEvidence.save()
 
             return HttpResponseRedirect('/administrative/weekly_sessions/')
         else:
