@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .models import *
+from profiles.models import *
 
 # Create your tests here.
 class LoginTests(TestCase):
@@ -41,3 +41,18 @@ class AlertTests(TestCase):
         self.client.login(username="test", password="testpassword")
         response = self.client.post('/profiles/new_alert/', {'name': 'alert', 'description': 'alert description'})
         self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ll
