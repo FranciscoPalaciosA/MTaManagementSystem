@@ -64,9 +64,6 @@ def add_promoter(request):
                                 )
             promoter.save()
             return HttpResponseRedirect('/profiles/')
-        else:
-            print('----Invalid form-----')
-            print(form.errors)
     elif request.method == 'GET':
         form = PromoterForm()
         context = {'form': form}
