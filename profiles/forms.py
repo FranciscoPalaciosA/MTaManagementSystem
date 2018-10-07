@@ -9,7 +9,6 @@ class AlertForm(forms.ModelForm):
 class PromoterForm(forms.Form):
     username = forms.CharField(max_length=150)
     password = forms.CharField(max_length=150)
-    passwordConfirm = forms.CharField(max_length=150)
     name = forms.CharField(max_length=50)
     last_name_paternal = forms.CharField(max_length=50)
     last_name_maternal = forms.CharField(max_length=50)
