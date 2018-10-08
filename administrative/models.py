@@ -21,7 +21,7 @@ class Beneficiary(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return "Beneficiaries " + str(self.id)
+        return str(self.name)
 
 
 class ProductionReport(models.Model):
@@ -54,6 +54,9 @@ class WeeklySession(models.Model):
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
     #evidences = models.ManyToManyField(WeeklySessionEvidence, verbose_name="evidences")
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
