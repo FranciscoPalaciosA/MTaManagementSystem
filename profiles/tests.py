@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.urls import reverse
 from profiles.models import *
 
@@ -42,17 +42,45 @@ class AlertTests(TestCase):
         response = self.client.post('/profiles/new_alert/', {'name': 'alert', 'description': 'alert description'})
         self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
+class NewUserTests(TestCase):
+    def test_add_new_user(self):
+        """
+        Add a new base user
+        """
+        group, created = Group.objects.get_or_create(name='test_group')
+        user_info = {
+                        "username": "testUser",
+                        "password": "testpassword",
+                        "group": group.id,
+                        "name": "testName",
+                        "last_name_paternal": "testLastnameP",
+                        "last_name_maternal": "testLastnameM",
+                        "phone_number": "4422497177",
+                        "address": "test address #4",
+                        "email": "test@email.com"}
+        user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
+        self.client.force_login(user)
+        response = self.client.post('/profiles/new_user/', user_info)
+        self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-
-
-
-
-
-
-
-
-
-
-
-
-#ll
+    def test_add_new_promoter(self):
+        """
+        Add a new promoter
+        """
+        group, created = Group.objects.get_or_create(name='test_group')
+        user_info = {
+                        "username": "testUser",
+                        "password": "testpassword",
+                        "group": group.id,
+                        "name": "testName",
+                        "last_name_paternal": "testLastnameP",
+                        "last_name_maternal": "testLastnameM",
+                        "phone_number": "4422497177",
+                        "address": "test address #4",
+                        "email": "test@email.com",
+                        "contact_name": "testContactName",
+                        "contact_phone_number": "testContactPhone"}
+        user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
+        self.client.force_login(user)
+        response = self.client.post('/profiles/new_user/', user_info)
+        self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
