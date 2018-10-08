@@ -23,11 +23,23 @@ class Beneficiary(models.Model):
     def __str__(self):
         return str(self.name)
 
-class BeneficiaryProgram(models.Model):
+class Program(models.Model):
     name = models.CharField(max_length=50)
+    members = models.ManyToManyField(Beneficiary, through='BeneficiaryInProgram')
 
     def __str__(self):
         return str(self.name)
+
+class BeneficiaryInProgram(models.Model):
+        beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
+        program = models.ForeignKey(Program, on_delete=models.CASCADE)
+        curp = models.CharField(max_length=50)
+        house_address = models.CharField(max_length=100)
+        house_references = models.CharField(max_length=120)
+        huerto_coordinates = models.CharField(max_length=100)
+        water_capacity = models.IntegerField(default=0)
+        savings_account_role = models.CharField(max_length=50)
+
 
 class ProductionReport(models.Model):
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
