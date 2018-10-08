@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-
+from profiles.models import HelpAlert
 from .models import *
 from .forms import *
 
@@ -125,3 +125,11 @@ def weekly_sessions(request):
         weekly_session_form = WeeklySessionForm()
         context = {'weekly_session_form': weekly_session_form}
         return render(request, 'administrative/weekly_sessions.html', context)
+
+@login_required
+def alert_list(request):
+    if request.method == 'POST':
+        print("post")
+    else:
+        alert_list = HelpAlert.objects.all().order_by('created_at')[:30]
+        return render(request, 'administrative/alert_list.html', {'alerts': alert_list})
