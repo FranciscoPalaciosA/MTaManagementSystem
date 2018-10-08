@@ -19,7 +19,7 @@ def production_report(request):
 def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-        print("Exch_seed" + form.data['exch_seed'])
+
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0
@@ -30,6 +30,14 @@ def add_production_report(request):
                 exch_leaf = 0
             else:
                 exch_leaf = form.cleaned_data['exch_leaf']
+            if not form.cleaned_data['want_for_seed']:
+                want_for_seed = ' '
+            else:
+                want_for_seed = form.cleaned_data['want_for_seed']
+            if not form.cleaned_data['want_for_leaf']:
+                want_for_leaf = ' '
+            else:
+                want_for_leaf = form.cleaned_data['want_for_leaf']
 
             newProductionReport = ProductionReport(
                                                     beneficiary = Beneficiary.objects.get(id = 1),
@@ -38,7 +46,9 @@ def add_production_report(request):
                                                     self_flour = form.cleaned_data['self_seed'],
                                                     days_per_month = form.cleaned_data['days_per_month'],
                                                     exch_seed = exch_seed,
-                                                    exch_leaf = exch_leaf
+                                                    want_for_seed = want_for_seed,
+                                                    exch_leaf = exch_leaf,
+                                                    want_for_leaf = want_for_leaf
                                                     )
             newProductionReport.save()
             return HttpResponseRedirect('/administrative/')
@@ -78,22 +88,19 @@ def add_beneficiary(request):
 
             beneficiary.save()
             return HttpResponseRedirect('/administrative/beneficiaries')
-    else:
-        print("-------------------")
-        print("\n\n\n\n\n")
-        print("Form is not valid")
-        print(form.errors)
-        print("\n\n\n\n\n")
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
 
-        
+
 @login_required
 def weekly_sessions(request):
     if request.method == 'POST':
         form = WeeklySessionForm(request.POST)
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
             base_user = BaseUser.objects.get(user = request.user.id)
             promoter = Promoter.objects.get(base_user = base_user.id)
             newSession = WeeklySession(

@@ -6,4 +6,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('new_alert/', views.add_alert, name='new_alert'),
     path('new_promoter/', views.add_promoter, name='new_promoter'),
+    path('new_user/', views.add_user, name='new_user'),
 ]
