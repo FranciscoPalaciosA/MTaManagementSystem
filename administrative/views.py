@@ -19,7 +19,7 @@ def production_report(request):
 def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-        
+
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0
@@ -88,22 +88,19 @@ def add_beneficiary(request):
 
             beneficiary.save()
             return HttpResponseRedirect('/administrative/beneficiaries')
-    else:
-        print("-------------------")
-        print("\n\n\n\n\n")
-        print("Form is not valid")
-        print(form.errors)
-        print("\n\n\n\n\n")
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
 
-        
+
 @login_required
 def weekly_sessions(request):
     if request.method == 'POST':
         form = WeeklySessionForm(request.POST)
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
             base_user = BaseUser.objects.get(user = request.user.id)
             promoter = Promoter.objects.get(base_user = base_user.id)
             newSession = WeeklySession(
