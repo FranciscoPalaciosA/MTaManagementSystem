@@ -7,13 +7,15 @@ class BeneficiaryForm(forms.ModelForm):
         fields = [      'name',
                         'last_name_paternal',
                         'last_name_maternal',
-                        'state','municipality',
+                        'state',
+                        'municipality',
                         'community_name',
                         'num_of_family_beneficiaries',
                         'contact_name',
                         'contact_phone',
                         'account_number',
                         'bank_name',
+                        'member_in',
                         'promoter']
 
 class ProductionReportForm(forms.ModelForm):

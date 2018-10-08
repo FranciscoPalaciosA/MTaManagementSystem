@@ -2,6 +2,12 @@ from django.utils import timezone
 from profiles.models import *
 
 # Create your models here.
+class Program(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return str(self.name)
+        
 class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
@@ -15,17 +21,10 @@ class Beneficiary(models.Model):
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
-    #program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    member_in = models.ManyToManyField(Program, through='BeneficiaryInProgram')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return str(self.name)
-
-class Program(models.Model):
-    name = models.CharField(max_length=50)
-    members = models.ManyToManyField(Beneficiary, through='BeneficiaryInProgram')
 
     def __str__(self):
         return str(self.name)
@@ -59,9 +58,6 @@ class ProductionReport(models.Model):
 
     def __str__(self):
         return "Production Report " + str(self.id)
-
-class WeeklySessionEvidence(models.Model):
-    path = models.CharField(max_length=100)
 
 class WeeklySession(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)

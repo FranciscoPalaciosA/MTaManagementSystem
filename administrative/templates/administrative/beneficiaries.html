@@ -116,7 +116,14 @@
           <input required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
           <label for="{{form.bank_name.id_for_label}}">Nombre del banco</label>
         </div>
+        <select id="{{form.member_in.id_for_label}}" name="{{form.member_in.html_name}}" onselect="console.log('change')">
+          <option value="0" disabled selected>Programa al que pertenece</option>
+          {% for program in form.member_in.field.queryset %}
+          <option value="{{program.id}}">{{program}}</option>
+          {% endfor %}
+        </select>
         <select id="{{form.promoter.id_for_label}}" name="{{form.promoter.html_name}}">
+          <option value="0" disabled selected>Asignado a promotora</option>
           {% for choice in form.promoter.field.queryset %}
           <option value="{{choice.id}}">{{choice}}</option>
           {% endfor %}
