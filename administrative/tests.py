@@ -16,7 +16,6 @@ def create_user():
     base_user.save()
     return base_user
 
-
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
         """
@@ -37,3 +36,37 @@ class ProductionReportTest(TestCase):
 #'want_for_seed': 'Hoja congelada',
 #'exch_leaf': 3,
 #'want_for_leaf': 'Hoja congelada'
+
+class WeeklySessionTests(TestCase):
+    def test_add_new_weekly_session(self):
+        """
+        Register a weekly session
+        """
+        user = create_user()
+        promoter = Promoter.objects.create(base_user=user,
+                                           contact_name="Juan",
+                                           contact_phone_number="44222345678")
+        promoter.save()
+
+        beneficiary = Beneficiary.objects.create(promoter_id=1,
+                                                 name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 state="Querétaro",
+                                                 municipality="Peñamiller",
+                                                 community_name="Río Blanco",
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+        beneficiary.save()
+
+        self.client.login(username="test", password="testpassword")
+        response = self.client.post('/administrative/weekly_sessions/', {'type': 'session_type',
+                                                                         'topic': 'session_topic',
+                                                                         'assistants': 1,
+                                                                         'start_time': '4:00 PM',
+                                                                         'end_time': '5:00 PM',
+                                                                         'promoter_id': 1})
+        self.assertRedirects(response, '/administrative/weekly_sessions/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
