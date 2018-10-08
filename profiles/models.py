@@ -23,6 +23,7 @@ class AdminUser(models.Model):
 
 class Promoter(models.Model):
     base_user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
+    community = models.ForeignKey('administrative.Community', on_delete=models.CASCADE)
     contact_name = models.CharField(max_length=50)
     contact_phone_number = models.CharField(max_length=50)
 

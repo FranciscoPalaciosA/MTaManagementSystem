@@ -1,3 +1,4 @@
+from django.db import models
 from django.utils import timezone
 from profiles.models import *
 
@@ -65,3 +66,9 @@ class WeeklySession(models.Model):
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
+
+class Community(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
