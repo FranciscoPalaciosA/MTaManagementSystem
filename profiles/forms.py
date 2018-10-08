@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from administrative.models import Community
 from django.contrib.auth.models import Group
 
 class AlertForm(forms.ModelForm):
@@ -16,6 +17,7 @@ class PromoterForm(forms.Form):
     phone_number = forms.CharField(max_length=50)
     address = forms.CharField(max_length=200)
     email = forms.EmailField(max_length=200)
+    community = forms.ModelChoiceField(queryset = Community.objects.all())
     contact_name = forms.CharField(max_length=50)
     contact_phone_number = forms.CharField(max_length=50)
 

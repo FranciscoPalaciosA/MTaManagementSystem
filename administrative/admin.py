@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(ProductionReport)
 admin.site.register(Beneficiary)
 admin.site.register(WeeklySession)
+admin.site.register(Community)

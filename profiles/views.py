@@ -60,7 +60,8 @@ def add_promoter(request):
             promoter = Promoter(
                                     base_user=base_user,
                                     contact_name=form.cleaned_data['contact_name'],
-                                    contact_phone_number=form.cleaned_data['contact_phone_number']
+                                    contact_phone_number=form.cleaned_data['contact_phone_number'],
+                                    community=form.cleaned_data['community']
                                 )
             promoter.save()
             return HttpResponseRedirect('/profiles/')
