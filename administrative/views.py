@@ -18,7 +18,8 @@ def production_report(request):
 def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-        
+        print("\n\n\n\n PRUEBAAAAA")
+
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0

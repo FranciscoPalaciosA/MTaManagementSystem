@@ -11,7 +11,7 @@ class Beneficiary(models.Model):
     community_name = models.CharField(max_length=50)
     num_of_family_beneficiaries = models.IntegerField(default=0)
     contact_name = models.CharField(max_length=200)
-    contact_phone = models.IntegerField(default=0)
+    contact_phone = models.CharField(max_length=50, default=0)
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
     promoter = models.ManyToManyField(Promoter)
@@ -41,9 +41,6 @@ class ProductionReport(models.Model):
 
     def __str__(self):
         return "Production Report " + str(self.id)
-
-class WeeklySessionEvidence(models.Model):
-    path = models.CharField(max_length=100)
 
 class WeeklySession(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)

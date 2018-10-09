@@ -23,13 +23,27 @@ class ProductionReportTest(TestCase):
         Creating a new production report with correct information. Expecting a redirect to /administrative/
         """
         user = create_user()
+
+        beneficiary = Beneficiary.objects.create(id=1,
+                                                 name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 state="Querétaro",
+                                                 municipality="Peñamiller",
+                                                 community_name="Río Blanco",
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+
         self.client.login(username="test", password="testpassword")
         response = self.client.post('/administrative/new_production_report', {'self_seed': 1,
                                                                                 'self_leaf': 3,
                                                                                 'self_flour': 4,
                                                                                 'days_per_month': 15
                                                                              })
-        #print("\n\n\n\n"+response)
+        #print("\n\n\n\n"+str(response))
         self.assertRedirects(response, '/administrative/', status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
 
