@@ -73,55 +73,91 @@
       <form action="/administrative/new_beneficiary/" method="post">
         {% csrf_token %}
         <div class="input-field">
-          <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
+          <input value="Rodolfo" required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
           <label for="{{form.name.id_for_label}}">Nombre</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
+          <input value="Rodriguez" required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
           <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
+          <input value="Rocha" required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
           <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.state.id_for_label}}" name="{{form.state.html_name}}" type="text" class="validate">
+          <input value="Querétaro" required id="{{form.state.id_for_label}}" name="{{form.state.html_name}}" type="text" class="validate">
           <label for="{{form.state.id_for_label}}">Estado</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
+          <input value="Peñamiller" required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
           <label for="{{form.municipality.id_for_label}}">Municipio</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.community_name.id_for_label}}" name="{{form.community_name.html_name}}" type="text" class="validate">
+          <input value="Río Blanco" required id="{{form.community_name.id_for_label}}" name="{{form.community_name.html_name}}" type="text" class="validate">
           <label for="{{form.community_name.id_for_label}}">Nombre de la comunidad</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate">
+          <input value="3" required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate">
           <label for="{{form.num_of_family_beneficiaries.id_for_label}}">Número de beneficiarios de la familia</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
+          <input value="Juan" required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
           <label for="{{form.contact_name.id_for_label}}">Nombre del contacto</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate">
+          <input value="4325671" required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate">
           <label for="{{form.contact_phone.id_for_label}}">Telefono del contacto</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="number" class="validate">
+          <input value=123 required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="number" class="validate">
           <label for="{{form.account_number.id_for_label}}">Número de cuenta</label>
         </div>
         <div class="input-field">
-          <input required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
+          <input value="Banamex" required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
           <label for="{{form.bank_name.id_for_label}}">Nombre del banco</label>
         </div>
-        <select id="{{form.member_in.id_for_label}}" name="{{form.member_in.html_name}}" onselect="console.log('change')">
+        <select required id="{{form.member_in.id_for_label}}" name="{{form.member_in.html_name}}" onchange="showProgramFields('{{form.member_in.id_for_label}}')">
           <option value="0" disabled selected>Programa al que pertenece</option>
           {% for program in form.member_in.field.queryset %}
-          <option value="{{program.id}}">{{program}}</option>
+          <option value="{{program}}">{{program}}</option>
           {% endfor %}
         </select>
+        <div class="container">
+          <div id="fields_for_productor" hidden>
+            <div class="input-field">
+              <input id="{{beneficiary_in_program_form.curp.id_for_label}}" name="{{beneficiary_in_program_form.curp.html_name}}" type="text" class="validate">
+              <label for="{{beneficiary_in_program_form.curp.id_for_label}}">CURP</label>
+            </div>
+            <div class="input-field">
+              <input id="{{beneficiary_in_program_form.house_address.id_for_label}}" name="{{beneficiary_in_program_form.house_address.html_name}}" type="text" class="validate">
+              <label for="{{beneficiary_in_program_form.house_address.id_for_label}}">Dirección de casa</label>
+            </div>
+            <div class="input-field">
+              <input id="{{beneficiary_in_program_form.house_references.id_for_label}}" name="{{beneficiary_in_program_form.house_references.html_name}}" type="text" class="validate">
+              <label for="{{beneficiary_in_program_form.house_references.id_for_label}}">Referencias</label>
+            </div>
+            <div class="input-field">
+              <input id="{{beneficiary_in_program_form.huerto_coordinates.id_for_label}}" name="{{beneficiary_in_program_form.huerto_coordinates.html_name}}" type="text" class="validate">
+              <label for="{{beneficiary_in_program_form.huerto_coordinates.id_for_label}}">Ubicación del huerto</label>
+            </div>
+          </div>
+          <div id="fields_for_cisterna" hidden>
+            <div class="input-field">
+              <input id="{{beneficiary_in_program_form.water_capacity.id_for_label}}" name="{{beneficiary_in_program_form.water_capacity.html_name}}" type="number" class="validate">
+              <label for="{{beneficiary_in_program_form.water_capacity.id_for_label}}">Capacidad de cisterna</label>
+            </div>
+          </div>
+          <div id="fields_for_saving_account" hidden>
+            <div class="input-field inline">
+              <select id="{{production_report_form.savings_account_role.id_for_label}}" name="{{production_report_form.savings_account_role.html_name}}">
+                <option value="" disabled selected>Selecciona un rol</option>
+                <option value="Presidente">Presidente</option>
+                <option value="Tesorero">Tesorero</option>
+                <option value="Socio">Socio</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <select id="{{form.promoter.id_for_label}}" name="{{form.promoter.html_name}}">
           <option value="0" disabled selected>Asignado a promotora</option>
           {% for choice in form.promoter.field.queryset %}
@@ -143,6 +179,7 @@
 {% endblock %}
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/administrative.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">

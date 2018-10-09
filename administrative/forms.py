@@ -18,6 +18,26 @@ class BeneficiaryForm(forms.ModelForm):
                         'member_in',
                         'promoter']
 
+class BeneficiaryInProgramForm(forms.ModelForm):
+    curp = forms.CharField(required=False)
+    house_address = forms.CharField(required=False)
+    house_references = forms.CharField(required=False)
+    huerto_coordinates = forms.CharField(required=False)
+    water_capacity = forms.IntegerField(required=False)
+    savings_account_role = forms.CharField(required=False)
+
+    class Meta:
+        model = BeneficiaryInProgram
+        fields = [
+                    'program',
+                    'curp',
+                    'house_address',
+                    'house_references',
+                    'huerto_coordinates',
+                    'water_capacity',
+                    'savings_account_role'
+                ]
+
 class ProductionReportForm(forms.ModelForm):
     exch_seed = forms.DecimalField(required=False)
     exch_leaf = forms.DecimalField(required=False)

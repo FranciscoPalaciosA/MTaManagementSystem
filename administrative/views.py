@@ -63,7 +63,8 @@ def add_production_report(request):
 @login_required
 def beneficiaries(request):
     form = BeneficiaryForm()
-    context = {'form': form}
+    beneficiary_in_program_form = BeneficiaryInProgram()
+    context = {'form': form, 'beneficiary_in_program_form': beneficiary_in_program_form}
     return render(request, 'administrative/beneficiaries.html', context)
 
 @login_required
@@ -83,6 +84,7 @@ def add_beneficiary(request):
                                         contact_phone=form.cleaned_data['contact_phone'],
                                         account_number=form.cleaned_data['account_number'],
                                         bank_name=form.cleaned_data['bank_name'],
+                                        member_in=form.cleaned_data['member_in'],
                                         promoter=form.cleaned_data['promoter']
                                         )
 
