@@ -44,7 +44,7 @@ class ProductionReportTest(TestCase):
                                                                                 'days_per_month': 15
                                                                              })
         #print("\n\n\n\n"+str(response))
-        self.assertRedirects(response, '/administrative/', status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
 
 #'exch_seed': 2,

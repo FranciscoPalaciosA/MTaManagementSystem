@@ -16,9 +16,10 @@ def production_report(request):
     return render(request, 'administrative/Production_Report.html', context)
 
 def add_production_report(request):
-    if request.method == 'POST':
+    print("\n\n\n\n PRUEBAAAAA1")
+    if request.method == 'post':
         form = ProductionReportForm(request.POST)
-        print("\n\n\n\n PRUEBAAAAA")
+        print("\n\n\n\n PRUEBAAAAA2")
 
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
@@ -59,6 +60,8 @@ def add_production_report(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
+    else:
+        print("no entro al post")
 
 def add_beneficiary(request):
     if request.method == 'GET':
