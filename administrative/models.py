@@ -7,7 +7,7 @@ class Program(models.Model):
 
     def __str__(self):
         return str(self.name)
-        
+
 class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
@@ -30,14 +30,14 @@ class Beneficiary(models.Model):
         return str(self.name)
 
 class BeneficiaryInProgram(models.Model):
-        beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
-        program = models.ForeignKey(Program, on_delete=models.CASCADE)
-        curp = models.CharField(max_length=50)
-        house_address = models.CharField(max_length=100)
-        house_references = models.CharField(max_length=120)
-        huerto_coordinates = models.CharField(max_length=100)
-        water_capacity = models.IntegerField(default=0)
-        savings_account_role = models.CharField(max_length=50)
+    beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
+    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    curp = models.CharField(max_length=50)
+    house_address = models.CharField(max_length=100)
+    house_references = models.CharField(max_length=120)
+    huerto_coordinates = models.CharField(max_length=100)
+    water_capacity = models.IntegerField(default=0)
+    savings_account_role = models.CharField(max_length=50)
 
 
 class ProductionReport(models.Model):
