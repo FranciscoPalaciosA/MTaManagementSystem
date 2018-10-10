@@ -76,9 +76,6 @@ class BeneficiariestTest(TestCase):
         response = self.client.post('/administrative/new_beneficiary', {'name': 'beneTest',
                                                                                 'last_name_paternal': 'Test',
                                                                                 'last_name_maternal': 'Test',
-                                                                                'state': 'testState',
-                                                                                'municipality': 'muniTest',
-                                                                                'community_name' : 'testComm',
                                                                                 'num_of_family_beneficiaries': 5,
                                                                                 'contact_name': 'contactTest',
                                                                                 'contact_phone': '111111',
@@ -88,6 +85,19 @@ class BeneficiariestTest(TestCase):
         #print("\n\n\n\n"+response)
         self.assertRedirects(response, '/administrative/beneficiaries', status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
+class CommunitiesTests(TestCase):
+    def test_new_community(self):
+        """
+        Creating a new community. Expecting a redirect to /administrative/communities/
+
+        """
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+        response = self.client.post('/administrative/communities/', {'name': 'Río Blanco',
+                                                                     'municipality': 'Peñamiller',
+                                                                     'state': 'Querétaro',
+                                                                    })
+        self.assertRedirects(response, '/administrative/communities/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
 class WeeklySessionTests(TestCase):
     def test_add_new_weekly_session(self):
@@ -104,9 +114,6 @@ class WeeklySessionTests(TestCase):
                                                  name="Rodolfo",
                                                  last_name_paternal="Rodriguez",
                                                  last_name_maternal="Rocha",
-                                                 state="Querétaro",
-                                                 municipality="Peñamiller",
-                                                 community_name="Río Blanco",
                                                  num_of_family_beneficiaries=16,
                                                  contact_name="Juan",
                                                  contact_phone="4325671",
@@ -122,4 +129,3 @@ class WeeklySessionTests(TestCase):
                                                                          'end_time': '5:00 PM',
                                                                          'promoter_id': 1})
         self.assertRedirects(response, '/administrative/weekly_sessions/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-
