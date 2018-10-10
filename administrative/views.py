@@ -17,7 +17,7 @@ def production_report(request):
 
 def add_production_report(request):
     print("\n\n\n\n PRUEBAAAAA1")
-    if request.method == 'post':
+    if request.method == 'POST':
         form = ProductionReportForm(request.POST)
         print("\n\n\n\n PRUEBAAAAA2")
 
@@ -62,6 +62,7 @@ def add_production_report(request):
             print("\n\n\n\n\n")
     else:
         print("no entro al post")
+        print(request.method)
 
 def add_beneficiary(request):
     if request.method == 'GET':
