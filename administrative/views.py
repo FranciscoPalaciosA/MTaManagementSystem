@@ -75,9 +75,6 @@ def add_beneficiary(request):
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
                                         last_name_maternal=form.cleaned_data['last_name_maternal'],
-                                        state=form.cleaned_data['state'],
-                                        municipality=form.cleaned_data['municipality'],
-                                        community_name=form.cleaned_data['community_name'],
                                         num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries'],
                                         contact_name=form.cleaned_data['contact_name'],
                                         contact_phone=form.cleaned_data['contact_phone'],
@@ -95,6 +92,25 @@ def add_beneficiary(request):
             print(form.errors)
             print("\n\n\n\n\n")
 
+@login_required
+def communities(request):
+    #Description: Renders the view to register a new community on the system, when posted stores the data
+    #Parameters: request
+    #Function return expected: For POST request: redirect, For GET request: render
+    if request.method == 'POST':
+        form = CommunityForm(request.POST)
+        if form.is_valid():
+            community = Community(  name=form.cleaned_data['name'],
+                                    state=form.cleaned_data['state'],
+                                    municipality=form.cleaned_data['municipality'],
+                                 )
+            community.save()
+
+            return HttpResponseRedirect('/administrative/communities/')
+    elif request.method == 'GET':
+        community_form = CommunityForm()
+        context = {'community_form': community_form}
+        return render(request, 'administrative/communities.html', context)
 
 @login_required
 def weekly_sessions(request):
