@@ -1,3 +1,4 @@
+from django.db import models
 from django.utils import timezone
 from profiles.models import *
 
@@ -14,11 +15,17 @@ class Beneficiary(models.Model):
     contact_phone = models.CharField(max_length=50, default=0)
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
-    promoter = models.ManyToManyField(Promoter)
+    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
     #program = models.ForeignKey(Program, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
+
+class BeneficiaryProgram(models.Model):
+    name = models.CharField(max_length=50)
 
     def __str__(self):
         return str(self.name)
@@ -50,6 +57,15 @@ class WeeklySession(models.Model):
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
     #evidences = models.ManyToManyField(WeeklySessionEvidence, verbose_name="evidences")
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
+
+class Community(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name

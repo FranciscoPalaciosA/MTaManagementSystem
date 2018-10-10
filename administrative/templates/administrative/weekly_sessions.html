@@ -4,6 +4,15 @@
 
 {% block nav_title %}Sesiones semanales{% endblock %}
 {% block nav_tabs %}
+
+<style type="text/scss">
+  .hide {
+   position: absolute !important;
+   top: -9999px !important;
+   left: -9999px !important;
+  }
+</style>
+
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
   <div class="collapsible-body">
@@ -90,27 +99,18 @@
               <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
               <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker">
             </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.assistants.id_for_label}}">Asistentes</label>
+              <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
+              <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
+
               {% for choice in weekly_session_form.assistants.field.queryset %}
-              <br><div class="input-field">
-                <label>
+              <div class="input-field"><br>
+                <label name=assistant_check>
                   <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}">
                   <span>{{choice}}</span>
                 </label>
               </div>
               {% endfor %}
-              <!--{% for choice in weekly_session_form.assistants.field.queryset %}
-              <br><div class="input-field">
-                <label>
-                  <input type="checkbox" name="assistants[]" value="{{choice.id}}">
-                  <span>{{choice}}</span>
-                </label>
-              </div>
-              {% endfor %}-->
-            </div>
-              <!--<label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
-              {{ weekly_session_form.assistants }}-->
+
             <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
               <i class="material-icons right">send</i>
             </button>
@@ -132,9 +132,29 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
-  });
-  $(document).ready(function(){
     $('.timepicker').timepicker();
   });
+
+  function filter_assistants() {
+    // Declare variables
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("search");
+    filter = input.value.toUpperCase();
+    option = document.getElementsByName("assistant_check");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < option.length; i++) {
+      td = option[i].children[1];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          option[i].parentElement.style.display = "";
+        } else {
+          option[i].parentElement.style.display = "none";
+        }
+      }
+    }
+  }
+
+
 </script>
 {% endblock js %}
