@@ -1,22 +1,27 @@
 from django import forms
 from.models import *
+from profiles.models import *
 
-class BeneficiaryForm(forms.ModelForm):
-    class Meta:
-        model = Beneficiary
-        fields = [      'name',
-                        'last_name_paternal',
-                        'last_name_maternal',
-                        'state',
-                        'municipality',
-                        'community_name',
-                        'num_of_family_beneficiaries',
-                        'contact_name',
-                        'contact_phone',
-                        'account_number',
-                        'bank_name',
-                        'member_in',
-                        'promoter']
+class BeneficiaryForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    last_name_paternal = forms.CharField(max_length=50)
+    last_name_maternal = forms.CharField(max_length=50)
+    state = forms.CharField(max_length=50)
+    municipality = forms.CharField(max_length=50)
+    community_name = forms.CharField(max_length=50)
+    num_of_family_beneficiaries = forms.IntegerField(required=True)
+    contact_name = forms.CharField(max_length=200)
+    contact_phone = forms.IntegerField()
+    account_number = forms.IntegerField()
+    bank_name = forms.CharField(max_length=100)
+    promoter = forms.ModelMultipleChoiceField(queryset=Promoter.objects)
+    member_in = forms.ModelMultipleChoiceField(queryset=Program.objects)
+    curp = forms.CharField(max_length=50, required=False)
+    house_address = forms.CharField(max_length=100, required=False)
+    house_references = forms.CharField(max_length=120, required=False)
+    huerto_coordinates = forms.CharField(max_length=100, required=False)
+    water_capacity = forms.IntegerField(required=False)
+    savings_account_role = forms.CharField(required=False)
 
 class BeneficiaryInProgramForm(forms.ModelForm):
     curp = forms.CharField(required=False)

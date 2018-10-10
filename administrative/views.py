@@ -68,12 +68,9 @@ def beneficiaries(request):
 @login_required
 def add_beneficiary(request):
     if request.method == 'POST':
-        #form = BeneficiaryForm(request.POST)
-        print("POST= " + str(request.POST))
         form = BeneficiaryForm(request.POST)
-        #program_form = BeneficiaryInProgramForm(request.POST)
-        #print(str(program_form))
-        if all([form.is_valid()]): #, program_form.is_valid()
+        if all([form.is_valid()]):
+            print("Promoter =" + str(form.cleaned_data['promoter']))
             beneficiary = Beneficiary   (
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
@@ -88,6 +85,8 @@ def add_beneficiary(request):
                                         bank_name=form.cleaned_data['bank_name'],
                                         promoter=form.cleaned_data['promoter']
                                         )
+
+            print("Ben:"+ str(beneficiary))
             beneficiary.save()
 
             benficiary_in_program = BeneficiaryInProgram(
@@ -113,8 +112,7 @@ def add_beneficiary(request):
 
     elif request.method == 'GET':
         form = BeneficiaryForm()
-        beneficiary_in_program_form = BeneficiaryInProgram()
-        context = {'form': form, 'beneficiary_in_program_form': beneficiary_in_program_form}
+        context = {'form': form}
         return render(request, 'administrative/new_beneficiary.html', context)
 
 
