@@ -51,14 +51,13 @@ class WeeklySession(models.Model):
     assistants = models.ManyToManyField(Beneficiary, verbose_name="list of assistants")
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
-    #evidences = models.ManyToManyField(WeeklySessionEvidence, verbose_name="evidences")
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
 
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
-    evidence = models.ImageField(upload_to = 'weekly_session_evidence/', default = 'weekly_session_evidence/no-img.jpg')
+    evidence = models.ImageField(upload_to = 'administrative/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
 
     def __str__(self):
         return str(self.weekly_session) + " Ev: " + str(self.evidence)
