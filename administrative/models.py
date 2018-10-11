@@ -6,7 +6,10 @@ from profiles.models import *
 
 class Program(models.Model):
     name = models.CharField(max_length=50)
-    
+
+    def __str__(self):
+        return str(self.name)
+
 class Community(models.Model):
     name = models.CharField(max_length=50)
     municipality = models.CharField(max_length=50)
