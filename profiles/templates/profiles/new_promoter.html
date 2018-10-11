@@ -116,6 +116,15 @@
                   <label for="{{form.email.id_for_label}}">Correo</label>
                 </div>
               </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <select id="{{form.community.id_for_label}}" name="{{form.community.html_name}}">
+                    {% for choice in form.community.field.queryset %}
+                    <option value="{{choice.id}}">{{choice}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
               <h4 class="left-align col s12">Información del contacto</h4>
               <div class="row">
                 <div class="input-field col s12 m6">

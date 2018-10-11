@@ -1,9 +1,22 @@
+from django.db import models
 from django.utils import timezone
 from profiles.models import *
 
 # Create your models here.
+
 class Program(models.Model):
     name = models.CharField(max_length=50)
+    
+class Community(models.Model):
+    name = models.CharField(max_length=50)
+    municipality = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        verbose_name = 'Community'
+        verbose_name_plural = 'Communities'
 
     def __str__(self):
         return str(self.name)
@@ -12,12 +25,9 @@ class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
     last_name_maternal = models.CharField(max_length=50)
-    state = models.CharField(max_length=50)
-    municipality = models.CharField(max_length=50)
-    community_name = models.CharField(max_length=50)
     num_of_family_beneficiaries = models.IntegerField(default=0)
     contact_name = models.CharField(max_length=200)
-    contact_phone = models.IntegerField(default=0)
+    contact_phone = models.CharField(max_length=50, default=0)
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)

@@ -30,7 +30,6 @@ class BeneficiaryInProgramForm(forms.ModelForm):
     huerto_coordinates = forms.CharField(required=False)
     water_capacity = forms.IntegerField(required=False)
     savings_account_role = forms.CharField(required=False)
-
     class Meta:
         model = BeneficiaryInProgram
         fields = [
@@ -42,6 +41,13 @@ class BeneficiaryInProgramForm(forms.ModelForm):
                     'water_capacity',
                     'savings_account_role'
                 ]
+        
+class CommunityForm(forms.ModelForm):
+    class Meta:
+        model = Community
+        fields = ['name',
+                  'municipality',
+                  'state']
 
 class ProductionReportForm(forms.ModelForm):
     exch_seed = forms.DecimalField(required=False)

@@ -17,7 +17,6 @@ def production_report(request):
 def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0
@@ -57,6 +56,9 @@ def add_production_report(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
+    else:
+        print("no entro al post")
+        print(request.method)
 
 @login_required
 def beneficiaries(request):
@@ -74,9 +76,6 @@ def add_beneficiary(request):
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
                                         last_name_maternal=form.cleaned_data['last_name_maternal'],
-                                        state=form.cleaned_data['state'],
-                                        municipality=form.cleaned_data['municipality'],
-                                        community_name=form.cleaned_data['community_name'],
                                         num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries'],
                                         contact_name=form.cleaned_data['contact_name'],
                                         contact_phone=form.cleaned_data['contact_phone'],
@@ -118,6 +117,25 @@ def add_beneficiary(request):
         context = {'form': form}
         return render(request, 'administrative/new_beneficiary.html', context)
 
+@login_required
+def communities(request):
+    #Description: Renders the view to register a new community on the system, when posted stores the data
+    #Parameters: request
+    #Function return expected: For POST request: redirect, For GET request: render
+    if request.method == 'POST':
+        form = CommunityForm(request.POST)
+        if form.is_valid():
+            community = Community(  name=form.cleaned_data['name'],
+                                    state=form.cleaned_data['state'],
+                                    municipality=form.cleaned_data['municipality'],
+                                 )
+            community.save()
+
+            return HttpResponseRedirect('/administrative/communities/')
+    elif request.method == 'GET':
+        community_form = CommunityForm()
+        context = {'community_form': community_form}
+        return render(request, 'administrative/communities.html', context)
 
 @login_required
 def weekly_sessions(request):

@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Beneficiarios{% endblock %}
-{% block nav_title %} Beneficiarios{% endblock %}
+{% block title %}Comunidades{% endblock %}
+
+{% block nav_title %}Comunidades{% endblock %}
 {% block nav_tabs %}
+
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
   <div class="collapsible-body">
@@ -59,19 +61,55 @@
   </div>
 </li>
 {% endblock nav_tabs %}
+
 {% block content %}
-<main>
-</main>
-{% endblock %}
+    <main>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red modal-trigger"  href="#newCommunity">
+          <i class="large material-icons">add</i>
+        </a>
+      </div>
+      <!-- Modal Structure -->
+      <div id="newCommunity" class="modal">
+        <div class="modal-content">
+          <h4>Nueva Comunidad</h4>
+          <form action="/administrative/communities/" method="POST">
+            {% csrf_token %}<div class="row">
+            <div class="input-field col s12 m12">
+              <label for="{{community_form.name.id_for_label}}">Nombre</label>
+              <input required id="{{community_form.name.id_for_label}}" name="{{community_form.name.html_name}}" type="text" class="validate">
+            </div>
+            <div class="input-field col s12 m6">
+              <label for="{{community_form.municipality.id_for_label}}">Municipio</label>
+              <input required id="{{community_form.municipality.id_for_label}}" name="{{community_form.municipality.html_name}}" type="text" class="timepicker">
+            </div>
+            <div class="input-field col s12 m6">
+              <label for="{{community_form.state.id_for_label}}">Estado</label>
+              <input required id="{{community_form.state.id_for_label}}" name="{{community_form.state.html_name}}" type="text" class="validate">
+            </div>
+
+            <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+              <i class="material-icons right">send</i>
+            </button>
+
+            <br><br>
+          </form>
+        </div></div>
+        <!-- <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div> -->
+      </div>
+    </main>
+{% endblock content %}
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
-<script src="{%static 'js/mta_js/administrative.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
   $(document).ready(function(){
-    $('select').formSelect();
+    $('.fixed-action-btn').floatingActionButton();
   });
+
 </script>
 {% endblock js %}
