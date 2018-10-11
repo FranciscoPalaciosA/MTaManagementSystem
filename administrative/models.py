@@ -39,6 +39,9 @@ class BeneficiaryInProgram(models.Model):
     water_capacity = models.IntegerField(default=0)
     savings_account_role = models.CharField(max_length=50)
 
+    def __str__(self):
+        return str(self.beneficiary.name) + " - " + str(self.program.name)
+
 
 class ProductionReport(models.Model):
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)

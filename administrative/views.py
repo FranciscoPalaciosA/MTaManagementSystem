@@ -70,7 +70,6 @@ def add_beneficiary(request):
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
         if all([form.is_valid()]):
-            print("Promoter =" + str(form.cleaned_data['promoter']))
             beneficiary = Beneficiary   (
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
@@ -83,20 +82,24 @@ def add_beneficiary(request):
                                         contact_phone=form.cleaned_data['contact_phone'],
                                         account_number=form.cleaned_data['account_number'],
                                         bank_name=form.cleaned_data['bank_name'],
-                                        promoter=form.cleaned_data['promoter']
+                                        promoter=form.cleaned_data['promoter'][0]
                                         )
 
-            print("Ben:"+ str(beneficiary))
             beneficiary.save()
 
-            benficiary_in_program = BeneficiaryInProgram(
+            if not form.cleaned_data['water_capacity']:
+                water_capacity = 0
+            else:
+                water_capacity = form.cleaned_data['water_capacity']
+
+            beneficiary_in_program = BeneficiaryInProgram(
                                                         beneficiary=beneficiary,
-                                                        program=Program(id=form.cleaned_data['member_in']),
+                                                        program=form.cleaned_data['member_in'][0],
                                                         curp=form.cleaned_data['curp'],
                                                         house_address=form.cleaned_data['house_address'],
                                                         house_references=form.cleaned_data['house_references'],
                                                         huerto_coordinates=form.cleaned_data['huerto_coordinates'],
-                                                        water_capacity=form.cleaned_data['water_capacity'],
+                                                        water_capacity=water_capacity,
                                                         savings_account_role=form.cleaned_data['savings_account_role']
                                                         )
             beneficiary_in_program.save()
