@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from administrative.models import *
+from profiles.models import *
 
 def create_user():
     user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
@@ -13,6 +14,18 @@ def create_user():
                                         address="address")
     base_user.save()
     return base_user
+  
+def create_promoter():
+    base_user = create_user()
+    promoter = Promoter.objects.create(base_user=base_user,
+                                        contact_name = "Contacto",
+                                        contact_phone_number = "1234512312"
+                                        )
+    return promoter
+
+def create_program():
+    program = Program.objects.create(name="Productores")
+    return program
 
 def create_beneficiary():
     beneficiary = Beneficiary.objects.create(id=1,
@@ -29,6 +42,7 @@ def create_beneficiary():
                                              bank_name="Banamets")
     beneficiary.save()
     return beneficiary
+
 
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
@@ -65,25 +79,34 @@ class ProductionReportTest(TestCase):
         #print("\n\n\n\n"+str(response))
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
+
 class BeneficiariestTest(TestCase):
-    def test_new_beneficary_only_selfconsumption(self):
+    def test_new_beneficary(self):
         """
         Creating a new beneficiary with correct information. Expecting a redirect to /administrative/beneficiaries
 
         """
         user = create_user()
+        promoter = create_promoter()
+        program = create_program()
         self.client.login(username="test", password="testpassword")
-        response = self.client.post('/administrative/new_beneficiary', {'name': 'beneTest',
+        response = self.client.post('/administrative/new_beneficiary/', {'name': 'beneTest',
                                                                                 'last_name_paternal': 'Test',
                                                                                 'last_name_maternal': 'Test',
                                                                                 'num_of_family_beneficiaries': 5,
                                                                                 'contact_name': 'contactTest',
                                                                                 'contact_phone': '111111',
                                                                                 'account_number': '222222',
-                                                                                'bank_name': 'banco'
+                                                                                'bank_name': 'banco',
+                                                                                'promoter': [promoter],
+                                                                                'member_in': [program],
+                                                                                'curp': '123FWEDWF12',
+                                                                                'house_address': 'Casa 3',
+                                                                                'house_references': 'Por ahí',
+                                                                                'huerto_coordinates': 'Atrás'
+
                                                                              })
-        #print("\n\n\n\n"+response)
-        self.assertRedirects(response, '/administrative/beneficiaries', status_code=301, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/administrative/beneficiary/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
 class CommunitiesTests(TestCase):
     def test_new_community(self):

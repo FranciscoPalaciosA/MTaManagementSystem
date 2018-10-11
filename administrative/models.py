@@ -3,6 +3,10 @@ from django.utils import timezone
 from profiles.models import *
 
 # Create your models here.
+
+class Program(models.Model):
+    name = models.CharField(max_length=50)
+    
 class Community(models.Model):
     name = models.CharField(max_length=50)
     municipality = models.CharField(max_length=50)
@@ -10,7 +14,6 @@ class Community(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
-
     class Meta:
         verbose_name = 'Community'
         verbose_name_plural = 'Communities'
@@ -28,7 +31,7 @@ class Beneficiary(models.Model):
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
-    #program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    member_in = models.ManyToManyField(Program, through='BeneficiaryInProgram')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -36,11 +39,19 @@ class Beneficiary(models.Model):
     def __str__(self):
         return str(self.name)
 
-class BeneficiaryProgram(models.Model):
-    name = models.CharField(max_length=50)
+class BeneficiaryInProgram(models.Model):
+    beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
+    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    curp = models.CharField(max_length=50)
+    house_address = models.CharField(max_length=100)
+    house_references = models.CharField(max_length=120)
+    huerto_coordinates = models.CharField(max_length=100)
+    water_capacity = models.IntegerField(default=0)
+    savings_account_role = models.CharField(max_length=50)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.beneficiary.name) + " - " + str(self.program.name)
+
 
 class ProductionReport(models.Model):
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)

@@ -12,9 +12,7 @@ def index(request):
 
 @login_required
 def production_report(request):
-    production_report_form = ProductionReportForm()
-    context = {'production_report_form': production_report_form}
-    return render(request, 'administrative/Production_Report.html', context)
+    return render(request, 'administrative/Production_Report.html')
 
 def add_production_report(request):
     if request.method == 'POST':
@@ -65,14 +63,15 @@ def add_production_report(request):
 @login_required
 def beneficiaries(request):
     form = BeneficiaryForm()
-    context = {'form': form}
+    beneficiary_in_program_form = BeneficiaryInProgram()
+    context = {'form': form, 'beneficiary_in_program_form': beneficiary_in_program_form}
     return render(request, 'administrative/beneficiaries.html', context)
 
 @login_required
 def add_beneficiary(request):
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
-        if form.is_valid():
+        if all([form.is_valid()]):
             beneficiary = Beneficiary   (
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
@@ -82,10 +81,27 @@ def add_beneficiary(request):
                                         contact_phone=form.cleaned_data['contact_phone'],
                                         account_number=form.cleaned_data['account_number'],
                                         bank_name=form.cleaned_data['bank_name'],
-                                        promoter=form.cleaned_data['promoter']
+                                        promoter=form.cleaned_data['promoter'][0]
                                         )
 
             beneficiary.save()
+
+            if not form.cleaned_data['water_capacity']:
+                water_capacity = 0
+            else:
+                water_capacity = form.cleaned_data['water_capacity']
+
+            beneficiary_in_program = BeneficiaryInProgram(
+                                                        beneficiary=beneficiary,
+                                                        program=form.cleaned_data['member_in'][0],
+                                                        curp=form.cleaned_data['curp'],
+                                                        house_address=form.cleaned_data['house_address'],
+                                                        house_references=form.cleaned_data['house_references'],
+                                                        huerto_coordinates=form.cleaned_data['huerto_coordinates'],
+                                                        water_capacity=water_capacity,
+                                                        savings_account_role=form.cleaned_data['savings_account_role']
+                                                        )
+            beneficiary_in_program.save()
             return HttpResponseRedirect('/administrative/beneficiaries')
         else:
             print("-------------------")
@@ -93,6 +109,13 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
+            #print(program_form.errors)
+            print("\n\n\n\n\n")
+
+    elif request.method == 'GET':
+        form = BeneficiaryForm()
+        context = {'form': form}
+        return render(request, 'administrative/new_beneficiary.html', context)
 
 @login_required
 def communities(request):

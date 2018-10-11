@@ -5,5 +5,6 @@ from .models import *
 admin.site.register(Community)
 admin.site.register(ProductionReport)
 admin.site.register(Beneficiary)
-admin.site.register(BeneficiaryProgram)
+admin.site.register(Program)
+admin.site.register(BeneficiaryInProgram)
 admin.site.register(WeeklySession)
