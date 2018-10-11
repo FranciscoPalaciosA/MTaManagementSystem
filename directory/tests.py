@@ -2,7 +2,18 @@ from django.test import TestCase
 from django.urls import reverse
 from .models import *
 
-lass AddContactTest(TestCase):
+def create_user():
+    user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
+    base_user = BaseUser.objects.create(user=user, name="name",
+                                        last_name_paternal="last_name_paternal",
+                                        last_name_maternal="last_name_maternal",
+                                        phone_number="phone_number",
+                                        email="email@email.com",
+                                        address="address")
+    base_user.save()
+    return base_user
+
+class AddContactTest(TestCase):
 
     def test_new_beneficary_only_selfconsumption(self):
         """
@@ -16,7 +27,8 @@ lass AddContactTest(TestCase):
                                                                                 'phone_number': '123456',
                                                                                 'email': 'contact@test.com'
                                                                                 'contact_type':'Voluntario',
-                                                                                'institution':'INEGI'
+                                                                                'institution':'INEGI',
+                                                                                'comments': 'test'
                                                                              })
         #print("\n\n\n\n"+response)
 

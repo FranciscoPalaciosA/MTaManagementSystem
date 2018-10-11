@@ -22,9 +22,6 @@ def add_contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
             newContact = Contact(
                                 first_name = form.cleaned_data['first_name'],
                                 last_name_paternal = form.cleaned_data['last_name_paternal'],
@@ -32,14 +29,10 @@ def add_contact(request):
                                 phone_number = form.cleaned_data['phone_number'],
                                 email = form.cleaned_data['email'],
                                 contact_type = form.cleaned_data['contact_type'],
+                                institution = form.cleaned_data['institution'],
                                 comments = form.cleaned_data['comments'],
                                 )
             newContact.save()
-
-            newContactAdicional = ContactTypeInfo(
-                                                institution = forms.cleaned_data['institution'],
-                                                )
-            newContactAdicional.save()
             return HttpResponseRedirect('/directory/')
 
         else:
@@ -51,6 +44,5 @@ def add_contact(request):
 
     elif request.method == 'GET':
         form = ContactForm()
-        newContactAdicional = ContactTypeInfo()
-        context = {'form': form, 'newContactAdicional': newContactAdicional}
+        context = {'form': form}
         return render(request, 'directory/new_contact.html', context)

@@ -10,8 +10,5 @@ class ContactForm(forms.ModelForm):
                   'phone_number',
                   'email',
                   'contact_type',
+                  'institution',
                   'comments']
-                  
-class ContactTypeForm(forms.ModelForm):
-        model = ContactTypeInfo
-        fields = ['institution']

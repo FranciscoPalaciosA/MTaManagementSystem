@@ -125,7 +125,7 @@
                   <div class="container">
                     <div id="fields_for_volunteers" hidden>
                       <div class="input-field">
-                        <input required id="{{form.institution.id_for_label}}" name="{{form.institution.html_name}}" type="text" class="validate">
+                        <input id="{{form.institution.id_for_label}}" name="{{form.institution.html_name}}" type="text" class="validate">
                         <label for="{{form.institution.id_for_label}}">Nombre de la Institución:</label>
                       </div>
                     </div>
@@ -160,6 +160,16 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('select').formSelect();
+  });
+
+  if("#{{form.contact_type.id_for_label}}".on('change',function(){
+    var selected_choice = $("form.contact_type.id_for_label}}");
+    if(selected_choice == "Volunteer"){
+      $("{{form.contact_type.id_for_label}}").attr("required", "true");
+    }
+    else{
+      $("{{form.contact_type.id_for_label}}").attr("required", "false");
+    }
   });
 </script>
 {% endblock js %}
