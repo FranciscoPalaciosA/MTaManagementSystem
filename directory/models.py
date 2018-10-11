@@ -3,7 +3,7 @@ from django.utils import timezone
 
 # Create your models here.
 class Contact(models.Model):
-    type_choices = (('Admin', 'Administrativo'), ('Volunteer','Voluntario'),('Ext_Cons','Consultor Externo'),('Simp','Simpatizante'),('Other', 'Otro'))
+    type_choices = (('Other', 'Otro'),('Admin', 'Administrativo'), ('Volunteer','Voluntario'),('Ext_Cons','Consultor Externo'),('Simp','Simpatizante'))
 
     first_name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)

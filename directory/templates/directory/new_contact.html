@@ -83,8 +83,8 @@
               <div class="row">
                 <div class="col s4">
                   <div class="input-field">
-                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
-                    <label for="{{form.name.id_for_label}}">Nombre:</label>
+                    <input required id="{{form.first_name.id_for_label}}" name="{{form.first_name.html_name}}" type="text" class="validate">
+                    <label for="{{form.first_name.id_for_label}}">Nombre:</label>
                   </div>
                 </div>
                 <div class="col s4">
@@ -116,25 +116,25 @@
                 <br>
                 <div class="col s6">
                   <label for="{{form.comments.id_for_label}}">Tipo de contacto:</label>
-                  <select id="{{form.contact_type.id_for_label}}" name="{{form.contact_type.html_name}}">
+                  <select id="{{form.contact_type.id_for_label}}" name="{{form.contact_type.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
                     {% for id, val in form.contact_type.field.choices %}
                     {{choice.value}}
                     <option value="{{id}}">{{val}}</option>
                     {% endfor %}
                   </select>
-                </div>
-              <div class="container">
-                <div id="fields_for_volunteers" hidden>
-                  <div class="input-field">
-                    <input required id="{{form.institution.id_for_label}}" name="{{form.institution.html_name}}" type="text" class="validate">
-                    <label for="{{form.institution.id_for_label}}">Nombre de la Institución:</label>
+                  <div class="container">
+                    <div id="fields_for_volunteers" hidden>
+                      <div class="input-field">
+                        <input required id="{{form.institution.id_for_label}}" name="{{form.institution.html_name}}" type="text" class="validate">
+                        <label for="{{form.institution.id_for_label}}">Nombre de la Institución:</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
               <div class="row">
                 <div class="col s6">
                   <div class="input-field">
-                    <input required id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate">
+                    <input id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate">
                     <label for="{{form.comments.id_for_label}}">Comentarios:</label>
                   </div>
                 </div>
@@ -153,6 +153,7 @@
 {% endblock %}
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/directory.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">

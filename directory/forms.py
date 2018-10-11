@@ -11,3 +11,7 @@ class ContactForm(forms.ModelForm):
                   'email',
                   'contact_type',
                   'comments']
+                  
+class ContactTypeForm(forms.ModelForm):
+        model = ContactTypeInfo
+        fields = ['institution']

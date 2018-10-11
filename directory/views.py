@@ -26,20 +26,31 @@ def add_contact(request):
             # ...
             # redirect to a new URL:
             newContact = Contact(
-                                first_name = forms.cleaned_data['first_name'],
-                                last_name_paternal = forms.cleaned_data['last_name_paternal'],
-                                last_name_maternal = forms.cleaned_data['last_name_maternal'],
-                                phone_number = forms.cleaned_data['phone_number'],
-                                email = forms.cleaned_data['email'],
-                                contact_type = forms.cleaned_data['contact_type'],
-                                comments = forms.cleaned_data['comments']
+                                first_name = form.cleaned_data['first_name'],
+                                last_name_paternal = form.cleaned_data['last_name_paternal'],
+                                last_name_maternal = form.cleaned_data['last_name_maternal'],
+                                phone_number = form.cleaned_data['phone_number'],
+                                email = form.cleaned_data['email'],
+                                contact_type = form.cleaned_data['contact_type'],
+                                comments = form.cleaned_data['comments'],
                                 )
             newContact.save()
+
+            newContactAdicional = ContactTypeInfo(
+                                                institution = forms.cleaned_data['institution'],
+                                                )
+            newContactAdicional.save()
             return HttpResponseRedirect('/directory/')
 
-    else:
+        else:
             print("-------------------")
             print("\n\n\n\n\n")
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
+
+    elif request.method == 'GET':
+        form = ContactForm()
+        newContactAdicional = ContactTypeInfo()
+        context = {'form': form, 'newContactAdicional': newContactAdicional}
+        return render(request, 'directory/new_contact.html', context)
