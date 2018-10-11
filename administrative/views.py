@@ -12,7 +12,9 @@ def index(request):
 
 @login_required
 def production_report(request):
-    return render(request, 'administrative/Production_Report.html')
+    production_report_form = ProductionReportForm()
+    context = {'production_report_form': production_report_form}
+    return render(request, 'administrative/Production_Report.html', context)
 
 def add_production_report(request):
     if request.method == 'POST':
