@@ -140,7 +140,9 @@ def communities(request):
 @login_required
 def weekly_sessions(request):
     if request.method == 'POST':
-        form = WeeklySessionForm(request.POST)
+        form = WeeklySessionForm(request.POST, request.FILES)
+        evidences = request.FILES.getlist('evidence')
+        #print("\n\n\n getlist('evidence')" + str(request.FILES.getlist('evidence')))
         if form.is_valid():
             base_user = BaseUser.objects.get(user = request.user.id)
             promoter = Promoter.objects.get(base_user = base_user.id)
@@ -156,6 +158,14 @@ def weekly_sessions(request):
             list = request.POST.getlist("assistants")
             for assistant in list:
                 newSession.assistants.add(Beneficiary.objects.get(id = assistant))
+
+            print("\n\n\n newSession.id = " + str(newSession.id))
+            for e in evidences:
+                newEvidence = WeeklySessionEvidence(
+                                                    weekly_session = newSession,
+                                                    evidence = e
+                                                    )
+                newEvidence.save()
 
             return HttpResponseRedirect('/administrative/weekly_sessions/')
         else:

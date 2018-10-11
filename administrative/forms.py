@@ -67,9 +67,10 @@ class ProductionReportForm(forms.ModelForm):
                     'want_for_leaf']
 
 class WeeklySessionForm(forms.ModelForm):
+    evidence = forms.ImageField(required=False)
     class Meta:
         model = WeeklySession
-        fields = ['type', 'topic', 'assistants', 'start_time', 'end_time']
+        fields = ['type', 'topic', 'assistants', 'start_time', 'end_time', 'evidence']
 
         widgets = {
             'assistants': forms.CheckboxSelectMultiple,
