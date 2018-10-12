@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Registro Beneficiarios{% endblock %}
+{% block nav_title %}Nuevo Beneficiarios{% endblock %}
+{% block nav_tabs %}
+<!-- Should be doing this based on the current logged user -->
+<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
+      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
+      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
+      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
+      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
+      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
+      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
+      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
+      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
+      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
+      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
+      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
+      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+{% endblock nav_tabs %}
+{% block content %}
+<main>
+  <br><br>
+  <div class="container">
+    <br><br>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card z-depth-3">
+          <div class="card-content">
+            <form action="/administrative/new_beneficiary/" method="post">
+              {% csrf_token %}
+              <h5>Información del Beneficiario</h5>
+              <br>
+              <div class="row">
+                <label for="{{form.member_in.id_for_label}}">Programa al que pertenece</label>
+                <select required id="{{form.member_in.id_for_label}}" name="{{form.member_in.html_name}}" onchange="showProgramFields('{{form.member_in.id_for_label}}')">
+                  <option value="" disabled selected> Seleccione uno </option>
+                  {% for program in form.member_in.field.queryset %}
+                  <option value="{{program.id}}">{{program}}</option>
+                  {% endfor %}
+                </select>
+                <div class="container">
+                  <div id="fields_for_productor" hidden>
+                    <div class="input-field">
+                      <input id="{{form.curp.id_for_label}}" name="{{form.as_p.curp.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.curp.id_for_label}}">CURP</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.house_address.id_for_label}}" name="{{form.house_address.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.house_address.id_for_label}}">Dirección de casa</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.house_references.id_for_label}}" name="{{form.house_references.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.house_references.id_for_label}}">Referencias</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.huerto_coordinates.id_for_label}}" name="{{form.huerto_coordinates.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.huerto_coordinates.id_for_label}}">Ubicación del huerto</label>
+                    </div>
+                  </div>
+                  <div id="fields_for_cisterna" hidden>
+                    <div class="input-field">
+                      <input id="{{form.water_capacity.id_for_label}}" name="{{form.water_capacity.html_name}}" type="number" class="validate change_req" step="0.1">
+                      <label for="{{form.water_capacity.id_for_label}}">Capacidad de cisterna</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.cisterna_location.id_for_label}}" name="{{form.cisterna_location.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.cisterna_location.id_for_label}}">Ubicación</label>
+                    </div>
+                    <label for="{{form.cisterna_status.id_for_label}}">Status</label>
+                    <select id="{{form.cisterna_status.id_for_label}}" name="{{form.cisterna_status.html_name}}" class="change_req">
+                      <option value="" disabled selected> Seleccione un status </option>
+                      <option value="Done">Concluída</option>
+                      <option value="In use">En uso</option>
+                      <option value="Not done">En obra</option>
+                    </select>
+                  </div>
+                  <div id="fields_for_saving_account" hidden>
+                    <div class="input-field inline">
+                      <select id="{{form.savings_account_role.id_for_label}}" name="{{form.savings_account_role.html_name}}" class="change_req">
+                        <option value="" disabled selected>Selecciona un rol</option>
+                        <option value="Presidente">Presidente</option>
+                        <option value="Tesorero">Tesorero</option>
+                        <option value="Socio">Socio</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="field_school" hidden>
+                    <div class="input-field">
+                      <input id="{{form.school.id_for_label}}" name="{{form.school.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.school.id_for_label}}">Escuela</label>
+                    </div>
+                  </div>
+                  <div id="fields_for_breakfast" hidden>
+                    <div class="input-field">
+                      <input id="{{form.age.id_for_label}}" name="{{form.age.html_name}}" type="number" class="validate change_req">
+                      <label for="{{form.age.id_for_label}}">Edad</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.initial_weight.id_for_label}}" name="{{form.initial_weight.html_name}}" type="number" class="validate change_req" step="0.1">
+                      <label for="{{form.initial_weight.id_for_label}}">Peso inicial</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="full_form" hidden>
+                <div class="row">
+                  <div class="input-field">
+                    <input value="Rodolfo" required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
+                    <label for="{{form.name.id_for_label}}">Nombre</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="Rodriguez" required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
+                      <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno</label>
+                    </div>
+                  </div>
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="Rocha" required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
+                      <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="Querétaro" required id="{{form.state.id_for_label}}" name="{{form.state.html_name}}" type="text" class="validate">
+                      <label for="{{form.state.id_for_label}}">Estado</label>
+                    </div>
+                  </div>
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="Peñamiller" required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
+                      <label for="{{form.municipality.id_for_label}}">Municipio</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s8">
+                    <div class="input-field">
+                      <input value="Río Blanco" required id="{{form.community_name.id_for_label}}" name="{{form.community_name.html_name}}" type="text" class="validate">
+                      <label for="{{form.community_name.id_for_label}}">Nombre de la comunidad</label>
+                    </div>
+                  </div>
+                  <div class="col s4">
+                    <div class="input-field">
+                      <input value="3" required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate">
+                      <label for="{{form.num_of_family_beneficiaries.id_for_label}}">Num. Beneficiarios</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value=123 required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="number" class="validate">
+                      <label for="{{form.account_number.id_for_label}}">Número de cuenta</label>
+                    </div>
+                  </div>
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="Banamex" required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
+                      <label for="{{form.bank_name.id_for_label}}">Nombre del banco</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field">
+                    <select id="{{form.promoter.id_for_label}}" name="{{form.promoter.html_name}}" required>
+                      <option value="" disabled selected> Seleccione una </option>
+                      {% for choice in form.promoter.field.queryset %}
+                      <option value="{{choice.id}}">{{choice}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="{{form.promoter.id_for_label}}">Promotora asignada</label>
+                  </div>
+                </div>
+                <h5>Información del Contacto</h5>
+                <div class="row">
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="Juan" required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
+                      <label for="{{form.contact_name.id_for_label}}">Nombre del contacto</label>
+                    </div>
+                  </div>
+                  <div class="col s6">
+                    <div class="input-field">
+                      <input value="4325671" required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate">
+                      <label for="{{form.contact_phone.id_for_label}}">Telefono del contacto</label>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                  <i class="material-icons right">send</i>
+                </button>
+                <br><br>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/administrative.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+  $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+
+  $("#{{form.member_in.id_for_label}}").on('change', function(){
+    var req = document.getElementsByClassName('change_req');
+
+    for(i=0; i < req.length; i++){
+      req[i].required = false;
+      console.log(req[i].required);
+    }
+
+    var program = $( "#{{form.member_in.id_for_label}} option:selected" ).text();
+    switch (program) {
+      case "Productores":
+        $("#{{form.curp.id_for_label}}").prop('required',true);
+        $("#{{form.house_address.id_for_label}}").prop('required',true);
+        $("#{{form.house_references.id_for_label}}").prop('required',true);
+        $("#{{form.huerto_coordinates.id_for_label}}").prop('required',true);
+        break;
+      case "Cisternas":
+        $("#{{form.water_capacity.id_for_label}}").prop('required',true);
+        $("#{{form.cisterna_location.id_for_label}}").prop('required',true);
+        $("#{{form.cisterna_status.id_for_label}}").prop('required',true);
+        $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+        break;
+      case "Cajas de ahorro":
+        $("#{{form.savings_account_role.id_for_label}}").prop('required',true);
+        $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+       break;
+      case "Ecónomas":
+        $("#{{form.school.id_for_label}}").prop('required',true);
+        break;
+      case "Desayunos con amaranto":
+        $("#{{form.school.id_for_label}}").prop('required',true);
+        $("#{{form.age.id_for_label}}").prop('required',true);
+        $("#{{form.initial_weight.id_for_label}}").prop('required',true);
+        break;
+    }
+
+    for(i=0; i < req.length; i++){
+      console.log(req[i].required);
+    }
+  });
+
+
+</script>
+{% endblock js %}

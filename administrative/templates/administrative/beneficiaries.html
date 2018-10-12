@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Registro Beneficiarios{% endblock %}
-{% block nav_title %}Registro Beneficiarios{% endblock %}
+{% block title %}MTA - Beneficiarios{% endblock %}
+{% block nav_title %} Beneficiarios{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -61,81 +61,11 @@
 {% endblock nav_tabs %}
 {% block content %}
 <main>
-  <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red modal-trigger"  href="#modalB">
-      <i class="large material-icons">add</i>
-    </a>
-  </div>
-  <!-- Modal Structure -->
-  <div id="modalB" class="modal">
-    <div class="modal-content">
-      <h4>Nuevo Beneficiario</h4>
-      <form action="/administrative/new_beneficiary/" method="post">
-        {% csrf_token %}
-        <div class="input-field">
-          <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
-          <label for="{{form.name.id_for_label}}">Nombre</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
-          <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
-          <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.state.id_for_label}}" name="{{form.state.html_name}}" type="text" class="validate">
-          <label for="{{form.state.id_for_label}}">Estado</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
-          <label for="{{form.municipality.id_for_label}}">Municipio</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.community_name.id_for_label}}" name="{{form.community_name.html_name}}" type="text" class="validate">
-          <label for="{{form.community_name.id_for_label}}">Nombre de la comunidad</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate">
-          <label for="{{form.num_of_family_beneficiaries.id_for_label}}">Número de beneficiarios de la familia</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
-          <label for="{{form.contact_name.id_for_label}}">Nombre del contacto</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate">
-          <label for="{{form.contact_phone.id_for_label}}">Telefono del contacto</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="number" class="validate">
-          <label for="{{form.account_number.id_for_label}}">Número de cuenta</label>
-        </div>
-        <div class="input-field">
-          <input required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
-          <label for="{{form.bank_name.id_for_label}}">Nombre del banco</label>
-        </div>
-        <select id="{{form.promoter.id_for_label}}" name="{{form.promoter.html_name}}">
-          {% for choice in form.promoter.field.queryset %}
-          <option value="{{choice.id}}">{{choice}}</option>
-          {% endfor %}
-        </select>
-        <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-          <i class="material-icons right">send</i>
-        </button>
-        <br><br>
-        <!-- <input   type="submit" value="Submit"> -->
-      </form>
-    </div>
-    <!-- <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-    </div> -->
-  </div>
 </main>
 {% endblock %}
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/administrative.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
