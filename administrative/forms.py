@@ -21,6 +21,11 @@ class BeneficiaryForm(forms.Form):
     house_references = forms.CharField(max_length=120, required=False)
     huerto_coordinates = forms.CharField(max_length=100, required=False)
     water_capacity = forms.IntegerField(required=False)
+    cisterna_location = forms.CharField(max_length=120, required=False)
+    cisterna_status = forms.CharField(max_length=120, required=False)
+    school = forms.CharField(max_length=120, required=False)
+    age = forms.IntegerField(required=False)
+    initial_weight = forms.DecimalField(required=False)
     savings_account_role = forms.CharField(required=False)
 
 class BeneficiaryInProgramForm(forms.ModelForm):
@@ -29,7 +34,13 @@ class BeneficiaryInProgramForm(forms.ModelForm):
     house_references = forms.CharField(required=False)
     huerto_coordinates = forms.CharField(required=False)
     water_capacity = forms.IntegerField(required=False)
+    cisterna_location = forms.CharField(required=False)
+    cisterna_status = forms.CharField(required=False)
+    school = forms.CharField(required=False)
+    age = forms.IntegerField(required=False)
+    initial_weight = forms.DecimalField(required=False)
     savings_account_role = forms.CharField(required=False)
+
     class Meta:
         model = BeneficiaryInProgram
         fields = [
@@ -39,9 +50,14 @@ class BeneficiaryInProgramForm(forms.ModelForm):
                     'house_references',
                     'huerto_coordinates',
                     'water_capacity',
+                    'cisterna_location',
+                    'cisterna_status',
+                    'school',
+                    'age',
+                    'initial_weight',
                     'savings_account_role'
                 ]
-        
+
 class CommunityForm(forms.ModelForm):
     class Meta:
         model = Community
