@@ -6,10 +6,9 @@ from profiles.models import *
 
 class Program(models.Model):
     name = models.CharField(max_length=50)
-
     def __str__(self):
         return str(self.name)
-
+        
 class Community(models.Model):
     name = models.CharField(max_length=50)
     municipality = models.CharField(max_length=50)
@@ -43,6 +42,7 @@ class Beneficiary(models.Model):
         return str(self.name)
 
 class BeneficiaryInProgram(models.Model):
+    status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     curp = models.CharField(max_length=50)
@@ -50,6 +50,11 @@ class BeneficiaryInProgram(models.Model):
     house_references = models.CharField(max_length=120)
     huerto_coordinates = models.CharField(max_length=100)
     water_capacity = models.IntegerField(default=0)
+    cisterna_location = models.CharField(max_length=120)
+    cisterna_status = models.CharField(max_length=120, choices=status_choices, default='Otro')
+    school = models.CharField(max_length=120)
+    age = models.IntegerField(default=0)
+    initial_weight = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     savings_account_role = models.CharField(max_length=50)
 
     def __str__(self):
