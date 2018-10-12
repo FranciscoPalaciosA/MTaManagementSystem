@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
 from profiles.models import *
+from administrative.models import Community
 
 # Create your tests here.
 class LoginTests(TestCase):
@@ -63,11 +64,16 @@ class NewUserTests(TestCase):
         response = self.client.post('/profiles/new_user/', user_info)
         self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-    def test_add_new_promoter(self):
+    def test_add_new_promoter_with_one_community(self):
         """
         Add a new promoter
         """
         group, created = Group.objects.get_or_create(name='test_group')
+        community = Community.objects.create(
+                                                name ="community1",
+                                                municipality = "mun1",
+                                                state = "state1"
+                                            )
         user_info = {
                         "username": "testUser",
                         "password": "testpassword",
@@ -79,8 +85,45 @@ class NewUserTests(TestCase):
                         "address": "test address #4",
                         "email": "test@email.com",
                         "contact_name": "testContactName",
-                        "contact_phone_number": "testContactPhone"}
+                        "contact_phone_number": "testContactPhone",
+                        "communities": community.id}
+        #user to bypass @login_required
         user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
         self.client.force_login(user)
-        response = self.client.post('/profiles/new_user/', user_info)
+        response = self.client.post('/profiles/new_promoter/', user_info)
+        self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_add_new_promoter_with_multiple_communities(self):
+        """
+        Add a new promoter
+        """
+        group, created = Group.objects.get_or_create(name='test_group')
+        com1 = Community.objects.create(
+                                    name ="community1",
+                                    municipality = "mun1",
+                                    state = "state1"
+                                )
+        com2 = Community.objects.create(
+                                    name ="community2",
+                                    municipality = "mun2",
+                                    state = "state2"
+                                )
+        coms = [com1.id, com2.id]
+        user_info = {
+                        "username": "testUser",
+                        "password": "testpassword",
+                        "group": group.id,
+                        "name": "testName",
+                        "last_name_paternal": "testLastnameP",
+                        "last_name_maternal": "testLastnameM",
+                        "phone_number": "4422497177",
+                        "address": "test address #4",
+                        "email": "test@email.com",
+                        "contact_name": "testContactName",
+                        "contact_phone_number": "testContactPhone",
+                        "communities": coms}
+        #user to bypass @login_required
+        user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
+        self.client.force_login(user)
+        response = self.client.post('/profiles/new_promoter/', user_info)
         self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
