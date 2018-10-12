@@ -118,11 +118,12 @@
               </div>
               <div class="row">
                 <div class="input-field col s12">
-                  <select id="{{form.community.id_for_label}}" name="{{form.community.html_name}}">
-                    {% for choice in form.community.field.queryset %}
+                  <select id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" multiple>
+                    {% for choice in form.communities.field.queryset %}
                     <option value="{{choice.id}}">{{choice}}</option>
                     {% endfor %}
                   </select>
+                  <label for="{{form.communities.id_for_label}}">Comunidades</label>
                 </div>
               </div>
               <h4 class="left-align col s12">Información del contacto</h4>
