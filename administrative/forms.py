@@ -41,3 +41,20 @@ class WeeklySessionForm(forms.ModelForm):
         widgets = {
             'assistants': forms.CheckboxSelectMultiple,
         }
+
+class SavingAccountForm(forms.ModelForm):
+    class Meta:
+        model = SavingAccount
+        fields = [  'name',
+                    'community',
+                    'municipality',
+                    'location',
+                    'list_of_beneficiaries',
+                    'total_saved_amount',
+                    'president_beneficiary',
+                    'treasurer_beneficiary',
+                    'partner_beneficiary']
+
+        widgets = {
+            'list_of_beneficiaries': forms.CheckboxSelectMultiple,
+        }

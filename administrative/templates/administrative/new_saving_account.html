@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Registro Contactos{% endblock %}
-{% block nav_title %}Registro Contactos{% endblock %}
+{% block title %}MTA - Registro Cuneta de Ahorro{% endblock %}
+{% block nav_title %}Registro Cuenta de Ahorro{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -78,64 +78,68 @@
 
                 </div>
               </div>
-              <h5>Información del Contacto</h5>
+              <h5>Información de la cuenta de ahorro</h5>
               <br>
               <div class="row">
                 <div class="col s4">
                   <div class="input-field">
-                    <input required id="{{form.first_name.id_for_label}}" name="{{form.first_name.html_name}}" type="text" class="validate">
-                    <label for="{{form.first_name.id_for_label}}">Nombre:</label>
+                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
+                    <label for="{{form.name.id_for_label}}">Nombre de la cuenta:</label>
                   </div>
                 </div>
                 <div class="col s4">
                   <div class="input-field">
-                    <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
-                    <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno:</label>
+                    <input required id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" type="text" class="validate">
+                    <label for="{{form.community.id_for_label}}">Nombre de la comunidad:</label>
                   </div>
                 </div>
                 <div class="col s4">
                   <div class="input-field">
-                    <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
-                    <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno:</label>
+                    <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
+                    <label for="{{form.municipality.id_for_label}}">Municipio:</label>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col s6">
                   <div class="input-field">
-                    <input required id="{{form.phone_number.id_for_label}}" name="{{form.phone_number.html_name}}" type="number" class="validate">
-                    <label for="{{form.phone_number.id_for_label}}">Teléfono:</label>
-                  </div>
-                </div>
-                <div class="col s6">
-                  <div class="input-field">
-                    <input required id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" type="text" class="validate">
-                    <label for="{{form.email.id_for_label}}">Correo electrónico:</label>
+                    <input required id="{{form.location.id_for_label}}" name="{{form.location.html_name}}" type="number" class="validate">
+                    <label for="{{form.location.id_for_label}}">Ubicación:</label>
                   </div>
                 </div>
                 <br>
+                <label for="{{forms.list_of_beneficiaries.id_for_label}}" class="active">Lista de Beneficiarios:</label>
+                <input type="text" id="search" onkeyup="filter_beneficiaries()" placeholder="Buscar...">
+
+                {% for choice in weekly_session_form.assistants.field.queryset %}
+                <div class="input-field"><br>
+                  <label name=benficiary_check>
+                    <input type="checkbox" id="{{form.list_of_beneficiaries.id_for_label}}" name="{{form.list_of_beneficiaries.html_name}}" value="{{choice.id}}">
+                    <span>{{choice}}</span>
+                  </label>
+                </div>
+                {% endfor %}
+
                 <div class="col s6">
-                  <label for="{{form.comments.id_for_label}}">Tipo de contacto:</label>
+                  <label for="{{form.president_beneficiary.id_for_label}}">Tipo de contacto:</label>
+                  <select id="{{form.president_beneficiary.id_for_label}}" name="{{form.president_beneficiary.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
+                    {% for id, val in form.contact_type.field.choices %}
+                    {{choice.value}}
+                    <option value="{{id}}">{{val}}</option>
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.contact_type.id_for_label}}">Tipo de contacto:</label>
                   <select id="{{form.contact_type.id_for_label}}" name="{{form.contact_type.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
                     {% for id, val in form.contact_type.field.choices %}
                     {{choice.value}}
                     <option value="{{id}}">{{val}}</option>
                     {% endfor %}
                   </select>
-                  <div class="container">
-                    <div id="fields_for_volunteers" hidden>
-                      <div class="input-field">
-                        <input id="{{form.institution.id_for_label}}" name="{{form.institution.html_name}}" type="text" class="validate">
-                        <label for="{{form.institution.id_for_label}}">Nombre de la Institución:</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               <div class="row">
                 <div class="col s6">
                   <div class="input-field">
-                    <input id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate">
-                    <label for="{{form.comments.id_for_label}}">Comentarios:</label>
+                    <input id="{{form.total_saved_ammount.id_for_label}}" name="{{form.total_saved_ammount.html_name}}" type="number" class="validate">
+                    <label for="{{form.total_saved_ammount.id_for_label}}">Monto ahorrado en total:</label>
                   </div>
                 </div>
               </div>
@@ -157,33 +161,38 @@
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
-// Initialize Floating Action Button
-$(document).ready(function(){
-  $('select').formSelect();
-});
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
 
-$("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+  if("#{{form.contact_type.id_for_label}}".on('change',function(){
+    var selected_choice = $("form.contact_type.id_for_label}}");
+    if(selected_choice == "Volunteer"){
+      $("{{form.contact_type.id_for_label}}").attr("required", "true");
+    }
+    else{
+      $("{{form.contact_type.id_for_label}}").attr("required", "false");
+    }
+  });
+  function filter_beneficiaries() {
+    // Declare variables
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("search");
+    filter = input.value.toUpperCase();
+    option = document.getElementsByName("beneficiary_check");
 
-$("#{{form.contact_type.id_for_label}}").on('change', function(){
-
-  var req = document.getElementsByClassName('change_req');
-
-  for(i=0; i < req.length; i++){
-    req[i].required = false;
-    console.log(req[i].required);
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < option.length; i++) {
+      td = option[i].children[1];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          option[i].parentElement.style.display = "";
+        } else {
+          option[i].parentElement.style.display = "none";
+        }
+      }
+    }
   }
-
-  var program = $( "#{{form.contact_type.id_for_label}} option:selected" ).text();
-
-  switch (program) {
-
-    case "Voluntario":
-      $("#{{form.institution.id_for_label}}").prop('required',true);
-      break;
-  }
-  for(i=0; i < req.length; i++){
-    console.log(req[i].required);
-  }
-});
 </script>
 {% endblock js %}

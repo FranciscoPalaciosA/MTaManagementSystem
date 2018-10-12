@@ -125,3 +125,33 @@ def weekly_sessions(request):
         weekly_session_form = WeeklySessionForm()
         context = {'weekly_session_form': weekly_session_form}
         return render(request, 'administrative/weekly_sessions.html', context)
+
+@login_required
+def saving_account(request):
+    if request.method == 'POST':
+        form = SavingAccountForm(request.POST)
+        if form.is_valid():
+            newSavingAccount = SavingAccount(
+                                        name=form.cleaned_data['name'],
+                                        community=form.cleaned_data['community'],
+                                        municipality=form.cleaned_data['municipality'],
+                                        location=form.cleaned_data['end_time'],
+                                        total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                        president_beneficiary=form.cleaned_data['president_beneficiary'],
+                                        treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
+                                        partner_beneficiary=form.cleaned_data['partner_beneficiary'],
+                                       )
+            newSavingAccount.save()
+            list = request.POST.getlist("list_of_beneficiaries")
+            for list_of_beneficiary in list:
+                newSession.list_of_beneficiaries.add(Beneficiary.objects.get(id = list_of_beneficiary))
+            print("\n\n\n newSession.id = " + str(newSession.id))
+            return HttpResponseRedirect('/administrative/')
+        else:
+            print("-------------------")
+            print("Form is not valid")
+            print(form.errors)
+    else:
+        weekly_session_form = WeeklySessionForm()
+        context = {'weekly_session_form': weekly_session_form}
+        return render(request, 'administrative/new_saving_account.html', context)
