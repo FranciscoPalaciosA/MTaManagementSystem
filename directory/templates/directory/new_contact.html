@@ -165,7 +165,6 @@ $(document).ready(function(){
 $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
 
 $("#{{form.contact_type.id_for_label}}").on('change', function(){
-
   var req = document.getElementsByClassName('change_req');
 
   for(i=0; i < req.length; i++){
@@ -173,9 +172,11 @@ $("#{{form.contact_type.id_for_label}}").on('change', function(){
     console.log(req[i].required);
   }
 
-  var program = $( "#{{form.contact_type.id_for_label}} option:selected" ).text();
+  $("#{{form.institution.id_for_label}}").prop('required',false);
 
-  switch (program) {
+  var type = $( "#{{form.contact_type.id_for_label}} option:selected" ).text();
+
+  switch (type) {
 
     case "Voluntario":
       $("#{{form.institution.id_for_label}}").prop('required',true);
