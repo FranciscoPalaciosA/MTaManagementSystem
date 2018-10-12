@@ -8,7 +8,7 @@ class Program(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return str(self.name)
-        
+
 class Community(models.Model):
     name = models.CharField(max_length=50)
     municipality = models.CharField(max_length=50)
@@ -100,3 +100,16 @@ class WeeklySessionEvidence(models.Model):
 
     def __str__(self):
         return str(self.weekly_session) + " Ev: " + str(self.evidence)
+
+class Payment(models.Model):
+    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100)
+    quantity = models.IntegerField()
+    due_date = models.DateTimeField()
+    pay_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.description)
