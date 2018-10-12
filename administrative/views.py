@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-
+from django.utils import timezone
+from profiles.models import HelpAlert
 from .models import *
 from .forms import *
 
@@ -178,3 +179,17 @@ def weekly_sessions(request):
         weekly_session_form = WeeklySessionForm()
         context = {'weekly_session_form': weekly_session_form}
         return render(request, 'administrative/weekly_sessions.html', context)
+
+@login_required
+def alert_list(request):
+    if request.method == 'GET':
+        solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
+        pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
+        return render(request, 'administrative/alert_list.html', {'solved_alerts': solved_alerts, 'pending_alerts': pending_alerts})
+
+@login_required
+def resolve_alert(request, pk):
+    alert = HelpAlert.objects.get(pk=pk)
+    alert.resolved_at=timezone.now()
+    alert.save()
+    return HttpResponseRedirect('/administrative/alerts/')
