@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
+
 from django.utils import timezone
 from profiles.models import HelpAlert
+
 from .models import *
 from .forms import *
 
@@ -176,11 +178,29 @@ def weekly_sessions(request):
             print("Form is not valid")
             print(form.errors)
     else:
+        base_user = BaseUser.objects.get(user = request.user.id)
+        promoter = Promoter.objects.get(base_user = base_user.id)
+
+        beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+
         weekly_session_form = WeeklySessionForm()
-        context = {'weekly_session_form': weekly_session_form}
+        context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
         return render(request, 'administrative/weekly_sessions.html', context)
 
 @login_required
+def payments(request):
+    #Description: Renders the view of the upcoming payments for a promoter
+    #Parameters: request
+    #Function return expected: rendered template with payments
+    base_user = BaseUser.objects.get(user = request.user.id)
+    promoter = Promoter.objects.get(base_user = base_user.id)
+
+    upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
+    past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
+
+    context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
+    return render(request, 'administrative/payments.html', context)
+
 def alert_list(request):
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
