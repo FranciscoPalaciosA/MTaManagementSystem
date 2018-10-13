@@ -12,4 +12,6 @@ urlpatterns = [
     path('new_production_report/', views.add_production_report, name='new_production_report'),
     path('weekly_sessions/', views.weekly_sessions, name='weekly_sessions'),
     path('payments/', views.payments, name='payments'),
+    path('alerts/', views.alert_list, name='alerts'),
+    path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
 ]
