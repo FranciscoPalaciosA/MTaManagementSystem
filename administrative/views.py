@@ -8,6 +8,18 @@ from profiles.models import HelpAlert
 from .models import *
 from .forms import *
 
+def is_promoter(user):
+    #Description: Check if a user is a promoter
+    #Parameter: user
+    #Return: boolean indicating wheter the user is a promoter
+    base = BaseUser.objects.get(pk=user.id)
+    try:
+        promoter = Promoter.objects.get(pk=base.id)
+    except Promoter.DoesNotExist:
+        return False
+    return True
+
+
 # Create your views here.
 @login_required
 def index(request):
@@ -189,18 +201,38 @@ def weekly_sessions(request):
 
 @login_required
 def payments(request):
-    #Description: Renders the view of the upcoming payments for a promoter
+    #Description: Renders the view of the upcoming payments for a promoter, or the payments for all promoters if an admin is logged in
     #Parameters: request
     #Function return expected: rendered template with payments
-    base_user = BaseUser.objects.get(user = request.user.id)
-    promoter = Promoter.objects.get(base_user = base_user.id)
+    if is_promoter(request.user):
+        #A promoter wants to check their payments
+        base_user = BaseUser.objects.get(user = request.user.id)
+        promoter = Promoter.objects.get(base_user = base_user.id)
 
-    upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
-    past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
+        upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
+        past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
 
-    context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
-    return render(request, 'administrative/payments.html', context)
+        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
+        return render(request, 'administrative/payments.html', context)
+    else:
+        #An administrative user wants to check promoters payments.
+        upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
+        past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
+        curdate = timezone.now()
 
+        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments, 'curdate':curdate}
+        return render(request, 'administrative/Admin_payments.html', context)
+
+@login_required
+def pay(request, pk):
+    payment = Payment.objects.get(pk=pk)
+    payment.pay_date=timezone.now()
+    payment.updated_at=timezone.now()
+    payment.save()
+    return HttpResponseRedirect('/administrative/payments/')
+
+
+@login_required
 def alert_list(request):
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
@@ -211,5 +243,6 @@ def alert_list(request):
 def resolve_alert(request, pk):
     alert = HelpAlert.objects.get(pk=pk)
     alert.resolved_at=timezone.now()
+    alert.updated_at=timezone.now()
     alert.save()
     return HttpResponseRedirect('/administrative/alerts/')

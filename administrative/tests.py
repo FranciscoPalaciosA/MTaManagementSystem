@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 from administrative.models import *
 from profiles.models import *
 
@@ -14,7 +15,7 @@ def create_user():
                                         address="address")
     base_user.save()
     return base_user
-  
+
 def create_promoter():
     base_user = create_user()
     promoter = Promoter.objects.create(base_user=base_user,
@@ -152,3 +153,42 @@ class WeeklySessionTests(TestCase):
                                                                          'end_time': '5:00 PM',
                                                                          'promoter_id': 1})
         self.assertRedirects(response, '/administrative/weekly_sessions/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+class PaymentsTest(TestCase):
+    def test_admin_no_pending_payments(self):
+        """
+        Admin checks pending payments buy there are none to be paid.
+        """
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "No hay pagos pendientes.")
+
+    def test_admin_pending_payments(self):
+        """
+        Admin checks pending payments.
+        """
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "Pago por cultivo")
