@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Alertas{% endblock %}
+{% block title %}MTA - Pagos{% endblock %}
 
-{% block nav_title %}Alertas{% endblock %}
+{% block nav_title %}Pagos{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -69,41 +69,52 @@
         <div class="row">
           <div class="col s12">
             <ul class="tabs ">
-              <li class="tab col s3"><a class="active" href="#unresolved">Activas</a></li>
-              <li class="tab col s3"><a href="#resolved">Resueltas</a></li>
+              <li class="tab col s3"><a class="active" href="#unresolved">Por Pagar</a></li>
+              <li class="tab col s3"><a href="#resolved">Pagados</a></li>
             </ul>
+
           </div>
           <div id="unresolved" class="col s12">
             <table class="striped highlight">
               <thead>
                 <tr>
-                    <th>Promotora</th>
-                    <th>Alerta</th>
-                    <th>Descripción</th>
-                    <th>Fecha</th>
-                    <th>Resolver</th>
+                  <th>Promotora</th>
+                  <th>Descripcion</th>
+                  <th>Cantidad</th>
+                  <th>Pagar antes de</th>
+                  <th>Marcar como pagado</th>
                 </tr>
               </thead>
               <tbody>
-                {% for alert in pending_alerts %}
+                {% for payment in upcoming_payments %}
                   <tr>
                     <td>
-                      {{alert.promoter}}
+                      {{payment.promoter}}
                     </td>
                     <td>
-                      {{alert.name}}
+                      {{payment.description}}
                     </td>
                     <td>
-                      {{alert.description}}
+                      {{payment.quantity}}
                     </td>
+                    {% if payment.due_date > curdate %}
                     <td>
-                      {{alert.created_at}}
+                      {{payment.due_date|date:"d / m / Y"}}
                     </td>
+                    {% else %}
+                    <td class="red-text">
+                      {{payment.due_date|date:"d / m / Y"}}
+                    </td>
+                    {% endif %}
                     <td>
-                      <a href="/administrative/resolve_alert/{{alert.id}}/">
+                      <a href="/administrative/pay/{{payment.id}}/">
                         <i class="material-icons modal-trigger">check_circle_outline</i>
                       </a>
                     </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td>No hay pagos pendientes.</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -113,27 +124,33 @@
             <table class="striped highlight">
               <thead>
                 <tr>
+                  <tr>
                     <th>Promotora</th>
-                    <th>Alerta</th>
-                    <th>Descripción</th>
-                    <th>Fecha</th>
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                    <th>Fecha de pago</th>
+                  </tr>
                 </tr>
               </thead>
               <tbody>
-                {% for alert in solved_alerts %}
+                {% for payment in past_payments %}
                   <tr>
                     <td>
-                      {{alert.promoter}}
+                      {{payment.promoter}}
                     </td>
                     <td>
-                      {{alert.name}}
+                      {{payment.description}}
                     </td>
                     <td>
-                      {{alert.description}}
+                      {{payment.quantity}}
                     </td>
                     <td>
-                      {{alert.resolved_at}}
+                      {{payment.pay_date|date:"d / m / Y"}}
                     </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td>No hay pagos realizados</td>
                   </tr>
                 {% endfor %}
               </tbody>
