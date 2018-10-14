@@ -1,0 +1,7 @@
+.sidenav{
+  background-color: #faaca8
+}
+
+.tabs .tab a, .tabs .tab a.active {
+  color: #faaca8;
+}

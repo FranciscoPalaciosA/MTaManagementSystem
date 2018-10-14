@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Beneficiarios{% endblock %}
-{% block nav_title %} Beneficiarios{% endblock %}
+{% block title %}MTA - Inicio{% endblock %}
+
+{% block nav_title %}Inicio{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -59,19 +60,101 @@
   </div>
 </li>
 {% endblock nav_tabs %}
+
 {% block content %}
 <main>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12">
+            <ul class="tabs ">
+              <li class="tab col s3"><a class="active" href="#unresolved">Activas</a></li>
+              <li class="tab col s3"><a href="#resolved">Resueltas</a></li>
+            </ul>
+          </div>
+          <div id="unresolved" class="col s12">
+            <table class="striped highlight">
+              <thead>
+                <tr>
+                    <th>Promotora</th>
+                    <th>Alerta</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Resolver</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for alert in pending_alerts %}
+                  <tr>
+                    <td>
+                      {{alert.promoter}}
+                    </td>
+                    <td>
+                      {{alert.name}}
+                    </td>
+                    <td>
+                      {{alert.description}}
+                    </td>
+                    <td>
+                      {{alert.created_at}}
+                    </td>
+                    <td>
+                      <a href="/administrative/resolve_alert/{{alert.id}}/">
+                        <i class="material-icons modal-trigger">check_circle_outline</i>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div id="resolved" class="col s12">
+            <table class="striped highlight">
+              <thead>
+                <tr>
+                    <th>Promotora</th>
+                    <th>Alerta</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for alert in solved_alerts %}
+                  <tr>
+                    <td>
+                      {{alert.promoter}}
+                    </td>
+                    <td>
+                      {{alert.name}}
+                    </td>
+                    <td>
+                      {{alert.description}}
+                    </td>
+                    <td>
+                      {{alert.resolved_at}}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
-{% endblock %}
+{% endblock content %}
 {% block init_scripts %}
-<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
-<script src="{%static 'js/mta_js/administrative.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
-  // Initialize Floating Action Button
   $(document).ready(function(){
-    $('select').formSelect();
+    //Inicializar componentes
+    $('.tabs').tabs(
+      swipeable=true
+    );
   });
+
 </script>
 {% endblock js %}

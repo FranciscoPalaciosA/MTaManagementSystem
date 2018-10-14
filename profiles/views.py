@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import *
 from .forms import *
 
@@ -61,10 +61,41 @@ def add_promoter(request):
                                     base_user=base_user,
                                     contact_name=form.cleaned_data['contact_name'],
                                     contact_phone_number=form.cleaned_data['contact_phone_number']
+                                    #,communities=form.cleaned_data['communities']
                                 )
             promoter.save()
+            promoter.communities.set(form.cleaned_data['communities'])
             return HttpResponseRedirect('/profiles/')
     elif request.method == 'GET':
         form = PromoterForm()
         context = {'form': form}
         return render(request, 'profiles/new_promoter.html', context)
+
+
+@login_required
+def add_user(request):
+    if request.method == 'POST':
+        form = BaseUserForm(request.POST)
+        if form.is_valid():
+            #Create the Django User (The one that accesses the system)
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = User.objects.create_user(username=username, password=password)
+            user.save()
+            user.groups.add(form.cleaned_data['group'])
+            #Create the BaseUser object
+            base_user = BaseUser(
+                                    user=user,
+                                    name=form.cleaned_data['name'],
+                                    last_name_maternal=form.cleaned_data['last_name_maternal'],
+                                    last_name_paternal=form.cleaned_data['last_name_paternal'],
+                                    phone_number=form.cleaned_data['phone_number'],
+                                    address=form.cleaned_data['address'],
+                                    email=form.cleaned_data['email']
+                                )
+            base_user.save()
+            return HttpResponseRedirect('/profiles/')
+    elif request.method == 'GET':
+        form = BaseUserForm()
+        context = {'form': form}
+        return render(request, 'profiles/new_user.html', context)
