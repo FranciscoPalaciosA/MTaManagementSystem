@@ -8,21 +8,41 @@ from .forms import *
 # Create your views here.
 @login_required
 def index(request):
+    return HttpResponse("Directory Index")
+
+@login_required
+def contact(request):
+    form = ContactForm()
+    context = {'form': form}
+    return render(request, 'directory/new_contact.html', context)
+
+@login_required
+def add_contact(request):
     contact_list = Contact.objects.all()
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
             newContact = Contact(
-                                first_name=form.cleaned_data['first_name'],
-                                last_name=form.cleaned_data['last_name'],
-                                phone_number=form.cleaned_data['phone_number'],
-                                institution=form.cleaned_data['institution'])
+                                first_name = form.cleaned_data['first_name'],
+                                last_name_paternal = form.cleaned_data['last_name_paternal'],
+                                last_name_maternal = form.cleaned_data['last_name_maternal'],
+                                phone_number = form.cleaned_data['phone_number'],
+                                email = form.cleaned_data['email'],
+                                contact_type = form.cleaned_data['contact_type'],
+                                institution = form.cleaned_data['institution'],
+                                comments = form.cleaned_data['comments'],
+                                )
             newContact.save()
             return HttpResponseRedirect('/directory/')
-    else:
+
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
+
+    elif request.method == 'GET':
         form = ContactForm()
-        context = {'contacts': contact_list, 'form': form}
-    return render(request, 'directory/index.html', context)
+        context = {'form': form}
+        return render(request, 'directory/new_contact.html', context)

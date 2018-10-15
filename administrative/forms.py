@@ -97,6 +97,7 @@ class WeeklySessionForm(forms.ModelForm):
             'assistants': forms.CheckboxSelectMultiple,
         }
 
+
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
