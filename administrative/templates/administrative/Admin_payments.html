@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Beneficiarios{% endblock %}
-{% block nav_title %} Beneficiarios{% endblock %}
+{% block title %}MTA - Pagos{% endblock %}
+
+{% block nav_title %}Pagos{% endblock %}
 {% block nav_tabs %}
 <!-- Should be doing this based on the current logged user -->
 <li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
@@ -59,19 +60,118 @@
   </div>
 </li>
 {% endblock nav_tabs %}
+
 {% block content %}
 <main>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12">
+            <ul class="tabs ">
+              <li class="tab col s3"><a class="active" href="#unresolved">Por Pagar</a></li>
+              <li class="tab col s3"><a href="#resolved">Pagados</a></li>
+            </ul>
+
+          </div>
+          <div id="unresolved" class="col s12">
+            <table class="striped highlight">
+              <thead>
+                <tr>
+                  <th>Promotora</th>
+                  <th>Descripcion</th>
+                  <th>Cantidad</th>
+                  <th>Pagar antes de</th>
+                  <th>Marcar como pagado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for payment in upcoming_payments %}
+                  <tr>
+                    <td>
+                      {{payment.promoter}}
+                    </td>
+                    <td>
+                      {{payment.description}}
+                    </td>
+                    <td>
+                      {{payment.quantity}}
+                    </td>
+                    {% if payment.due_date > curdate %}
+                    <td>
+                      {{payment.due_date|date:"d / m / Y"}}
+                    </td>
+                    {% else %}
+                    <td class="red-text">
+                      {{payment.due_date|date:"d / m / Y"}}
+                    </td>
+                    {% endif %}
+                    <td>
+                      <a href="/administrative/pay/{{payment.id}}/">
+                        <i class="material-icons modal-trigger">check_circle_outline</i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td>No hay pagos pendientes.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div id="resolved" class="col s12">
+            <table class="striped highlight">
+              <thead>
+                <tr>
+                  <tr>
+                    <th>Promotora</th>
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                    <th>Fecha de pago</th>
+                  </tr>
+                </tr>
+              </thead>
+              <tbody>
+                {% for payment in past_payments %}
+                  <tr>
+                    <td>
+                      {{payment.promoter}}
+                    </td>
+                    <td>
+                      {{payment.description}}
+                    </td>
+                    <td>
+                      {{payment.quantity}}
+                    </td>
+                    <td>
+                      {{payment.pay_date|date:"d / m / Y"}}
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td>No hay pagos realizados</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
-{% endblock %}
+{% endblock content %}
 {% block init_scripts %}
-<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
-<script src="{%static 'js/mta_js/administrative.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
-  // Initialize Floating Action Button
   $(document).ready(function(){
-    $('select').formSelect();
+    //Inicializar componentes
+    $('.tabs').tabs(
+      swipeable=true
+    );
   });
+
 </script>
 {% endblock js %}

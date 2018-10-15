@@ -6,6 +6,18 @@ from profiles.models import HelpAlert
 from .models import *
 from .forms import *
 
+def is_promoter(user):
+    #Description: Check if a user is a promoter
+    #Parameter: user
+    #Return: boolean indicating wheter the user is a promoter
+    base = BaseUser.objects.get(pk=user.id)
+    try:
+        promoter = Promoter.objects.get(pk=base.id)
+    except Promoter.DoesNotExist:
+        return False
+    return True
+
+
 # Create your views here.
 @login_required
 def index(request):
@@ -64,6 +76,14 @@ def add_production_report(request):
         print(request.method)
 
 @login_required
+def production_report_list(request):
+    if request.method == 'GET':
+        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True) 
+        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
+        paid_reports = ProductionReport.objects.filter(paid=True)
+        return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+
+@login_required
 def beneficiaries(request):
     form = BeneficiaryForm()
     beneficiary_in_program_form = BeneficiaryInProgram()
@@ -114,7 +134,6 @@ def add_beneficiary(request):
             print("\n\n\n\n\n")
             #print(program_form.errors)
             print("\n\n\n\n\n")
-
     elif request.method == 'GET':
         form = BeneficiaryForm()
         context = {'form': form}
@@ -133,7 +152,6 @@ def communities(request):
                                     municipality=form.cleaned_data['municipality'],
                                  )
             community.save()
-
             return HttpResponseRedirect('/administrative/communities/')
     elif request.method == 'GET':
         community_form = CommunityForm()
@@ -176,9 +194,47 @@ def weekly_sessions(request):
             print("Form is not valid")
             print(form.errors)
     else:
+        base_user = BaseUser.objects.get(user = request.user.id)
+        promoter = Promoter.objects.get(base_user = base_user.id)
+
+        beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+
         weekly_session_form = WeeklySessionForm()
-        context = {'weekly_session_form': weekly_session_form}
+        context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
         return render(request, 'administrative/weekly_sessions.html', context)
+
+@login_required
+def payments(request):
+    #Description: Renders the view of the upcoming payments for a promoter, or the payments for all promoters if an admin is logged in
+    #Parameters: request
+    #Function return expected: rendered template with payments
+    if is_promoter(request.user):
+        #A promoter wants to check their payments
+        base_user = BaseUser.objects.get(user = request.user.id)
+        promoter = Promoter.objects.get(base_user = base_user.id)
+
+        upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
+        past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
+
+        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
+        return render(request, 'administrative/payments.html', context)
+    else:
+        #An administrative user wants to check promoters payments.
+        upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
+        past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
+        curdate = timezone.now()
+
+        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments, 'curdate':curdate}
+        return render(request, 'administrative/Admin_payments.html', context)
+
+@login_required
+def pay(request, pk):
+    payment = Payment.objects.get(pk=pk)
+    payment.pay_date=timezone.now()
+    payment.updated_at=timezone.now()
+    payment.save()
+    return HttpResponseRedirect('/administrative/payments/')
+
 
 @login_required
 def alert_list(request):
@@ -191,5 +247,6 @@ def alert_list(request):
 def resolve_alert(request, pk):
     alert = HelpAlert.objects.get(pk=pk)
     alert.resolved_at=timezone.now()
+    alert.updated_at=timezone.now()
     alert.save()
     return HttpResponseRedirect('/administrative/alerts/')

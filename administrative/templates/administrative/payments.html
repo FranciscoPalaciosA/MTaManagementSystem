@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Sesiones semanales{% endblock %}
+{% block title %}Pagos{% endblock %}
 
-{% block nav_title %}Sesiones semanales{% endblock %}
+{% block nav_title %}Pagos{% endblock %}
 {% block nav_tabs %}
 
 <style type="text/scss">
@@ -72,67 +72,70 @@
 
 {% block content %}
     <main>
-      <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
-          <i class="large material-icons">add</i>
-        </a>
-      </div>
-      <!-- Modal Structure -->
-      <div id="modal1" class="modal">
-        <div class="modal-content">
-          <h4>Nueva Sesión</h4>
-          <form action="/administrative/weekly_sessions/" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="input-field">
-              <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
-              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate" value="Clase">
-            </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
-              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate" value="Clase">
-            </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
-              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker" value="07:15">
-            </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
-              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker" value="07:15">
-            </div>
-              <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
-              <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
+      <br><br>
+      <div class="container">
+        <div class="row">
+          <div class="col s12 m12">
+            <div class="card z-depth-3">
+              <div class="card-content">
 
-              {% for choice in weekly_session_form.assistants.field.queryset %}
-                {% if choice in beneficiaries %}
-                <div class="input-field"><br>
-                  <label name=assistant_check>
-                    <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}">
-                    <span>{{choice}}</span>
-                  </label>
-                </div>
-                {% endif %}
-              {% endfor %}
-            </div>
-            <br><br><br>
-            <div class="file-field input-field">
-              <div class="btn">
-                <span>Evidencia</span>
-                <input type="file" id="{{weekly_session_form.evidence.id_for_label}}" name="{{weekly_session_form.evidence.html_name}}" accept="image/*" multiple>
-              </div>
-              <div class="file-path-wrapper">
-                <input class="file-path validate" type="text" placeholder="Sube una o más evidencias!">
+                <h5>Pagos próximos</h5>
+                <table class="striped" id="upcoming_payments">
+                  <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for payment in upcoming_payments %}
+                      <tr>
+                        <td>{{ payment.description }}</td>
+                        <td>{{ payment.quantity }}</td>
+                        <td>{{ payment.due_date|date:"d / m / Y" }}</td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
               </div>
             </div>
-            <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-              <i class="material-icons right">send</i>
-            </button>
-
-            <br><br>
-          </form>
+          </div>
         </div>
-        <!-- <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div> -->
+        <div class="row">
+          <div class="col s12 m12">
+            <div class="card z-depth-3">
+              <div class="card-content">
+
+                <h5>Pagos anteriores</h5>
+                <table class="striped" id="past_payments">
+                  <thead>
+                    <tr>
+                        <th>Descripcion</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                        <th>Pagado</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for payment in past_payments %}
+                      <tr>
+                        <td>{{ payment.description }}</td>
+                        <td>{{ payment.quantity }}</td>
+                        <td>{{ payment.due_date|date:"d / m / Y" }}</td>
+                        <td>{{ payment.pay_date|date:"d / m / Y" }}</td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 {% endblock content %}
@@ -144,7 +147,39 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
-    $('.timepicker').timepicker();
+
+    $.fn.dataTable.ext.classes.sPageButton = 'waves-effect waves-teal btn-flat'; // Change Pagination Button Class
+
+    $('#upcoming_payments').DataTable({
+      "pageLength": 10,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info":     false,
+
+      "language": {
+        "paginate": {
+          "previous": "anterior",
+          "next": "siguiente"
+        }
+      }
+    });
+
+    $('#past_payments').DataTable({
+      "pageLength": 10,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info":     false,
+
+      "language": {
+        "paginate": {
+          "previous": "anterior",
+          "next": "siguiente"
+        }
+      }
+    });
+
   });
 
   function filter_assistants() {
@@ -166,6 +201,7 @@
       }
     }
   }
+
 
 
 </script>
