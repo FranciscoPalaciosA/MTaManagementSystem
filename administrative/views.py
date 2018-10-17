@@ -78,7 +78,7 @@ def add_production_report(request):
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
-        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True) 
+        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
         pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
@@ -250,3 +250,36 @@ def resolve_alert(request, pk):
     alert.updated_at=timezone.now()
     alert.save()
     return HttpResponseRedirect('/administrative/alerts/')
+
+@login_required
+def add_saving_account(request):
+    if request.method == 'POST':
+        form = SavingAccountForm(request.POST)
+        if form.is_valid():
+            print("-----------------------------")
+            print("form is valid")
+            print("-----------------------------")
+            saving_account = SavingAccount(
+                                    name=form.cleaned_data['name'],
+                                    community=form.cleaned_data['community'],
+                                    municipality=form.cleaned_data['municipality'],
+                                    location=form.cleaned_data['location'],
+                                    total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                )
+            saving_account.save()
+            saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+            saving_account.save()
+            return HttpResponseRedirect('/administrative/')
+        else:
+
+            print("-----------------------------")
+            print("form is not valid")
+            print(form.errors)
+            print("-----------------------------")
+    elif request.method == 'GET':
+        form = SavingAccountForm()
+        context = {'form': form}
+        return render(request, 'administrative/new_saving_account.html', context)
