@@ -14,7 +14,8 @@ urlpatterns = [
     path('weekly_sessions/', views.weekly_sessions, name='weekly_sessions'),
     path('new_saving_account/', views.saving_account, name='new_saving_account'),
     path('payments/', views.payments, name='payments'),
-    path('pay/<int:pk>/', views.pay, name='pay'),
+    path('get_payment/<int:pk>/', views.get_payment,  name='get_payment'),
+    path('pay/<int:pk>/', views.payments, name='pay'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
 ]

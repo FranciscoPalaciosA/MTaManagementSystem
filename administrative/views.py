@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.contrib import messages
 from django.utils import timezone
 from profiles.models import HelpAlert
 from .models import *
@@ -78,7 +79,7 @@ def add_production_report(request):
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
-        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True) 
+        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
         pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
@@ -204,36 +205,84 @@ def weekly_sessions(request):
         return render(request, 'administrative/weekly_sessions.html', context)
 
 @login_required
-def payments(request):
+def payments(request, pk=0):
     #Description: Renders the view of the upcoming payments for a promoter, or the payments for all promoters if an admin is logged in
     #Parameters: request
     #Function return expected: rendered template with payments
-    if is_promoter(request.user):
-        #A promoter wants to check their payments
-        base_user = BaseUser.objects.get(user = request.user.id)
-        promoter = Promoter.objects.get(base_user = base_user.id)
+    if request.method == 'GET':
+        if is_promoter(request.user):
+            #A promoter wants to check their payments
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
 
-        upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
-        past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
+            upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
+            past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
 
-        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
-        return render(request, 'administrative/payments.html', context)
-    else:
-        #An administrative user wants to check promoters payments.
+            context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
+            return render(request, 'administrative/payments.html', context)
+        else:
+            #An administrative user wants to check promoters payments.
+            upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
+            past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
+            curdate = timezone.now()
+            form = PayForm()
+            context = {
+                        'upcoming_payments': upcoming_payments,
+                        'past_payments': past_payments,
+                        'curdate':curdate,
+                        'form':form
+                        }
+            return render(request, 'administrative/Admin_payments.html', context)
+    elif request.method == 'POST':
+        form = PayForm(request.POST)
+        if form.is_valid():
+            payment = Payment.objects.get(pk=pk)
+            time = timezone.now()
+            payment.pay_date=time
+            payment.comment=form.cleaned_data['comment']
+            payment.updated_at=time
+            payment.save()
+        else:
+            messages.warning(request,'Favor de llenar los campos.')
         upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
         past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
         curdate = timezone.now()
-
-        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments, 'curdate':curdate}
+        form = PayForm()
+        context = {
+                    'upcoming_payments': upcoming_payments,
+                    'past_payments': past_payments,
+                    'curdate':curdate,
+                    'form':form
+                    }
         return render(request, 'administrative/Admin_payments.html', context)
 
 @login_required
+def get_payment(request, pk):
+    if request.method == 'GET':
+        payment = Payment.objects.get(pk=pk)
+        promoter = "" + str(payment.promoter)
+        json_payment =  {
+                            'pk': payment.pk,
+                            'promoter': promoter,
+                            'description': payment.description,
+                            'quantity': payment.quantity
+                        }
+        return JsonResponse(json_payment)
+
+@login_required
 def pay(request, pk):
-    payment = Payment.objects.get(pk=pk)
-    payment.pay_date=timezone.now()
-    payment.updated_at=timezone.now()
-    payment.save()
-    return HttpResponseRedirect('/administrative/payments/')
+    if request.method == 'POST':
+        form = PayForm(request.POST)
+        if form.is_valid():
+            payment = Payment.objects.get(pk=pk)
+            time = timezone.now()
+            payment.pay_date=time
+            payment.comment=form.cleaned_data['comment']
+            payment.updated_at=time
+            payment.save()
+        else:
+            messages.warning(request,'Favor de llenar los campos.')
+        return HttpResponseRedirect('/administrative/payments/')
 
 
 @login_required
