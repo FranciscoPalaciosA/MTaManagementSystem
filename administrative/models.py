@@ -108,6 +108,7 @@ class Payment(models.Model):
     quantity = models.IntegerField()
     due_date = models.DateTimeField()
     pay_date = models.DateTimeField(blank=True, null=True)
+    comment = models.CharField(blank=True, max_length=250)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)

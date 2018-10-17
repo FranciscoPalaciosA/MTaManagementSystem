@@ -13,7 +13,8 @@ urlpatterns = [
     path('production_report_list/', views.production_report_list, name='production_report_list'),
     path('weekly_sessions/', views.weekly_sessions, name='weekly_sessions'),
     path('payments/', views.payments, name='payments'),
-    path('pay/<int:pk>/', views.pay, name='pay'),
+    path('get_payment/<int:pk>/', views.get_payment,  name='get_payment'),
+    path('pay/<int:pk>/', views.payments, name='pay'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
 ]

@@ -105,3 +105,9 @@ class PaymentForm(forms.ModelForm):
                   'quantity',
                   'due_date',
                   'pay_date']
+
+#For to check a payment as "paid" and add a comment
+class PayForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['comment']
