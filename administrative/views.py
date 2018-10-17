@@ -4,7 +4,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 from profiles.models import HelpAlert
-
 from .models import *
 from .forms import *
 
@@ -77,7 +76,6 @@ def add_production_report(request):
         print("no entro al post")
         print(request.method)
 
-
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
@@ -137,7 +135,6 @@ def add_beneficiary(request):
             print("\n\n\n\n\n")
             #print(program_form.errors)
             print("\n\n\n\n\n")
-
     elif request.method == 'GET':
         form = BeneficiaryForm()
         context = {'form': form}
@@ -156,7 +153,6 @@ def communities(request):
                                     municipality=form.cleaned_data['municipality'],
                                  )
             community.save()
-
             return HttpResponseRedirect('/administrative/communities/')
     elif request.method == 'GET':
         community_form = CommunityForm()
