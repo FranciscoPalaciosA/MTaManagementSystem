@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sesiones semanales{% endblock %}
+
+{% block nav_title %}Sesiones semanales{% endblock %}
+{% block nav_tabs %}
+
+<style type="text/scss">
+  .hide {
+   position: absolute !important;
+   top: -9999px !important;
+   left: -9999px !important;
+  }
+</style>
+
+<!-- Should be doing this based on the current logged user -->
+<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
+      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
+      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
+      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
+      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
+      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
+      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
+      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
+      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
+      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
+      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
+      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
+      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+{% endblock nav_tabs %}
+
+{% block content %}
+    <main>
+      <br><br>
+      <div class="container">
+        <div class="row">
+          <div class="col s12 m12">
+            <div class="card z-depth-3">
+              <div class="card-content">
+
+                <h5>Sesiones pasadas</h5>
+                <table class="striped" id="sessions">
+                  <thead>
+                    <tr>
+                        <th>Promotora</th>
+                        <th>Tipo</th>
+                        <th>Tema</th>
+                        <th>Fecha</th>
+                        <th>Asistentes</th>
+                        <th></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for session in weekly_sessions %}
+                      <tr>
+                        <td>{{ session.promoter }}</td>
+                        <td>{{ session.type }}</td>
+                        <td>{{ session.topic }}</td>
+                        <td>{{ session.created_at|date:"d / m / Y" }}</td>
+                        <td>{{ session.assistant_count }}</td>
+                        <td>
+                          <a class="modal-trigger " onclick="ajaxCall({{session.id}})">
+                            <i class="material-icons">pageview</i>
+                          </a>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td>No hay sesiones pasadas.</td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pay-modal" class="modal">
+          <div class="modal-content">
+            <h4>Sesión</h4>
+            <br>
+            <div class="row">
+              <div class="col s12"><b>Promotora: </b><span id="promoter-name">loremipsum</span></div>
+            </div>
+            <div class="row">
+              <div class="col s4"><b>Tipo: </b><span id="type-text">loremipsum</span></div>
+              <div class="col s4"><b>Tema: </b><span id="topic-text">loremipsum</span></div>
+            </div>
+            <div class="row">
+              <div class="col s4"><b>Fecha: </b><span id="date-text">loremipsum</span></div>
+              <div class="col s4"><b>Hora inicio: </b><span id="start-text">loremipsum</span></div>
+              <div class="col s4"><b>Hora fin: </b><span id="end-text">loremipsum</span></div>
+            </div><hr>
+            <div class="row">
+              <div class="col s12"><b>Asistentes:</b></div>
+              <div class="col s12"><span id="assistants-list"></span></div>
+            </div><hr>
+            <div class="row">
+              <div class="col s12"><b>Evnidencia:</b></div>
+              <div class="col s12"><img id="evidence" class="materialboxed" width="650" src="images/sample-1.jpg"></div>
+            </div>
+            <br>
+          </div>
+        </div>
+
+      </div>
+    </main>
+{% endblock content %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+
+  $(document).ready(function(){
+    $('.fixed-action-btn').floatingActionButton();
+    $('.materialboxed').materialbox();
+
+    $.fn.dataTable.ext.classes.sPageButton = 'waves-effect waves-teal btn-flat'; // Change Pagination Button Class
+
+    $('#sessions').DataTable({
+      "pageLength": 10,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info":     false,
+
+      "language": {
+        "paginate": {
+          "previous": "anterior",
+          "next": "siguiente"
+        }
+      }
+
+    });
+
+  });
+
+  function ajaxCall(id){
+    path = "/administrative/get_weekly_session/" + id;
+    $.ajax({
+      method: "GET",
+      url: path
+    }).done(function(data) {
+      var date = new Date(data['date']);
+      day = date.getDate()+1;
+      month = date.getMonth()+1;
+      year = date.getFullYear();
+
+      $("#promoter-name").text(data['promoter']);
+      $("#type-text").text(data['type']);
+      $("#topic-text").text(data['topic']);
+      $("#date-text").text(day + ' / ' + month + ' / ' + year);
+      $("#start-text").text(data['start']);
+      $("#end-text").text(data['end']);
+
+      var assistants = data['assistants'].split(",");
+      for(var i=0;i<assistants.length;i++){
+        $("#assistants-list").append("<div class=\"col s4\">" + assistants[i] + "</div>");
+      }
+
+      $("#evidence").attr("src", data["evidence"]);
+
+      $('#pay-modal').modal('open');
+    });
+  }
+
+</script>
+{% endblock js %}

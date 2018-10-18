@@ -12,6 +12,7 @@ urlpatterns = [
     path('new_production_report/', views.production_report, name='new_production_report'),
     path('production_report_list/', views.production_report_list, name='production_report_list'),
     path('weekly_sessions/', views.weekly_sessions, name='weekly_sessions'),
+    path('get_weekly_session/<int:pk>/', views.get_weekly_session,  name='get_weekly_session'),
     path('payments/', views.payments, name='payments'),
     path('pay/<int:pk>/', views.pay, name='pay'),
     path('alerts/', views.alert_list, name='alerts'),

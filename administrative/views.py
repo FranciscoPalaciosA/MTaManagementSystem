@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
+from django.core import serializers
 
 from django.utils import timezone
 from profiles.models import HelpAlert
@@ -81,7 +83,7 @@ def add_production_report(request):
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
-        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True) 
+        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
         pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
@@ -199,14 +201,56 @@ def weekly_sessions(request):
             print("Form is not valid")
             print(form.errors)
     else:
-        base_user = BaseUser.objects.get(user = request.user.id)
-        promoter = Promoter.objects.get(base_user = base_user.id)
+        if is_promoter(request.user):
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
 
-        beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
-        weekly_session_form = WeeklySessionForm()
-        context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
-        return render(request, 'administrative/weekly_sessions.html', context)
+            weekly_session_form = WeeklySessionForm()
+            context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
+            return render(request, 'administrative/weekly_sessions.html', context)
+        else:
+            weekly_sessions = WeeklySession.objects.filter().order_by('-created_at')
+
+            for session in weekly_sessions:
+                session.assistant_count = session.assistants.all().count()
+
+            context = {'weekly_sessions': weekly_sessions}
+            return render(request, 'administrative/Admin_weekly_sessions.html', context)
+
+@login_required
+def get_weekly_session(request, pk):
+    if request.method == 'GET':
+        weekly_session = WeeklySession.objects.get(pk=pk)
+        promoter = "" + str(weekly_session.promoter)
+
+        assistants = weekly_session.assistants.all()
+        assistantJSON = ""
+        for assistant in assistants:
+            assistantJSON += assistant.name + " " + assistant.last_name_paternal + ","
+        assistantJSON = assistantJSON[:-1]
+
+        evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+        evidenceJSON = ""
+        for eviden in evidences:
+            evidenceJSON += eviden.evidence.url
+
+        evidenceJSON = evidenceJSON.split("_evidence/").pop()
+
+        json_session =  {
+                            'pk': weekly_session.pk,
+                            'promoter': promoter,
+                            'type': weekly_session.type,
+                            'topic': weekly_session.topic,
+                            'date': weekly_session.created_at,
+                            'start': weekly_session.start_time,
+                            'end': weekly_session.end_time,
+                            #'assistants': serializers.serialize('json', weekly_session.assistants.all())
+                            'assistants': assistantJSON,
+                            'evidence': evidenceJSON
+                        }
+        return JsonResponse(json_session)
 
 @login_required
 def payments(request):
