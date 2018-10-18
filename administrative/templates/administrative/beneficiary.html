@@ -71,7 +71,10 @@
             <h3>{{beneficiary.name}} {{beneficiary.last_name_paternal}}</h3>
             <div class="row">
               <div class="col s6">
-                <p>Pertenece a programa : {{program.name}}</p>
+                <h6>Pertenece a programa(s) :</h6>
+                  {% for prog in programs %}
+                    <p>{{prog.program.name}}</p>
+                  {% endfor %}
               </div>
               <div class="col s3">
               </div>
@@ -80,80 +83,83 @@
               </div>
             </div>
             <div id="add_program" class="row" hidden>
-              <label for="{{form.program.id_for_label}}">Programa al que pertenece</label>
-              <select required id="{{form.program.id_for_label}}" name="{{form.program.html_name}}" onchange="showProgramFields('{{form.program.id_for_label}}')">
-                <option value="" disabled selected> Seleccione uno </option>
-                {% for prog in programs %}
-                <option value="{{prog.id}}">{{prog}}</option>
-                {% endfor %}
-              </select>
-              <div class="container">
-                <div id="fields_for_productor" hidden>
-                  <div class="input-field">
-                    <input id="{{form.curp.id_for_label}}" name="{{form.as_p.curp.html_name}}" type="text" class="validate change_req">
-                    <label for="{{form.curp.id_for_label}}">CURP</label>
+              <form action="/administrative/modify_beneficiary/" method="POST">
+                {% csrf_token %}
+                <input id="{{form.beneficiary.id_for_label}}" name="{{form.beneficiary.html_name}}" type="text" value="{{beneficiary.id}}" hidden>
+                <label for="{{form.program.id_for_label}}">Programa al que pertenece</label>
+                <select required id="{{form.program.id_for_label}}" name="{{form.program.html_name}}" onchange="showProgramFields('{{form.program.id_for_label}}')">
+                  <option value="" disabled selected> Seleccione uno </option>
+                  {% for prog in allowed_programs %}
+                  <option value="{{prog.id}}">{{prog}}</option>
+                  {% endfor %}
+                </select>
+                <div class="container">
+                  <div id="fields_for_productor" hidden>
+                    <div class="input-field">
+                      <input id="{{form.curp.id_for_label}}" name="{{form.as_p.curp.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.curp.id_for_label}}">CURP</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.house_address.id_for_label}}" name="{{form.house_address.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.house_address.id_for_label}}">Dirección de casa</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.house_references.id_for_label}}" name="{{form.house_references.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.house_references.id_for_label}}">Referencias</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.huerto_coordinates.id_for_label}}" name="{{form.huerto_coordinates.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.huerto_coordinates.id_for_label}}">Ubicación del huerto</label>
+                    </div>
                   </div>
-                  <div class="input-field">
-                    <input id="{{form.house_address.id_for_label}}" name="{{form.house_address.html_name}}" type="text" class="validate change_req">
-                    <label for="{{form.house_address.id_for_label}}">Dirección de casa</label>
-                  </div>
-                  <div class="input-field">
-                    <input id="{{form.house_references.id_for_label}}" name="{{form.house_references.html_name}}" type="text" class="validate change_req">
-                    <label for="{{form.house_references.id_for_label}}">Referencias</label>
-                  </div>
-                  <div class="input-field">
-                    <input id="{{form.huerto_coordinates.id_for_label}}" name="{{form.huerto_coordinates.html_name}}" type="text" class="validate change_req">
-                    <label for="{{form.huerto_coordinates.id_for_label}}">Ubicación del huerto</label>
-                  </div>
-                </div>
-                <div id="fields_for_cisterna" hidden>
-                  <div class="input-field">
-                    <input id="{{form.water_capacity.id_for_label}}" name="{{form.water_capacity.html_name}}" type="number" class="validate change_req" step="0.1">
-                    <label for="{{form.water_capacity.id_for_label}}">Capacidad de cisterna</label>
-                  </div>
-                  <div class="input-field">
-                    <input id="{{form.cisterna_location.id_for_label}}" name="{{form.cisterna_location.html_name}}" type="text" class="validate change_req">
-                    <label for="{{form.cisterna_location.id_for_label}}">Ubicación</label>
-                  </div>
-                  <label for="{{form.cisterna_status.id_for_label}}">Status</label>
-                  <select id="{{form.cisterna_status.id_for_label}}" name="{{form.cisterna_status.html_name}}" class="change_req">
-                    <option value="" disabled selected> Seleccione un status </option>
-                    <option value="Done">Concluída</option>
-                    <option value="In use">En uso</option>
-                    <option value="Not done">En obra</option>
-                  </select>
-                </div>
-                <div id="fields_for_saving_account" hidden>
-                  <div class="input-field inline">
-                    <select id="{{form.savings_account_role.id_for_label}}" name="{{form.savings_account_role.html_name}}" class="change_req">
-                      <option value="" disabled selected>Selecciona un rol</option>
-                      <option value="Presidente">Presidente</option>
-                      <option value="Tesorero">Tesorero</option>
-                      <option value="Socio">Socio</option>
+                  <div id="fields_for_cisterna" hidden>
+                    <div class="input-field">
+                      <input id="{{form.water_capacity.id_for_label}}" name="{{form.water_capacity.html_name}}" type="number" class="validate change_req" step="0.1">
+                      <label for="{{form.water_capacity.id_for_label}}">Capacidad de cisterna</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.cisterna_location.id_for_label}}" name="{{form.cisterna_location.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.cisterna_location.id_for_label}}">Ubicación</label>
+                    </div>
+                    <label for="{{form.cisterna_status.id_for_label}}">Status</label>
+                    <select id="{{form.cisterna_status.id_for_label}}" name="{{form.cisterna_status.html_name}}" class="change_req">
+                      <option value="" disabled selected> Seleccione un status </option>
+                      <option value="Done">Concluída</option>
+                      <option value="In use">En uso</option>
+                      <option value="Not done">En obra</option>
                     </select>
                   </div>
-                </div>
-                <div id="field_school" hidden>
-                  <div class="input-field">
-                    <input id="{{form.school.id_for_label}}" name="{{form.school.html_name}}" type="text" class="validate change_req">
-                    <label for="{{form.school.id_for_label}}">Escuela</label>
+                  <div id="fields_for_saving_account" hidden>
+                    <div class="input-field inline">
+                      <select id="{{form.savings_account_role.id_for_label}}" name="{{form.savings_account_role.html_name}}" class="change_req">
+                        <option value="" disabled selected>Selecciona un rol</option>
+                        <option value="Presidente">Presidente</option>
+                        <option value="Tesorero">Tesorero</option>
+                        <option value="Socio">Socio</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="field_school" hidden>
+                    <div class="input-field">
+                      <input id="{{form.school.id_for_label}}" name="{{form.school.html_name}}" type="text" class="validate change_req">
+                      <label for="{{form.school.id_for_label}}">Escuela</label>
+                    </div>
+                  </div>
+                  <div id="fields_for_breakfast" hidden>
+                    <div class="input-field">
+                      <input id="{{form.age.id_for_label}}" name="{{form.age.html_name}}" type="number" class="validate change_req">
+                      <label for="{{form.age.id_for_label}}">Edad</label>
+                    </div>
+                    <div class="input-field">
+                      <input id="{{form.initial_weight.id_for_label}}" name="{{form.initial_weight.html_name}}" type="number" class="validate change_req" step="0.1">
+                      <label for="{{form.initial_weight.id_for_label}}">Peso inicial</label>
+                    </div>
                   </div>
                 </div>
-                <div id="fields_for_breakfast" hidden>
-                  <div class="input-field">
-                    <input id="{{form.age.id_for_label}}" name="{{form.age.html_name}}" type="number" class="validate change_req">
-                    <label for="{{form.age.id_for_label}}">Edad</label>
-                  </div>
-                  <div class="input-field">
-                    <input id="{{form.initial_weight.id_for_label}}" name="{{form.initial_weight.html_name}}" type="number" class="validate change_req" step="0.1">
-                    <label for="{{form.initial_weight.id_for_label}}">Peso inicial</label>
-                  </div>
-                </div>
-              </div>
-              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-                <i class="material-icons right">send</i>
-                prueba
-              </button>
+                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Agregar
+                </button>
+                <div id="full_form"></div>
+              </form>
             </div>
           </div>
         </div>
@@ -179,7 +185,7 @@
 
   $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
 
-  $("#{{form.member_in.id_for_label}}").on('change', function(){
+  $("#{{form.program.id_for_label}}").on('change', function(){
     var req = document.getElementsByClassName('change_req');
 
     for(i=0; i < req.length; i++){
@@ -187,7 +193,7 @@
       console.log(req[i].required);
     }
 
-    var program = $( "#{{form.member_in.id_for_label}} option:selected" ).text();
+    var program = $( "#{{form.program.id_for_label}} option:selected" ).text();
     switch (program) {
       case "Productores":
         $("#{{form.curp.id_for_label}}").prop('required',true);

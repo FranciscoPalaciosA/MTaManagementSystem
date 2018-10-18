@@ -98,10 +98,13 @@ def beneficiaries(request, pk):
             except Beneficiary.DoesNotExist:
                 raise Http404("No existe ese benficiario.")
 
-            program = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)[0].program
-            programs = Program.objects.exclude(id=program.id)
+            programs = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)
+            allowed_programs = Program.objects.all()
+            for prog in programs:
+                allowed_programs = allowed_programs.exclude(id=prog.program.id)
+
             form = BeneficiaryInProgramForm()
-            context = {'beneficiary': beneficiary, 'program': program, 'form': form, 'programs': programs}
+            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
             return render(request, 'administrative/beneficiary.html', context)
 
 
@@ -148,12 +151,42 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-            #print(program_form.errors)
-            print("\n\n\n\n\n")
+
     elif request.method == 'GET':
         form = BeneficiaryForm()
         context = {'form': form}
         return render(request, 'administrative/new_beneficiary.html', context)
+
+@login_required
+def modify_beneficiary(request):
+    if request.method == 'POST':
+        form = BeneficiaryInProgramForm(request.POST)
+        if form.is_valid():
+            if not form.cleaned_data['water_capacity']:
+                water_capacity = 0
+            else:
+                water_capacity = form.cleaned_data['water_capacity']
+
+            beneficiary = form.cleaned_data['beneficiary'][0]
+            beneficiary_in_program = BeneficiaryInProgram(
+                                                        beneficiary=beneficiary,
+                                                        program=form.cleaned_data['program'][0],
+                                                        curp=form.cleaned_data['curp'],
+                                                        house_address=form.cleaned_data['house_address'],
+                                                        house_references=form.cleaned_data['house_references'],
+                                                        huerto_coordinates=form.cleaned_data['huerto_coordinates'],
+                                                        water_capacity=water_capacity,
+                                                        savings_account_role=form.cleaned_data['savings_account_role']
+                                                        )
+            beneficiary_in_program.save()
+
+            return HttpResponseRedirect('/administrative/beneficiaries/'+ str(beneficiary.id))
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
 
 @login_required
 def communities(request):
