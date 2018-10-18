@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 from profiles.models import HelpAlert
+from django.http import Http404
 from .models import *
 from .forms import *
 
@@ -85,11 +86,25 @@ def production_report_list(request):
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 @login_required
-def beneficiaries(request):
-    form = BeneficiaryForm()
-    beneficiary_in_program_form = BeneficiaryInProgram()
-    context = {'form': form, 'beneficiary_in_program_form': beneficiary_in_program_form}
-    return render(request, 'administrative/beneficiaries.html', context)
+def beneficiaries(request, pk):
+    if request.method == 'GET':
+        if pk == 0:
+            form = BeneficiaryForm()
+            context = {'form': form}
+            return render(request, 'administrative/beneficiaries.html', context)
+        else:
+            try:
+                beneficiary = Beneficiary.objects.get(pk=pk)
+            except Beneficiary.DoesNotExist:
+                raise Http404("No existe ese benficiario.")
+
+            program = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)[0].program
+            programs = Program.objects.exclude(id=program.id)
+            form = BeneficiaryInProgramForm()
+            context = {'beneficiary': beneficiary, 'program': program, 'form': form, 'programs': programs}
+            return render(request, 'administrative/beneficiary.html', context)
+
+
 
 @login_required
 def add_beneficiary(request):
@@ -126,7 +141,7 @@ def add_beneficiary(request):
                                                         savings_account_role=form.cleaned_data['savings_account_role']
                                                         )
             beneficiary_in_program.save()
-            return HttpResponseRedirect('/administrative/beneficiaries')
+            return HttpResponseRedirect('/administrative/beneficiaries/0')
         else:
             print("-------------------")
             print("\n\n\n\n\n")
@@ -206,9 +221,6 @@ def weekly_sessions(request):
 
 @login_required
 def payments(request, pk=0):
-    #Description: Renders the view of the upcoming payments for a promoter, or the payments for all promoters if an admin is logged in
-    #Parameters: request
-    #Function return expected: rendered template with payments
     if request.method == 'GET':
         if is_promoter(request.user):
             #A promoter wants to check their payments

@@ -9,7 +9,7 @@ class Program(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return str(self.name)
-      
+
 class Community(models.Model):
     name = models.CharField(max_length=50)
     municipality = models.CharField(max_length=50)
@@ -17,7 +17,7 @@ class Community(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
-    
+
     class Meta:
         verbose_name = 'Community'
         verbose_name_plural = 'Communities'
@@ -41,7 +41,7 @@ class Beneficiary(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.name) + " " + str(self.id)
 
 class BeneficiaryInProgram(models.Model):
     status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
@@ -111,7 +111,7 @@ class SavingAccount(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
-    
+
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
     evidence = models.ImageField(upload_to = 'administrative/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
@@ -132,4 +132,3 @@ class Payment(models.Model):
 
     def __str__(self):
         return str(self.description)
-
