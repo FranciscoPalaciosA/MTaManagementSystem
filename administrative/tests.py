@@ -222,3 +222,6 @@ class PaymentsTest(TestCase):
         data = {'comment': "This is a comment"}
         response = self.client.post('/administrative/pay/' +str(pk) + '/', data)
         self.assertContains(response, 'This is a comment')
+
+class TrainingTests(TestCase):
+    

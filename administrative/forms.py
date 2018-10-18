@@ -97,6 +97,22 @@ class WeeklySessionForm(forms.ModelForm):
             'assistants': forms.CheckboxSelectMultiple,
         }
 
+class TrainingForm(forms.ModelForm):
+    evidence = forms.ImageField(required=False)
+    class Meta:
+        model = TrainingSession
+        fields = [
+                    'topic',
+                    'assistants',
+                    'date',
+                    'start_time',
+                    'end_time',
+                    'comments',
+                    'evidence'
+                ]
+        widgets = {
+            'assistants': forms.CheckboxSelectMultiple,
+        }
 
 class PaymentForm(forms.ModelForm):
     class Meta:

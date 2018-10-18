@@ -6,6 +6,7 @@ from django.utils import timezone
 from profiles.models import HelpAlert
 from .models import *
 from .forms import *
+from datetime import datetime, time
 
 def is_promoter(user):
     #Description: Check if a user is a promoter
@@ -270,22 +271,6 @@ def get_payment(request, pk):
         return JsonResponse(json_payment)
 
 @login_required
-def pay(request, pk):
-    if request.method == 'POST':
-        form = PayForm(request.POST)
-        if form.is_valid():
-            payment = Payment.objects.get(pk=pk)
-            time = timezone.now()
-            payment.pay_date=time
-            payment.comment=form.cleaned_data['comment']
-            payment.updated_at=time
-            payment.save()
-        else:
-            messages.warning(request,'Favor de llenar los campos.')
-        return HttpResponseRedirect('/administrative/payments/')
-
-
-@login_required
 def alert_list(request):
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
@@ -299,3 +284,46 @@ def resolve_alert(request, pk):
     alert.updated_at=timezone.now()
     alert.save()
     return HttpResponseRedirect('/administrative/alerts/')
+
+@login_required
+def training_session(request):
+    if request.method == 'POST':
+        date = request.POST['date']
+        date_obj = datetime.strptime(date, "%d-%m-%Y")
+        data = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'topic': request.POST['topic'],
+                    'date': date_obj,
+                    'start_time':request.POST['start_time'],
+                    'end_time':request.POST['end_time'],
+                    'comments': request.POST['comments'],
+                    'assistants': request.POST.getlist("assistants")
+                }
+        form = TrainingForm(data, request.FILES)
+        print("evidence: " + str(request.FILES.getlist('evidence')))
+        images = request.FILES.getlist('evidence')
+        if form.is_valid():
+            base_user = BaseUser.objects.get(user=request.user)
+            session = TrainingSession   (
+                                            topic=form.cleaned_data['topic'],
+                                            trainer=base_user,
+                                            date=form.cleaned_data['date'],
+                                            start_time=form.cleaned_data['start_time'],
+                                            end_time=form.cleaned_data['end_time'],
+                                            comments=form.cleaned_data['comments']
+                                        )
+            session.save()
+            assistants = request.POST.getlist("assistants")
+            session.assistants.set(assistants)
+            for evidence in images:
+                ev = TrainingSessionEvidence (
+                                                training_session = session,
+                                                evidence = evidence
+                                            )
+                ev.save()
+        else:
+            print(form.errors)
+            messages.warning(request,'Hubo errores en la forma, intente de nuevo')
+    form = TrainingForm()
+    curdate = timezone.now()
+    return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
