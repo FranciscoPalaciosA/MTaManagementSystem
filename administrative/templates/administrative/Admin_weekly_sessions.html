@@ -140,8 +140,9 @@
               <div class="col s12"><span id="assistants-list"></span></div>
             </div><hr>
             <div class="row">
-              <div class="col s12"><b>Evnidencia:</b></div>
-              <div class="col s12"><img id="evidence" class="materialboxed" width="650" src="images/sample-1.jpg"></div>
+              <div class="col s12"><b>Evidencias:</b></div>
+              {% load static %}
+              <span id="evidences"></span>
             </div>
             <br>
           </div>
@@ -159,7 +160,6 @@
 
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
-    $('.materialboxed').materialbox();
 
     $.fn.dataTable.ext.classes.sPageButton = 'waves-effect waves-teal btn-flat'; // Change Pagination Button Class
 
@@ -200,13 +200,21 @@
       $("#end-text").text(data['end']);
 
       var assistants = data['assistants'].split(",");
+      var change = "";
       for(var i=0;i<assistants.length;i++){
-        $("#assistants-list").append("<div class=\"col s4\">" + assistants[i] + "</div>");
+        change += "<div class=\"col s4\">" + assistants[i] + "</div>";
       }
+      $("#assistants-list").html(change);
 
-      $("#evidence").attr("src", data["evidence"]);
+      var evidences = data['evidences'].split(",");
+      var change = "";
+      for(var i=0;i<evidences.length;i++){
+        change += "<div class=\"col s4\"><img class=\"materialboxed\" width=\"100%\" src=\"/static/weekly_session_evidence/" + evidences[i] + " \"></div>";
+      }
+      $("#evidences").html(change);
 
       $('#pay-modal').modal('open');
+      $('.materialboxed').materialbox();
     });
   }
 

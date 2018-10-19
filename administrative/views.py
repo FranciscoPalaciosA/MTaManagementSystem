@@ -234,9 +234,9 @@ def get_weekly_session(request, pk):
         evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
         evidenceJSON = ""
         for eviden in evidences:
-            evidenceJSON += eviden.evidence.url
-
-        evidenceJSON = evidenceJSON.split("_evidence/").pop()
+            evidence_add = eviden.evidence.url.split("_evidence/").pop()
+            evidenceJSON += evidence_add + ","
+        evidenceJSON = evidenceJSON[:-1]
 
         json_session =  {
                             'pk': weekly_session.pk,
@@ -248,7 +248,7 @@ def get_weekly_session(request, pk):
                             'end': weekly_session.end_time,
                             #'assistants': serializers.serialize('json', weekly_session.assistants.all())
                             'assistants': assistantJSON,
-                            'evidence': evidenceJSON
+                            'evidences': evidenceJSON
                         }
         return JsonResponse(json_session)
 
