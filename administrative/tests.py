@@ -224,4 +224,7 @@ class PaymentsTest(TestCase):
         self.assertContains(response, 'This is a comment')
 
 class TrainingTests(TestCase):
-    
+    def test_new_training(self):
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+         beneficiary = create_beneficiary()

@@ -1,3 +1,10 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 19/10/2018
+"""
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -259,6 +266,11 @@ def payments(request, pk=0):
 
 @login_required
 def get_payment(request, pk):
+    """
+    Description: Gets the information of a specific payment
+    Parameters: request, pk -> the id of the specific payment
+    Return: Json containing the payment information
+    """
     if request.method == 'GET':
         payment = Payment.objects.get(pk=pk)
         promoter = "" + str(payment.promoter)
@@ -272,6 +284,11 @@ def get_payment(request, pk):
 
 @login_required
 def alert_list(request):
+    """
+    Description: Renders a list of alerts
+    Parameters: request
+    Return: Render
+    """
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
         pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
@@ -279,6 +296,12 @@ def alert_list(request):
 
 @login_required
 def resolve_alert(request, pk):
+    """
+    Description: Updates an alert, setting the resolved_at time to now, as well
+    as the updated_at date.
+    Parameters: pk -> id of the alert to be modified
+    Returns: HttpResponseRedirect to the alerts page
+    """
     alert = HelpAlert.objects.get(pk=pk)
     alert.resolved_at=timezone.now()
     alert.updated_at=timezone.now()
@@ -287,6 +310,11 @@ def resolve_alert(request, pk):
 
 @login_required
 def training_session(request):
+    """
+    Description: Handles the creation and rendering of training sessions
+    Parameters: request
+    Returns: Render
+    """
     if request.method == 'POST':
         date = request.POST['date']
         date_obj = datetime.strptime(date, "%d-%m-%Y")
