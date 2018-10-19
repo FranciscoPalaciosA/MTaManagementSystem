@@ -4,6 +4,7 @@ from profiles.models import *
 
 # Create your models here.
 
+
 class Program(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
@@ -16,6 +17,7 @@ class Community(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         verbose_name = 'Community'
         verbose_name_plural = 'Communities'
@@ -39,7 +41,7 @@ class Beneficiary(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.name) + " " + str(self.id)
 
 class BeneficiaryInProgram(models.Model):
     status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
@@ -95,6 +97,21 @@ class WeeklySession(models.Model):
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
 
+
+class SavingAccount(models.Model):
+    name = models.CharField(max_length=50)
+    community = models.CharField(max_length=50)
+    municipality = models.CharField(max_length=50)
+    location = models.CharField(max_length=50)
+    list_of_beneficiaries =models.ManyToManyField(Beneficiary, verbose_name="list of beneficiaries")
+    total_saved_amount = models.IntegerField(default=0)
+    president_beneficiary = models.ForeignKey(Beneficiary,related_name='president', on_delete=models.CASCADE)
+    treasurer_beneficiary = models.ForeignKey(Beneficiary, related_name='treasurer',on_delete=models.CASCADE)
+    partner_beneficiary = models.ForeignKey(Beneficiary, related_name='partner',on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
     evidence = models.ImageField(upload_to = 'administrative/static/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
@@ -108,6 +125,7 @@ class Payment(models.Model):
     quantity = models.IntegerField()
     due_date = models.DateTimeField()
     pay_date = models.DateTimeField(blank=True, null=True)
+    comment = models.CharField(blank=True, max_length=250)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)

@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Registro Cuneta de Ahorro{% endblock %}
+{% block nav_title %}Registro Cuenta de Ahorro{% endblock %}
+{% block nav_tabs %}
+<!-- Should be doing this based on the current logged user -->
+<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
+      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
+      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
+      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
+      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
+      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
+      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
+      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
+      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
+      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
+      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
+      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
+      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+{% endblock nav_tabs %}
+{% block content %}
+<main>
+  <br><br>
+  <div class="container">
+    <br><br>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card z-depth-3">
+          <div class="card-content">
+            <form action="/directory/new_contact/" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col s6">
+
+                </div>
+                <div class="col s6">
+
+                </div>
+              </div>
+              <h5>Información de la cuenta de ahorro</h5>
+              <br>
+              <div class="row">
+                <div class="col s4">
+                  <div class="input-field">
+                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
+                    <label for="{{form.name.id_for_label}}">Nombre de la cuenta:</label>
+                  </div>
+                </div>
+                <div class="col s4">
+                  <div class="input-field">
+                    <input required id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" type="text" class="validate">
+                    <label for="{{form.community.id_for_label}}">Nombre de la comunidad:</label>
+                  </div>
+                </div>
+                <div class="col s4">
+                  <div class="input-field">
+                    <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
+                    <label for="{{form.municipality.id_for_label}}">Municipio:</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s6">
+                  <div class="input-field">
+                    <input required id="{{form.location.id_for_label}}" name="{{form.location.html_name}}" type="number" class="validate">
+                    <label for="{{form.location.id_for_label}}">Ubicación:</label>
+                  </div>
+                </div>
+                <br>
+                <label for="{{forms.list_of_beneficiaries.id_for_label}}" class="active">Lista de Beneficiarios:</label>
+                <input type="text" id="search" onkeyup="filter_beneficiaries()" placeholder="Buscar...">
+
+                {% for choice in weekly_session_form.assistants.field.queryset %}
+                <div class="input-field"><br>
+                  <label name=benficiary_check>
+                    <input type="checkbox" id="{{form.list_of_beneficiaries.id_for_label}}" name="{{form.list_of_beneficiaries.html_name}}" value="{{choice.id}}">
+                    <span>{{choice}}</span>
+                  </label>
+                </div>
+                {% endfor %}
+
+                <div class="col s6">
+                  <label for="{{form.president_beneficiary.id_for_label}}">Tipo de contacto:</label>
+                  <select id="{{form.president_beneficiary.id_for_label}}" name="{{form.president_beneficiary.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
+                    {% for id, val in form.contact_type.field.choices %}
+                    {{choice.value}}
+                    <option value="{{id}}">{{val}}</option>
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.contact_type.id_for_label}}">Tipo de contacto:</label>
+                  <select id="{{form.contact_type.id_for_label}}" name="{{form.contact_type.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
+                    {% for id, val in form.contact_type.field.choices %}
+                    {{choice.value}}
+                    <option value="{{id}}">{{val}}</option>
+                    {% endfor %}
+                  </select>
+              <div class="row">
+                <div class="col s6">
+                  <div class="input-field">
+                    <input id="{{form.total_saved_ammount.id_for_label}}" name="{{form.total_saved_ammount.html_name}}" type="number" class="validate">
+                    <label for="{{form.total_saved_ammount.id_for_label}}">Monto ahorrado en total:</label>
+                  </div>
+                </div>
+              </div>
+        <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+          <i class="material-icons right">send</i>
+        </button>
+        <br><br>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/directory.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+
+  if("#{{form.contact_type.id_for_label}}".on('change',function(){
+    var selected_choice = $("form.contact_type.id_for_label}}");
+    if(selected_choice == "Volunteer"){
+      $("{{form.contact_type.id_for_label}}").attr("required", "true");
+    }
+    else{
+      $("{{form.contact_type.id_for_label}}").attr("required", "false");
+    }
+  });
+  function filter_beneficiaries() {
+    // Declare variables
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("search");
+    filter = input.value.toUpperCase();
+    option = document.getElementsByName("beneficiary_check");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < option.length; i++) {
+      td = option[i].children[1];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          option[i].parentElement.style.display = "";
+        } else {
+          option[i].parentElement.style.display = "none";
+        }
+      }
+    }
+  }
+</script>
+{% endblock js %}
