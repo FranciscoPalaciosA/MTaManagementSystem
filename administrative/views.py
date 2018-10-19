@@ -1,3 +1,10 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 19/10/2018
+"""
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -9,6 +16,7 @@ from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
 from .forms import *
+from datetime import datetime, time
 
 def is_promoter(user):
     #Description: Check if a user is a promoter
@@ -314,6 +322,11 @@ def payments(request, pk=0):
 
 @login_required
 def get_payment(request, pk):
+    """
+    Description: Gets the information of a specific payment
+    Parameters: request, pk -> the id of the specific payment
+    Return: Json containing the payment information
+    """
     if request.method == 'GET':
         payment = Payment.objects.get(pk=pk)
         promoter = "" + str(payment.promoter)
@@ -326,23 +339,12 @@ def get_payment(request, pk):
         return JsonResponse(json_payment)
 
 @login_required
-def pay(request, pk):
-    if request.method == 'POST':
-        form = PayForm(request.POST)
-        if form.is_valid():
-            payment = Payment.objects.get(pk=pk)
-            time = timezone.now()
-            payment.pay_date=time
-            payment.comment=form.cleaned_data['comment']
-            payment.updated_at=time
-            payment.save()
-        else:
-            messages.warning(request,'Favor de llenar los campos.')
-        return HttpResponseRedirect('/administrative/payments/')
-
-
-@login_required
 def alert_list(request):
+    """
+    Description: Renders a list of alerts
+    Parameters: request
+    Return: Render
+    """
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
         pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
@@ -350,8 +352,62 @@ def alert_list(request):
 
 @login_required
 def resolve_alert(request, pk):
+    """
+    Description: Updates an alert, setting the resolved_at time to now, as well
+    as the updated_at date.
+    Parameters: pk -> id of the alert to be modified
+    Returns: HttpResponseRedirect to the alerts page
+    """
     alert = HelpAlert.objects.get(pk=pk)
     alert.resolved_at=timezone.now()
     alert.updated_at=timezone.now()
     alert.save()
     return HttpResponseRedirect('/administrative/alerts/')
+
+@login_required
+def training_session(request):
+    """
+    Description: Handles the creation and rendering of training sessions
+    Parameters: request
+    Returns: Render
+    """
+    if request.method == 'POST':
+        date = request.POST['date']
+        date_obj = datetime.strptime(date, "%d-%m-%Y")
+        data = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'topic': request.POST['topic'],
+                    'date': date_obj,
+                    'start_time':request.POST['start_time'],
+                    'end_time':request.POST['end_time'],
+                    'comments': request.POST['comments'],
+                    'assistants': request.POST.getlist("assistants")
+                }
+        form = TrainingForm(data, request.FILES)
+        print("evidence: " + str(request.FILES.getlist('evidence')))
+        images = request.FILES.getlist('evidence')
+        if form.is_valid():
+            base_user = BaseUser.objects.get(user=request.user)
+            session = TrainingSession   (
+                                            topic=form.cleaned_data['topic'],
+                                            trainer=base_user,
+                                            date=form.cleaned_data['date'],
+                                            start_time=form.cleaned_data['start_time'],
+                                            end_time=form.cleaned_data['end_time'],
+                                            comments=form.cleaned_data['comments']
+                                        )
+            session.save()
+            assistants = request.POST.getlist("assistants")
+            session.assistants.set(assistants)
+            for evidence in images:
+                ev = TrainingSessionEvidence (
+                                                training_session = session,
+                                                evidence = evidence
+                                            )
+                ev.save()
+        else:
+            print(form.errors)
+            messages.warning(request,'Hubo errores en la forma, intente de nuevo')
+    form = TrainingForm()
+    curdate = timezone.now()
+    return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})

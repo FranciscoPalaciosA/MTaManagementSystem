@@ -19,4 +19,5 @@ urlpatterns = [
     path('pay/<int:pk>/', views.payments, name='pay'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
+    path('training_sessions/', views.training_session, name='training_session')
 ]

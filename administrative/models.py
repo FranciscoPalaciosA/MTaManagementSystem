@@ -132,3 +132,30 @@ class Payment(models.Model):
 
     def __str__(self):
         return str(self.description)
+class TrainingSession(models.Model):
+    topic_choices = (
+                        ('Health', 'Salud'),
+                        ('Cook', 'Cocina Con Amaranto'),
+                        ('MV', 'Mística y Valores'),
+                        ('Work', 'Competencias Laborales'),
+                        ('Motivation', 'Motivación y Desarrollo Humano'),
+                        ('Entrepeneur', 'Emprendedurismo'),
+                        ('Other', 'Otro')
+                    )
+    trainer = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+    assistants = models.ManyToManyField(Beneficiary, verbose_name='list of beneficiaries')
+    date = models.DateField()
+    start_time = models.CharField(max_length=10)
+    end_time = models.CharField(max_length=10)
+    topic = models.CharField(max_length=250, choices=topic_choices, default='Otro')
+    comments = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return self.topic + " - " + str(self.date)
+
+class TrainingSessionEvidence(models.Model):
+    training_session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE)
+    evidence = models.ImageField(upload_to = 'administrative/training_session_evidence/', default = 'administrative/training_session_evidence/no-img.jpg')
+
+    def __str__(self):
+        return str(self.training_session) + " Ev: " + str(self.evidence)
