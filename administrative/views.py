@@ -282,11 +282,13 @@ def payments(request, pk=0):
             past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
             curdate = timezone.now()
             form = PayForm()
+            new_payment = PaymentForm()
             context = {
                         'upcoming_payments': upcoming_payments,
                         'past_payments': past_payments,
                         'curdate':curdate,
-                        'form':form
+                        'form':form,
+                        'new_payment': new_payment
                         }
             return render(request, 'administrative/Admin_payments.html', context)
     elif request.method == 'POST':
@@ -340,6 +342,19 @@ def pay(request, pk):
             messages.warning(request,'Favor de llenar los campos.')
         return HttpResponseRedirect('/administrative/payments/')
 
+@login_required
+def add_payment(request):
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            new_payment = Payment(
+                                promoter=form.cleaned_data['promoter'],
+                                description=form.cleaned_data['description'],
+                                quantity=form.cleaned_data['quantity'],
+                                due_date=form.cleaned_data['due_date']
+                                )
+            new_payment.save()
+            return HttpResponseRedirect('/administrative/payments/')
 
 @login_required
 def alert_list(request):

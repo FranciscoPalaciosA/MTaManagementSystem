@@ -17,6 +17,7 @@ urlpatterns = [
     path('payments/', views.payments, name='payments'),
     path('get_payment/<int:pk>/', views.get_payment,  name='get_payment'),
     path('pay/<int:pk>/', views.payments, name='pay'),
+    path('add_payment/', views.add_payment, name='add_payment'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
 ]
