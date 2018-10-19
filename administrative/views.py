@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
 from django.contrib import messages
 from django.utils import timezone
+
 from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
@@ -210,14 +212,56 @@ def weekly_sessions(request):
             print("Form is not valid")
             print(form.errors)
     else:
-        base_user = BaseUser.objects.get(user = request.user.id)
-        promoter = Promoter.objects.get(base_user = base_user.id)
+        if is_promoter(request.user):
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
 
-        beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
-        weekly_session_form = WeeklySessionForm()
-        context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
-        return render(request, 'administrative/weekly_sessions.html', context)
+            weekly_session_form = WeeklySessionForm()
+            context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
+            return render(request, 'administrative/weekly_sessions.html', context)
+        else:
+            weekly_sessions = WeeklySession.objects.filter().order_by('-created_at')
+
+            for session in weekly_sessions:
+                session.assistant_count = session.assistants.all().count()
+
+            context = {'weekly_sessions': weekly_sessions}
+            return render(request, 'administrative/Admin_weekly_sessions.html', context)
+
+@login_required
+def get_weekly_session(request, pk):
+    if request.method == 'GET':
+        weekly_session = WeeklySession.objects.get(pk=pk)
+        promoter = "" + str(weekly_session.promoter)
+
+        assistants = weekly_session.assistants.all()
+        assistantJSON = ""
+        for assistant in assistants:
+            assistantJSON += assistant.name + " " + assistant.last_name_paternal + ","
+        assistantJSON = assistantJSON[:-1]
+
+        evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+        evidenceJSON = ""
+        for eviden in evidences:
+            evidence_add = eviden.evidence.url.split("_evidence/").pop()
+            evidenceJSON += evidence_add + ","
+        evidenceJSON = evidenceJSON[:-1]
+
+        json_session =  {
+                            'pk': weekly_session.pk,
+                            'promoter': promoter,
+                            'type': weekly_session.type,
+                            'topic': weekly_session.topic,
+                            'date': weekly_session.created_at,
+                            'start': weekly_session.start_time,
+                            'end': weekly_session.end_time,
+                            #'assistants': serializers.serialize('json', weekly_session.assistants.all())
+                            'assistants': assistantJSON,
+                            'evidences': evidenceJSON
+                        }
+        return JsonResponse(json_session)
 
 @login_required
 def payments(request, pk=0):
