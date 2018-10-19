@@ -85,19 +85,19 @@
             {% csrf_token %}
             <div class="input-field">
               <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
-              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate" value="Clase">
+              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
-              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate" value="Clase">
+              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
-              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker" value="07:15">
+              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker">
             </div>
             <div class="input-field">
               <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
-              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker" value="07:15">
+              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker">
             </div>
               <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
               <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">

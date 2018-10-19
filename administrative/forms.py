@@ -28,7 +28,8 @@ class BeneficiaryForm(forms.Form):
     initial_weight = forms.DecimalField(required=False)
     savings_account_role = forms.CharField(required=False)
 
-class BeneficiaryInProgramForm(forms.ModelForm):
+class BeneficiaryInProgramForm(forms.Form):
+    program = forms.ModelMultipleChoiceField(queryset=Program.objects)
     curp = forms.CharField(required=False)
     house_address = forms.CharField(required=False)
     house_references = forms.CharField(required=False)
@@ -40,23 +41,6 @@ class BeneficiaryInProgramForm(forms.ModelForm):
     age = forms.IntegerField(required=False)
     initial_weight = forms.DecimalField(required=False)
     savings_account_role = forms.CharField(required=False)
-
-    class Meta:
-        model = BeneficiaryInProgram
-        fields = [
-                    'program',
-                    'curp',
-                    'house_address',
-                    'house_references',
-                    'huerto_coordinates',
-                    'water_capacity',
-                    'cisterna_location',
-                    'cisterna_status',
-                    'school',
-                    'age',
-                    'initial_weight',
-                    'savings_account_role'
-                ]
 
 class CommunityForm(forms.ModelForm):
     class Meta:

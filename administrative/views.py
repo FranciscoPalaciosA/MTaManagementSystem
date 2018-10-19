@@ -8,9 +8,12 @@ Modify date: 19/10/2018
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
 from django.contrib import messages
 from django.utils import timezone
+
 from profiles.models import HelpAlert
+from django.http import Http404
 from .models import *
 from .forms import *
 from datetime import datetime, time
@@ -93,11 +96,25 @@ def production_report_list(request):
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 @login_required
-def beneficiaries(request):
-    form = BeneficiaryForm()
-    beneficiary_in_program_form = BeneficiaryInProgram()
-    context = {'form': form, 'beneficiary_in_program_form': beneficiary_in_program_form}
-    return render(request, 'administrative/beneficiaries.html', context)
+def beneficiaries(request, pk):
+    if request.method == 'GET':
+        if pk == 0:
+            form = BeneficiaryForm()
+            context = {'form': form}
+            return render(request, 'administrative/beneficiaries.html', context)
+        else:
+            try:
+                beneficiary = Beneficiary.objects.get(pk=pk)
+            except Beneficiary.DoesNotExist:
+                raise Http404("No existe ese benficiario.")
+
+            program = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)[0].program
+            programs = Program.objects.exclude(id=program.id)
+            form = BeneficiaryInProgramForm()
+            context = {'beneficiary': beneficiary, 'program': program, 'form': form, 'programs': programs}
+            return render(request, 'administrative/beneficiary.html', context)
+
+
 
 @login_required
 def add_beneficiary(request):
@@ -134,7 +151,7 @@ def add_beneficiary(request):
                                                         savings_account_role=form.cleaned_data['savings_account_role']
                                                         )
             beneficiary_in_program.save()
-            return HttpResponseRedirect('/administrative/beneficiaries')
+            return HttpResponseRedirect('/administrative/beneficiaries/0')
         else:
             print("-------------------")
             print("\n\n\n\n\n")
@@ -203,20 +220,59 @@ def weekly_sessions(request):
             print("Form is not valid")
             print(form.errors)
     else:
-        base_user = BaseUser.objects.get(user = request.user.id)
-        promoter = Promoter.objects.get(base_user = base_user.id)
+        if is_promoter(request.user):
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
 
-        beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
-        weekly_session_form = WeeklySessionForm()
-        context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
-        return render(request, 'administrative/weekly_sessions.html', context)
+            weekly_session_form = WeeklySessionForm()
+            context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
+            return render(request, 'administrative/weekly_sessions.html', context)
+        else:
+            weekly_sessions = WeeklySession.objects.filter().order_by('-created_at')
+
+            for session in weekly_sessions:
+                session.assistant_count = session.assistants.all().count()
+
+            context = {'weekly_sessions': weekly_sessions}
+            return render(request, 'administrative/Admin_weekly_sessions.html', context)
+
+@login_required
+def get_weekly_session(request, pk):
+    if request.method == 'GET':
+        weekly_session = WeeklySession.objects.get(pk=pk)
+        promoter = "" + str(weekly_session.promoter)
+
+        assistants = weekly_session.assistants.all()
+        assistantJSON = ""
+        for assistant in assistants:
+            assistantJSON += assistant.name + " " + assistant.last_name_paternal + ","
+        assistantJSON = assistantJSON[:-1]
+
+        evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+        evidenceJSON = ""
+        for eviden in evidences:
+            evidence_add = eviden.evidence.url.split("_evidence/").pop()
+            evidenceJSON += evidence_add + ","
+        evidenceJSON = evidenceJSON[:-1]
+
+        json_session =  {
+                            'pk': weekly_session.pk,
+                            'promoter': promoter,
+                            'type': weekly_session.type,
+                            'topic': weekly_session.topic,
+                            'date': weekly_session.created_at,
+                            'start': weekly_session.start_time,
+                            'end': weekly_session.end_time,
+                            #'assistants': serializers.serialize('json', weekly_session.assistants.all())
+                            'assistants': assistantJSON,
+                            'evidences': evidenceJSON
+                        }
+        return JsonResponse(json_session)
 
 @login_required
 def payments(request, pk=0):
-    #Description: Renders the view of the upcoming payments for a promoter, or the payments for all promoters if an admin is logged in
-    #Parameters: request
-    #Function return expected: rendered template with payments
     if request.method == 'GET':
         if is_promoter(request.user):
             #A promoter wants to check their payments

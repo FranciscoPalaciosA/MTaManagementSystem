@@ -41,7 +41,7 @@ class Beneficiary(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.name) + " " + str(self.id)
 
 class BeneficiaryInProgram(models.Model):
     status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
@@ -70,8 +70,8 @@ class ProductionReport(models.Model):
     self_flour = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     days_per_month = models.IntegerField(default=0)
     exch_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    want_for_seed = models.CharField(max_length=100, null=True)
     exch_leaf = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    want_for_seed = models.CharField(max_length=100, null=True)
     want_for_leaf = models.CharField(max_length=100, null=True)
     get_for_seed_qty = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     get_for_leaf_qty = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -114,7 +114,7 @@ class SavingAccount(models.Model):
 
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
-    evidence = models.ImageField(upload_to = 'administrative/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
+    evidence = models.ImageField(upload_to = 'administrative/static/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
 
     def __str__(self):
         return str(self.weekly_session) + " Ev: " + str(self.evidence)
@@ -132,7 +132,6 @@ class Payment(models.Model):
 
     def __str__(self):
         return str(self.description)
-
 class TrainingSession(models.Model):
     topic_choices = (
                         ('Health', 'Salud'),
