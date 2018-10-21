@@ -41,7 +41,7 @@ class Beneficiary(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.name) + " " + str(self.id)
 
 class BeneficiaryInProgram(models.Model):
     status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
@@ -70,8 +70,8 @@ class ProductionReport(models.Model):
     self_flour = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     days_per_month = models.IntegerField(default=0)
     exch_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    want_for_seed = models.CharField(max_length=100, null=True)
     exch_leaf = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    want_for_seed = models.CharField(max_length=100, null=True)
     want_for_leaf = models.CharField(max_length=100, null=True)
     get_for_seed_qty = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     get_for_leaf_qty = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -114,7 +114,7 @@ class SavingAccount(models.Model):
 
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
-    evidence = models.ImageField(upload_to = 'administrative/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
+    evidence = models.ImageField(upload_to = 'administrative/static/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
 
     def __str__(self):
         return str(self.weekly_session) + " Ev: " + str(self.evidence)
@@ -125,9 +125,39 @@ class Payment(models.Model):
     quantity = models.IntegerField()
     due_date = models.DateTimeField()
     pay_date = models.DateTimeField(blank=True, null=True)
+    comment = models.CharField(blank=True, max_length=250)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return str(self.description)
+
+class TrainingSession(models.Model):
+    topic_choices = (
+                        ('Health', 'Salud'),
+                        ('Cook', 'Cocina Con Amaranto'),
+                        ('MV', 'Mística y Valores'),
+                        ('Work', 'Competencias Laborales'),
+                        ('Motivation', 'Motivación y Desarrollo Humano'),
+                        ('Entrepeneur', 'Emprendedurismo'),
+                        ('Other', 'Otro')
+                    )
+    trainer = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+    assistants = models.ManyToManyField(Beneficiary, verbose_name='list of beneficiaries')
+    date = models.DateField()
+    start_time = models.CharField(max_length=10)
+    end_time = models.CharField(max_length=10)
+    topic = models.CharField(max_length=250, choices=topic_choices, default='Otro')
+    comments = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return self.topic + " - " + str(self.date)
+
+class TrainingSessionEvidence(models.Model):
+    training_session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE)
+    evidence = models.ImageField(upload_to = 'administrative/training_session_evidence/', default = 'administrative/training_session_evidence/no-img.jpg')
+
+    def __str__(self):
+        return str(self.training_session) + " Ev: " + str(self.evidence)
+

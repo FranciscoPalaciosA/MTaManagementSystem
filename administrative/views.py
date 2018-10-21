@@ -1,10 +1,22 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 19/10/2018
+"""
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
+from django.contrib import messages
 from django.utils import timezone
+
 from profiles.models import HelpAlert
+from django.http import Http404
 from .models import *
 from .forms import *
+from datetime import datetime, time
 
 def is_promoter(user):
     #Description: Check if a user is a promoter
@@ -84,11 +96,25 @@ def production_report_list(request):
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 @login_required
-def beneficiaries(request):
-    form = BeneficiaryForm()
-    beneficiary_in_program_form = BeneficiaryInProgram()
-    context = {'form': form, 'beneficiary_in_program_form': beneficiary_in_program_form}
-    return render(request, 'administrative/beneficiaries.html', context)
+def beneficiaries(request, pk):
+    if request.method == 'GET':
+        if pk == 0:
+            form = BeneficiaryForm()
+            context = {'form': form}
+            return render(request, 'administrative/beneficiaries.html', context)
+        else:
+            try:
+                beneficiary = Beneficiary.objects.get(pk=pk)
+            except Beneficiary.DoesNotExist:
+                raise Http404("No existe ese benficiario.")
+
+            program = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)[0].program
+            programs = Program.objects.exclude(id=program.id)
+            form = BeneficiaryInProgramForm()
+            context = {'beneficiary': beneficiary, 'program': program, 'form': form, 'programs': programs}
+            return render(request, 'administrative/beneficiary.html', context)
+
+
 
 @login_required
 def add_beneficiary(request):
@@ -125,7 +151,7 @@ def add_beneficiary(request):
                                                         savings_account_role=form.cleaned_data['savings_account_role']
                                                         )
             beneficiary_in_program.save()
-            return HttpResponseRedirect('/administrative/beneficiaries')
+            return HttpResponseRedirect('/administrative/beneficiaries/0')
         else:
             print("-------------------")
             print("\n\n\n\n\n")
@@ -194,50 +220,131 @@ def weekly_sessions(request):
             print("Form is not valid")
             print(form.errors)
     else:
-        base_user = BaseUser.objects.get(user = request.user.id)
-        promoter = Promoter.objects.get(base_user = base_user.id)
+        if is_promoter(request.user):
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
 
-        beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
-        weekly_session_form = WeeklySessionForm()
-        context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
-        return render(request, 'administrative/weekly_sessions.html', context)
+            weekly_session_form = WeeklySessionForm()
+            context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
+            return render(request, 'administrative/weekly_sessions.html', context)
+        else:
+            weekly_sessions = WeeklySession.objects.filter().order_by('-created_at')
+
+            for session in weekly_sessions:
+                session.assistant_count = session.assistants.all().count()
+
+            context = {'weekly_sessions': weekly_sessions}
+            return render(request, 'administrative/Admin_weekly_sessions.html', context)
 
 @login_required
-def payments(request):
-    #Description: Renders the view of the upcoming payments for a promoter, or the payments for all promoters if an admin is logged in
-    #Parameters: request
-    #Function return expected: rendered template with payments
-    if is_promoter(request.user):
-        #A promoter wants to check their payments
-        base_user = BaseUser.objects.get(user = request.user.id)
-        promoter = Promoter.objects.get(base_user = base_user.id)
+def get_weekly_session(request, pk):
+    if request.method == 'GET':
+        weekly_session = WeeklySession.objects.get(pk=pk)
+        promoter = "" + str(weekly_session.promoter)
 
-        upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
-        past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
+        assistants = weekly_session.assistants.all()
+        assistantJSON = ""
+        for assistant in assistants:
+            assistantJSON += assistant.name + " " + assistant.last_name_paternal + ","
+        assistantJSON = assistantJSON[:-1]
 
-        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
-        return render(request, 'administrative/payments.html', context)
-    else:
-        #An administrative user wants to check promoters payments.
+        evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+        evidenceJSON = ""
+        for eviden in evidences:
+            evidence_add = eviden.evidence.url.split("_evidence/").pop()
+            evidenceJSON += evidence_add + ","
+        evidenceJSON = evidenceJSON[:-1]
+
+        json_session =  {
+                            'pk': weekly_session.pk,
+                            'promoter': promoter,
+                            'type': weekly_session.type,
+                            'topic': weekly_session.topic,
+                            'date': weekly_session.created_at,
+                            'start': weekly_session.start_time,
+                            'end': weekly_session.end_time,
+                            #'assistants': serializers.serialize('json', weekly_session.assistants.all())
+                            'assistants': assistantJSON,
+                            'evidences': evidenceJSON
+                        }
+        return JsonResponse(json_session)
+
+@login_required
+def payments(request, pk=0):
+    if request.method == 'GET':
+        if is_promoter(request.user):
+            #A promoter wants to check their payments
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
+
+            upcoming_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=True).order_by('due_date')
+            past_payments = Payment.objects.filter(promoter=promoter, pay_date__isnull=False).order_by('-due_date')
+
+            context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments}
+            return render(request, 'administrative/payments.html', context)
+        else:
+            #An administrative user wants to check promoters payments.
+            upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
+            past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
+            curdate = timezone.now()
+            form = PayForm()
+            context = {
+                        'upcoming_payments': upcoming_payments,
+                        'past_payments': past_payments,
+                        'curdate':curdate,
+                        'form':form
+                        }
+            return render(request, 'administrative/Admin_payments.html', context)
+    elif request.method == 'POST':
+        form = PayForm(request.POST)
+        if form.is_valid():
+            payment = Payment.objects.get(pk=pk)
+            time = timezone.now()
+            payment.pay_date=time
+            payment.comment=form.cleaned_data['comment']
+            payment.updated_at=time
+            payment.save()
+        else:
+            messages.warning(request,'Favor de llenar los campos.')
         upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
         past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
         curdate = timezone.now()
-
-        context = {'upcoming_payments': upcoming_payments, 'past_payments': past_payments, 'curdate':curdate}
+        form = PayForm()
+        context = {
+                    'upcoming_payments': upcoming_payments,
+                    'past_payments': past_payments,
+                    'curdate':curdate,
+                    'form':form
+                    }
         return render(request, 'administrative/Admin_payments.html', context)
 
 @login_required
-def pay(request, pk):
-    payment = Payment.objects.get(pk=pk)
-    payment.pay_date=timezone.now()
-    payment.updated_at=timezone.now()
-    payment.save()
-    return HttpResponseRedirect('/administrative/payments/')
-
+def get_payment(request, pk):
+    """
+    Description: Gets the information of a specific payment
+    Parameters: request, pk -> the id of the specific payment
+    Return: Json containing the payment information
+    """
+    if request.method == 'GET':
+        payment = Payment.objects.get(pk=pk)
+        promoter = "" + str(payment.promoter)
+        json_payment =  {
+                            'pk': payment.pk,
+                            'promoter': promoter,
+                            'description': payment.description,
+                            'quantity': payment.quantity
+                        }
+        return JsonResponse(json_payment)
 
 @login_required
 def alert_list(request):
+    """
+    Description: Renders a list of alerts
+    Parameters: request
+    Return: Render
+    """
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
         pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
@@ -245,6 +352,12 @@ def alert_list(request):
 
 @login_required
 def resolve_alert(request, pk):
+    """
+    Description: Updates an alert, setting the resolved_at time to now, as well
+    as the updated_at date.
+    Parameters: pk -> id of the alert to be modified
+    Returns: HttpResponseRedirect to the alerts page
+    """
     alert = HelpAlert.objects.get(pk=pk)
     alert.resolved_at=timezone.now()
     alert.updated_at=timezone.now()
@@ -283,3 +396,50 @@ def add_saving_account(request):
         form = SavingAccountForm()
         context = {'form': form}
         return render(request, 'administrative/new_saving_account.html', context)
+      
+def training_session(request):
+    """
+    Description: Handles the creation and rendering of training sessions
+    Parameters: request
+    Returns: Render
+    """
+    if request.method == 'POST':
+        date = request.POST['date']
+        date_obj = datetime.strptime(date, "%d-%m-%Y")
+        data = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'topic': request.POST['topic'],
+                    'date': date_obj,
+                    'start_time':request.POST['start_time'],
+                    'end_time':request.POST['end_time'],
+                    'comments': request.POST['comments'],
+                    'assistants': request.POST.getlist("assistants")
+                }
+        form = TrainingForm(data, request.FILES)
+        print("evidence: " + str(request.FILES.getlist('evidence')))
+        images = request.FILES.getlist('evidence')
+        if form.is_valid():
+            base_user = BaseUser.objects.get(user=request.user)
+            session = TrainingSession   (
+                                            topic=form.cleaned_data['topic'],
+                                            trainer=base_user,
+                                            date=form.cleaned_data['date'],
+                                            start_time=form.cleaned_data['start_time'],
+                                            end_time=form.cleaned_data['end_time'],
+                                            comments=form.cleaned_data['comments']
+                                        )
+            session.save()
+            assistants = request.POST.getlist("assistants")
+            session.assistants.set(assistants)
+            for evidence in images:
+                ev = TrainingSessionEvidence (
+                                                training_session = session,
+                                                evidence = evidence
+                                            )
+                ev.save()
+        else:
+            print(form.errors)
+            messages.warning(request,'Hubo errores en la forma, intente de nuevo')
+    form = TrainingForm()
+    curdate = timezone.now()
+    return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})

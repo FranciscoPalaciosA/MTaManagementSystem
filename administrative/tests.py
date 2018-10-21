@@ -190,6 +190,7 @@ class PaymentsTest(TestCase):
                                             quantity=1000,
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
+        payment.save()
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
@@ -273,3 +274,39 @@ class NewSavingAccount(TestCase):
                                                                                 "partner_beneficiary": beneficiary3.id
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        
+    def test_pay_ok(self):
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+        pk = payment.pk
+        data = {'comment': "This is a comment"}
+        response = self.client.post('/administrative/pay/' +str(pk) + '/', data)
+        self.assertContains(response, 'This is a comment')
+
+class TrainingTests(TestCase):
+    def test_new_training(self):
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+         beneficiary = create_beneficiary()
+
