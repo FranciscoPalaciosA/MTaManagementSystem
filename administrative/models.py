@@ -132,6 +132,7 @@ class Payment(models.Model):
 
     def __str__(self):
         return str(self.description)
+
 class TrainingSession(models.Model):
     topic_choices = (
                         ('Health', 'Salud'),
@@ -159,3 +160,4 @@ class TrainingSessionEvidence(models.Model):
 
     def __str__(self):
         return str(self.training_session) + " Ev: " + str(self.evidence)
+

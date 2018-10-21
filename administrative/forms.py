@@ -107,8 +107,20 @@ class PaymentForm(forms.ModelForm):
                   'due_date',
                   'pay_date']
 
+class SavingAccountForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    community = forms.CharField(max_length=50)
+    municipality = forms.CharField(max_length=50)
+    location = forms.CharField(max_length=50)
+    list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())
+    total_saved_amount = forms.IntegerField()
+    president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    treasurer_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    partner_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+
 #For to check a payment as "paid" and add a comment
 class PayForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ['comment']
+

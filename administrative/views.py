@@ -365,6 +365,38 @@ def resolve_alert(request, pk):
     return HttpResponseRedirect('/administrative/alerts/')
 
 @login_required
+def add_saving_account(request):
+    if request.method == 'POST':
+        form = SavingAccountForm(request.POST)
+        if form.is_valid():
+            print("-----------------------------")
+            print("form is valid")
+            print("-----------------------------")
+            saving_account = SavingAccount(
+                                    name=form.cleaned_data['name'],
+                                    community=form.cleaned_data['community'],
+                                    municipality=form.cleaned_data['municipality'],
+                                    location=form.cleaned_data['location'],
+                                    total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                )
+            saving_account.save()
+            saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+            saving_account.save()
+            return HttpResponseRedirect('/administrative/')
+        else:
+
+            print("-----------------------------")
+            print("form is not valid")
+            print(form.errors)
+            print("-----------------------------")
+    elif request.method == 'GET':
+        form = SavingAccountForm()
+        context = {'form': form}
+        return render(request, 'administrative/new_saving_account.html', context)
+      
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions
