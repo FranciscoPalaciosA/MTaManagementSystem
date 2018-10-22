@@ -118,6 +118,12 @@ def beneficiaries(request, pk):
             return render(request, 'administrative/beneficiary.html', context)
 
 
+def load_communities(request):
+    promoter_id = request.GET.get('promoter')
+    print("\n\n Promoter id : "+ str(promoter_id))
+    communities = Promoter.objects.get(id=promoter_id).communities.all()
+    print(communities)
+    return render(request, 'administrative/community_dropdown_list.html', {'communities':communities})
 
 @login_required
 def add_beneficiary(request):
@@ -133,7 +139,8 @@ def add_beneficiary(request):
                                         contact_phone=form.cleaned_data['contact_phone'],
                                         account_number=form.cleaned_data['account_number'],
                                         bank_name=form.cleaned_data['bank_name'],
-                                        promoter=form.cleaned_data['promoter'][0]
+                                        promoter=form.cleaned_data['promoter'][0],
+                                        community=form.cleaned_data['community'][0]
                                         )
 
             beneficiary.save()
@@ -429,7 +436,7 @@ def add_saving_account(request):
         form = SavingAccountForm()
         context = {'form': form}
         return render(request, 'administrative/new_saving_account.html', context)
-      
+
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions
