@@ -8,6 +8,7 @@ urlpatterns = [
     path('communities/', views.communities, name='communities'),
     path('beneficiaries/<int:pk>', views.beneficiaries, name='beneficiaries'),
     path('new_beneficiary/', views.add_beneficiary, name='new_beneficiary'),
+    path('modify_beneficiary/', views.modify_beneficiary, name='modify_beneficiary'),
     path('production_report/', views.add_production_report, name='production_report'),
     path('new_production_report/', views.production_report, name='new_production_report'),
     path('production_report_list/', views.production_report_list, name='production_report_list'),

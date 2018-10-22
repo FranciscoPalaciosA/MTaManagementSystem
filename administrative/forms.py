@@ -29,6 +29,7 @@ class BeneficiaryForm(forms.Form):
     savings_account_role = forms.CharField(required=False)
 
 class BeneficiaryInProgramForm(forms.Form):
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects)
     program = forms.ModelMultipleChoiceField(queryset=Program.objects)
     curp = forms.CharField(required=False)
     house_address = forms.CharField(required=False)
