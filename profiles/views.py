@@ -1,9 +1,13 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User, Group
 from .models import *
 from .forms import *
+
+
 
 
 # Create your views here.
@@ -99,3 +103,47 @@ def add_user(request):
         form = BaseUserForm()
         context = {'form': form}
         return render(request, 'profiles/new_user.html', context)
+
+@login_required
+def edit_promoter(request, pk):
+    if request.method == 'POST':
+        form = PromoterFormEdit(request.POST)
+        if form.is_valid():
+            promoter = get_object_or_404(Promoter, pk=pk)
+            #Send the new clean data to the Tables
+
+            #Data from user
+            #promoter.base_user.user.username = form.cleaned_data['username']
+            print(form.cleaned_data['communities'])
+            if promoter.base_user.user.check_password(form.cleaned_data['previous_password']):
+                if form.cleaned_data['password'] != "" and form.cleaned_data['password'] != None:
+                    promoter.base_user.user.password = form.cleaned_data['password'],
+                #Data from base_user
+                promoter.base_user.name=form.cleaned_data['name'],
+                promoter.base_user.last_name_maternal=form.cleaned_data['last_name_maternal'],
+                promoter.base_user.last_name_paternal=form.cleaned_data['last_name_paternal'],
+                promoter.base_user.phone_number=form.cleaned_data['phone_number'],
+                promoter.base_user.address=form.cleaned_data['address'],
+                promoter.base_user.email=form.cleaned_data['email'],
+                #Data from promoter
+                promoter.contact_name=form.cleaned_data['contact_name'],
+                promoter.contact_phone_number=form.cleaned_data['contact_phone_number'],
+                promoter.communities.set(form.cleaned_data['communities'])
+                promoter.save()
+                return HttpResponseRedirect('/profiles/')
+            else:
+                form = PromoterFormEdit()
+                context = {'form': form, 'promoter': promoter}
+                messages.warning(request, 'La contraseña anterior es incorrecta')
+                return render(request, 'profiles/edit_promoter.html', context)
+        else:
+            print("Invalid form")
+            for error in form.errors:
+                print(error)
+    elif request.method == 'GET':
+        form = PromoterFormEdit()
+        promoter = Promoter.objects.get(pk=pk)
+        context = {'form': form, 'promoter': promoter}
+        return render(request, 'profiles/edit_promoter.html', context)
+    else:
+        print("NOT POST OR GET")
