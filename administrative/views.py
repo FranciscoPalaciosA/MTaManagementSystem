@@ -37,11 +37,6 @@ def index(request):
 
 @login_required
 def production_report(request):
-    production_report_form = ProductionReportForm()
-    context = {'production_report_form': production_report_form}
-    return render(request, 'administrative/Production_Report.html', context)
-
-def add_production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
         if form.is_valid():
@@ -64,7 +59,7 @@ def add_production_report(request):
                 want_for_leaf = form.cleaned_data['want_for_leaf']
 
             newProductionReport = ProductionReport(
-                                                    beneficiary = Beneficiary.objects.get(id = 1),
+                                                    beneficiary = Beneficiary.objects.get(id = 22),
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
@@ -83,9 +78,10 @@ def add_production_report(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-    else:
-        print("no entro al post")
-        print(request.method)
+    elif request.method == 'GET':
+        production_report_form = ProductionReportForm()
+        context = {'production_report_form': production_report_form}
+        return render(request, 'administrative/Production_Report.html', context)
 
 @login_required
 def production_report_list(request):
@@ -94,6 +90,34 @@ def production_report_list(request):
         pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+
+@login_required
+def administrative_production_report(request, pk):
+    if request.method == 'GET':
+        try:
+            production_report = ProductionReport.objects.get(pk=pk)
+        except ProductionReport.DoesNotExist:
+            raise Http404("No existe ese Reporte de Producción.")
+
+        production_report_form = ProductionReportForm()
+        return render(request, 'administrative/administrative_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
+    elif request.method == 'POST':
+        try:
+            production_report = ProductionReport.objects.get(pk=pk)
+        except ProductionReport.DoesNotExist:
+            raise Http404("No existe ese Reporte de Producción.")
+
+        data = request.POST
+        print(data)
+        
+        if data['get_for_leaf_qty']:
+            production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+        if data['get_for_seed_qty']:
+            production_report.get_for_seed_qty = data['get_for_seed_qty']
+        if data['paid']:
+            production_report.paid = data['paid']
+
+        return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required
 def beneficiaries(request, pk):
@@ -429,7 +453,7 @@ def add_saving_account(request):
         form = SavingAccountForm()
         context = {'form': form}
         return render(request, 'administrative/new_saving_account.html', context)
-      
+
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions

@@ -160,4 +160,3 @@ class TrainingSessionEvidence(models.Model):
 
     def __str__(self):
         return str(self.training_session) + " Ev: " + str(self.evidence)
-

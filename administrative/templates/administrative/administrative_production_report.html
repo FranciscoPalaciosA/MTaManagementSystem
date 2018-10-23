@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Reporte de Producción{% endblock %}
+
+{% block nav_title %}Reporte de Producción{% endblock %}
+{% block nav_tabs %}
+<!-- Should be doing this based on the current logged user -->
+<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
+      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
+      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
+      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
+      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
+      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
+      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
+      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
+      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
+      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
+      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
+      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
+      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+{% endblock nav_tabs %}
+
+{% block content %}
+  <main>
+    <div class="row center-align">
+      <form action="/administrative/administrative_production_report/{{prod_report.id}}" method="post">
+        {% csrf_token %}
+        <div class="col s12">
+          <div class="row">
+            <h3>Autoconsumo</h3>
+            <div class="col s3">
+              <div class="row">
+                Semilla:
+              </div>
+              <div class="input-field inline">
+                <input disabled required id="{{production_report_form.self_seed.id_for_label}}" name="{{production_report_form.self_seed.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.self_seed}}">
+                <label for="{{production_report_form.self_seed.id_for_label}}">Kg</label>
+              </div>
+            </div>
+            <div class="col s3">
+              <div class="row">
+                Hoja:
+              </div>
+              <div class="input-field inline">
+                <input disabled required id="{{production_report_form.self_leaf.id_for_label}}" name="{{production_report_form.self_leaf.html_name}}" type="number" class="validate" step="0.1"  value="{{prod_report.self_leaf}}">
+                <label for="{{production_report_form.self_leaf.id_for_label}}">Kg</label>
+              </div>
+            </div>
+            <div class="col s3">
+              <div class="row">
+                Harina:
+              </div>
+              <div class="input-field inline">
+                <input disabled required id="{{production_report_form.self_flour.id_for_label}}" name="{{production_report_form.self_flour.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.self_flour}}">
+                <label for="{{production_report_form.self_flour.id_for_label}}">Kg</label>
+              </div>
+            </div>
+            <div class="col s3">
+              <div class="row">
+                Días por mes:
+              </div>
+              <div class="input-field inline">
+                <input disabled required id="{{production_report_form.days_per_month.id_for_label}}" name="{{production_report_form.days_per_month.html_name}}" type="number" class="validate" max=31 value="{{prod_report.days_per_month}}">
+                <label for="{{production_report_form.days_per_month.id_for_label}}">#</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s6">
+              <h3>Trueque MTa</h3>
+              <div class="row">
+                <div class="col s2"> </div>
+                <div class="col s4">
+                  Semilla:
+                  <div class="input-field inline">
+                    <input disabled id="{{production_report_form.exch_seed.id_for_label}}" name="{{production_report_form.exch_seed.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.exch_seed}}">
+                    <label for="{{production_report_form.exch_seed.id_for_label}}">Kg</label>
+                  </div>
+                </div>
+                <div class="col s4">
+                  Por
+                  <div class="input-field inline">
+                    <select disabled id="{{production_report_form.want_for_seed.id_for_label}}" name="{{production_report_form.want_for_seed.html_name}}">
+                      <option value="{{prod_report.want_for_seed}}" disabled selected>{{prod_report.want_for_seed}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s2"> </div>
+                <div class="col s4">
+                  Hoja:
+                  <div class="input-field inline">
+                    <input disabled id="{{production_report_form.exch_leaf.id_for_label}}" name="{{production_report_form.exch_leaf.html_name}}" type="number" class="validate" step="0.1"  value="{{prod_report.exch_leaf}}">
+                    <label for="{{production_report_form.exch_leaf.id_for_label}}">Kg</label>
+                  </div>
+                </div>
+                <div class="col s4">
+                  Por
+                  <div class="input-field inline">
+                    <select disabled id="{{production_report_form.want_for_leaf.id_for_label}}" name="{{production_report_form.want_for_leaf.html_name}}" value="{{prod_report.want_for_leaf}}">
+                      <option value="{{prod_report.want_for_leaf}}" disabled selected>{{prod_report.want_for_leaf}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col s6">
+              <h3>Recepción</h3>
+              <div class="col s8">
+                <div class="row">
+                  <div class="col s3"> </div>
+                  <div class="col s6">
+                    Por pagar:
+                    <div class="input-field inline">
+                      {% if prod_report.exch_seed != 0 %}
+                        <input id="{{production_report_form.get_for_seed_qty.id_for_label}}" name="{{production_report_form.get_for_seed_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_seed_qty}}">
+                      {% else %}
+                        <input disabled id="{{production_report_form.get_for_seed_qty.id_for_label}}" name="{{production_report_form.get_for_seed_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_seed_qty}}">
+                      {% endif %}
+                      <label for="{{production_report_form.get_for_seed_qty.id_for_label}}">Cantidad</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s3"> </div>
+                  <div class="col s6">
+                    Por pagar:
+                    <div class="input-field inline">
+                      {% if prod_report.exch_leaf != 0 %}
+                        <input id="{{production_report_form.get_for_leaf_qty.id_for_label}}" name="{{production_report_form.get_for_leaf_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_leaf_qty}}">
+                      {% else %}
+                        <input disabled id="{{production_report_form.get_for_leaf_qty.id_for_label}}" name="{{production_report_form.get_for_leaf_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_leaf_qty}}">
+                      {% endif %}
+                      <label for="{{production_report_form.get_for_leaf_qty.id_for_label}}">Cantidad</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col s4">
+                <div class="row"> </div>
+                <div class="row"> </div>
+                <div class="row"> </div>
+                <div class="row"> </div>
+                <div class="row"> </div>
+                <div class="row">
+                  <label>
+                    {% if prod_report.paid == True %}
+                      <input disabled id="{{production_report_form.paid.id_for_label}}" name="{{production_report_form.paid.html_name}}" type="checkbox" class="filled-in" checked="checked" value="{{prod_report.paid}}"/>
+                    {% endif %}
+                    {% if prod_report.paid != True %}
+                      <input id="{{production_report_form.paid.id_for_label}}" name="{{production_report_form.paid.html_name}}" type="checkbox" class="filled-in" value="{{prod_report.paid}}"/>
+                    {% endif %}
+                    <span>Pagado</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <input id="prod_report_id" name="prod_report_id" type="text" value="{{prod_report.id}}" hidden>
+          <div class="row">
+            <button class="btn waves-effect waves-light" type="submit" value="Submit" name="action">Guardar
+              <i class="material-icons right">lock</i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+{% endblock content %}
+
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('.fixed-action-btn').floatingActionButton();
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems, options);
+  });
+
+  // Or with jQuery
+
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+</script>
+{% endblock js %}
