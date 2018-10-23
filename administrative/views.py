@@ -109,14 +109,15 @@ def administrative_production_report(request, pk):
 
         data = request.POST
         print(data)
-        
-        if data['get_for_leaf_qty']:
+
+        if 'get_for_leaf_qty' in data:
             production_report.get_for_leaf_qty = data['get_for_leaf_qty']
-        if data['get_for_seed_qty']:
+        if 'get_for_seed_qty' in data:
             production_report.get_for_seed_qty = data['get_for_seed_qty']
-        if data['paid']:
+        if 'paid' in data:
             production_report.paid = data['paid']
 
+        production_report.save()
         return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required

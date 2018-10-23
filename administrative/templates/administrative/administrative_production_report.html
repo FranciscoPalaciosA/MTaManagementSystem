@@ -187,18 +187,19 @@
                 <div class="row">
                   <label>
                     {% if prod_report.paid == True %}
-                      <input disabled id="{{production_report_form.paid.id_for_label}}" name="{{production_report_form.paid.html_name}}" type="checkbox" class="filled-in" checked="checked" value="{{prod_report.paid}}"/>
+                      <input disabled id="{{production_report_form.paid.id_for_label}}" name="{{production_report_form.paid.html_name}}" type="checkbox" class="filled-in" checked="checked" value="1"/>
+                      <span>Pagado</span>
+                    {% else %}
+                      <input id="{{production_report_form.paid.id_for_label}}" name="{{production_report_form.paid.html_name}}" type="checkbox" class="filled-in" value="1"/>
+                      <span>Pagado</span>
+                      <input id="paid_hidden" name="{{production_report_form.paid.html_name}}" value=0 type="hidden">
                     {% endif %}
-                    {% if prod_report.paid != True %}
-                      <input id="{{production_report_form.paid.id_for_label}}" name="{{production_report_form.paid.html_name}}" type="checkbox" class="filled-in" value="{{prod_report.paid}}"/>
-                    {% endif %}
-                    <span>Pagado</span>
+
                   </label>
                 </div>
               </div>
             </div>
           </div>
-          <input id="prod_report_id" name="prod_report_id" type="text" value="{{prod_report.id}}" hidden>
           <div class="row">
             <button class="btn waves-effect waves-light" type="submit" value="Submit" name="action">Guardar
               <i class="material-icons right">lock</i>
@@ -220,12 +221,11 @@
     $('.fixed-action-btn').floatingActionButton();
   });
 
-  document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('select');
-    var instances = M.FormSelect.init(elems, options);
-  });
-
-  // Or with jQuery
+  if(!document.getElementById("{{production_report_form.paid.id_for_label}}").checked){
+    $("#{{production_report_form.paid.id_for_label}}").on('change', function(){
+      document.getElementById('paid_hidden').disabled = !document.getElementById('paid_hidden').disabled ;
+    });
+  }
 
   $(document).ready(function(){
     $('select').formSelect();
