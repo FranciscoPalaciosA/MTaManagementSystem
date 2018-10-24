@@ -99,6 +99,7 @@
               <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
               <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker">
             </div>
+            <div>
               <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
               <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
 
@@ -133,7 +134,6 @@
         <!-- <div class="modal-footer">
           <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
         </div> -->
-      </div>
     </main>
 {% endblock content %}
 {% block init_scripts %}

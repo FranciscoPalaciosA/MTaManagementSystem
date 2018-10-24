@@ -108,10 +108,13 @@ def beneficiaries(request, pk):
             except Beneficiary.DoesNotExist:
                 raise Http404("No existe ese benficiario.")
 
-            program = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)[0].program
-            programs = Program.objects.exclude(id=program.id)
+            programs = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)
+            allowed_programs = Program.objects.all()
+            for prog in programs:
+                allowed_programs = allowed_programs.exclude(id=prog.program.id)
+
             form = BeneficiaryInProgramForm()
-            context = {'beneficiary': beneficiary, 'program': program, 'form': form, 'programs': programs}
+            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
             return render(request, 'administrative/beneficiary.html', context)
 
 
@@ -158,12 +161,42 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-            #print(program_form.errors)
-            print("\n\n\n\n\n")
+
     elif request.method == 'GET':
         form = BeneficiaryForm()
         context = {'form': form}
         return render(request, 'administrative/new_beneficiary.html', context)
+
+@login_required
+def modify_beneficiary(request):
+    if request.method == 'POST':
+        form = BeneficiaryInProgramForm(request.POST)
+        if form.is_valid():
+            if not form.cleaned_data['water_capacity']:
+                water_capacity = 0
+            else:
+                water_capacity = form.cleaned_data['water_capacity']
+
+            beneficiary = form.cleaned_data['beneficiary'][0]
+            beneficiary_in_program = BeneficiaryInProgram(
+                                                        beneficiary=beneficiary,
+                                                        program=form.cleaned_data['program'][0],
+                                                        curp=form.cleaned_data['curp'],
+                                                        house_address=form.cleaned_data['house_address'],
+                                                        house_references=form.cleaned_data['house_references'],
+                                                        huerto_coordinates=form.cleaned_data['huerto_coordinates'],
+                                                        water_capacity=water_capacity,
+                                                        savings_account_role=form.cleaned_data['savings_account_role']
+                                                        )
+            beneficiary_in_program.save()
+
+            return HttpResponseRedirect('/administrative/beneficiaries/'+ str(beneficiary.id))
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
 
 @login_required
 def communities(request):
@@ -290,11 +323,13 @@ def payments(request, pk=0):
             past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
             curdate = timezone.now()
             form = PayForm()
+            new_payment = PaymentForm()
             context = {
                         'upcoming_payments': upcoming_payments,
                         'past_payments': past_payments,
                         'curdate':curdate,
-                        'form':form
+                        'form':form,
+                        'new_payment': new_payment
                         }
             return render(request, 'administrative/Admin_payments.html', context)
     elif request.method == 'POST':
@@ -339,6 +374,20 @@ def get_payment(request, pk):
         return JsonResponse(json_payment)
 
 @login_required
+def add_payment(request):
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            new_payment = Payment(
+                                promoter=form.cleaned_data['promoter'],
+                                description=form.cleaned_data['description'],
+                                quantity=form.cleaned_data['quantity'],
+                                due_date=form.cleaned_data['due_date']
+                                )
+            new_payment.save()
+            return HttpResponseRedirect('/administrative/payments/')
+
+@login_required
 def alert_list(request):
     """
     Description: Renders a list of alerts
@@ -365,6 +414,38 @@ def resolve_alert(request, pk):
     return HttpResponseRedirect('/administrative/alerts/')
 
 @login_required
+def add_saving_account(request):
+    if request.method == 'POST':
+        form = SavingAccountForm(request.POST)
+        if form.is_valid():
+            print("-----------------------------")
+            print("form is valid")
+            print("-----------------------------")
+            saving_account = SavingAccount(
+                                    name=form.cleaned_data['name'],
+                                    community=form.cleaned_data['community'],
+                                    municipality=form.cleaned_data['municipality'],
+                                    location=form.cleaned_data['location'],
+                                    total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                )
+            saving_account.save()
+            saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+            saving_account.save()
+            return HttpResponseRedirect('/administrative/')
+        else:
+
+            print("-----------------------------")
+            print("form is not valid")
+            print(form.errors)
+            print("-----------------------------")
+    elif request.method == 'GET':
+        form = SavingAccountForm()
+        context = {'form': form}
+        return render(request, 'administrative/new_saving_account.html', context)
+      
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions
