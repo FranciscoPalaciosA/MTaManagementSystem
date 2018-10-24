@@ -120,9 +120,7 @@ def beneficiaries(request, pk):
 
 def load_communities(request):
     promoter_id = request.GET.get('promoter')
-    print("\n\n Promoter id : "+ str(promoter_id))
     communities = Promoter.objects.get(id=promoter_id).communities.all()
-    print(communities)
     return render(request, 'administrative/community_dropdown_list.html', {'communities':communities})
 
 @login_required
