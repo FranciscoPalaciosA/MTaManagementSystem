@@ -465,7 +465,6 @@ def training_session(request):
                     'assistants': request.POST.getlist("assistants")
                 }
         form = TrainingForm(data, request.FILES)
-        print("evidence: " + str(request.FILES.getlist('evidence')))
         images = request.FILES.getlist('evidence')
         if form.is_valid():
             base_user = BaseUser.objects.get(user=request.user)
