@@ -24,8 +24,8 @@
     <header>
       <div class="navbar-fixed">
         <nav class="navbar white">
-          <div class="nav-wrapper"><a href="#!" class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
-
+          <div class="nav-wrapper">
+            <a href="#!" class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
           </div>
         </nav>
       </div>
@@ -42,6 +42,9 @@
       {% block content %}
       {% endblock content %}
     </main>
+    <div class="right-align" style="max-height:90%;">
+      <div id="google_translate_element"></div>
+    </div>
     {% block bottom_nav %}{% endblock bottom_nav %}
 <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -90,6 +93,12 @@
         });
       });
     </script>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'es', includedLanguages: 'en,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     {% if messages %}
     <script type="text/javascript">
       {%for message in messages %}
