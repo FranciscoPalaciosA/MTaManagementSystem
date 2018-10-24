@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User, Group
 from .models import *
 from .forms import *
+from django.utils.translation import ugettext as _
 
 
 # Create your views here.

@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-10-24 18:33-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/profiles/new_promoter.html:98
+msgid "Información de la cuenta"
+msgstr "Account information"
+
+#: templates/profiles/new_promoter.html:101
+msgid "Usuario"
+msgstr "Username"
+
+#: templates/profiles/new_promoter.html:105
+msgid "Contraseña"
+msgstr "Password"
+
+#: templates/profiles/new_promoter.html:109
+msgid "Confirmar contraseña"
+msgstr "Confirm password"
+
+#: templates/profiles/new_promoter.html:112
+msgid "Información de la promotora"
+msgstr "Promoter information"
+
+#: templates/profiles/new_promoter.html:116
+msgid "Nombre"
+msgstr "Name"
+
+#: templates/profiles/new_promoter.html:120
+msgid "Apellido Paterno"
+msgstr "Last name"
+
+#: templates/profiles/new_promoter.html:124
+msgid "Apellido Materno"
+msgstr "Second last name"
+
+#: templates/profiles/new_promoter.html:130
+msgid "Teléfono"
+msgstr "Phone number"
+
+#: templates/profiles/new_promoter.html:134
+msgid "Direccion"
+msgstr "Address"
+
+#: templates/profiles/new_promoter.html:138
+msgid "Correo"
+msgstr "Email"
+
+#: templates/profiles/new_promoter.html:148
+msgid "Comunidades"
+msgstr "Communities"
+
+#: templates/profiles/new_promoter.html:151
+msgid "Información del recado"
+msgstr "Contact information"
+
+#: templates/profiles/new_promoter.html:155
+msgid "Nombre de recado"
+msgstr "Contact name"
+
+#: templates/profiles/new_promoter.html:159
+msgid "Teléfono de recado"
+msgstr "Contact phone number"

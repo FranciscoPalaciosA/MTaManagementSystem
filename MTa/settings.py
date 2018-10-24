@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'profiles.apps.ProfilesConfig',
+    'profiles',
     'directory.apps.DirectoryConfig',
     'administrative.apps.AdministrativeConfig',
     'django.contrib.admin',
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'MTa.urls'
@@ -113,28 +113,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'es-mx'
-
 LANGUAGES = [
-    ('de', _('German')),
-    ('en-us', _('English')),
-    ('es-mx', _('Spanish')),
+     ('en', _('English')),
+     ('es', _('Spanish')),
 ]
 
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'es'
+TIME_ZONE = 'America/Mexico_City'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'administrative/locale/'),
-    os.path.join(BASE_DIR, 'directory/locale/'),
+    os.path.join(BASE_DIR, 'profiles/locale/')
 ]
 
 STATIC_URL = '/static/'

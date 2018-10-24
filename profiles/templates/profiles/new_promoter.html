@@ -62,10 +62,32 @@
 {% endblock nav_tabs %}
 
 {% block content %}
+{% load i18n %}
 <main>
+  <div class="row">
+    <div class="col s9">
+    </div>
+    <div class="col s3">
+      <form action="{% url 'profiles:set_language' %}" method="POST">
+          {% csrf_token %}
+          <input name="next" type="hidden" value="{{ redirect_to }}" />
+          <select name="language">
+              {% get_current_language as LANGUAGE_CODE %}
+              {% get_available_languages as LANGUAGES %}
+              {% for lang in LANGUAGES %}
+                  <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %} selected="selected"{% endif %}>
+                      {{ lang.1 }} ({{ lang.0 }})
+                  </option>
+              {% endfor %}
+          </select>
+          <button style="float: right;" class="btn waves-effect waves-light btn-small" type="submit" name="action">
+            <i class="large material-icons" style="font-size: 1.8rem;">compare_arrows</i>
+          </button>
+      </form>
+    </div>
+  </div>
   <br><br>
   <div class="container">
-    <br><br>
     <div class="row">
       <div class="col s12 m12">
         <div class="card z-depth-3">
@@ -73,47 +95,47 @@
             <form action="/profiles/new_promoter/" method="post">
               {% csrf_token %}
               <div class="row">
-                <h4 class="left">Información de la cuenta</h3>
+                <h4 class="left">{% blocktrans %}Información de la cuenta{% endblocktrans %}</h4>
                 <div class="input-field col s12">
                   <input required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate">
-                  <label for="{{form.username.id_for_label}}">Usuario</label>
+                  <label for="{{form.username.id_for_label}}">{% blocktrans %}Usuario{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m6">
                   <input required id="{{form.password.id_for_label}}" name="{{form.password.html_name}}" type="password" class="validate">
-                  <label for="{{form.password.id_for_label}}">Contraseña</label>
+                  <label for="{{form.password.id_for_label}}"> {% blocktrans %}Contraseña{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m6">
                   <input required id="passwordConfirm" name="" type="password" class="validate">
-                  <label for="passwordConfirm">Confirmar contraseña</label>
+                  <label for="passwordConfirm">{% blocktrans %}Confirmar contraseña{% endblocktrans %}</label>
                 </div>
               </div>
-              <h4 class="left-align col s12">Información de la promotora</h4>
+              <h4 class="left-align col s12">{% blocktrans %}Información de la promotora{% endblocktrans %}</h4>
               <div class="row">
                 <div class="input-field col s12 m4">
                   <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate slide2-input">
-                  <label for="{{form.name.id_for_label}}">Nombre</label>
+                  <label for="{{form.name.id_for_label}}">{% blocktrans %}Nombre{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m4">
                   <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate slide2-input">
-                  <label for="{{form.last_name_paternal.id_for_label}}">Apellido Paterno</label>
+                  <label for="{{form.last_name_paternal.id_for_label}}">{% blocktrans %}Apellido Paterno{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m4">
                   <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate slide2-input">
-                  <label for="{{form.last_name_maternal.id_for_label}}">Apellido Materno</label>
+                  <label for="{{form.last_name_maternal.id_for_label}}">{% blocktrans %}Apellido Materno{% endblocktrans %}</label>
                 </div>
               </div>
               <div class="row">
                 <div class="input-field col s12 m4">
                   <input required id="{{form.phone_number.id_for_label}}" name="{{form.phone_number.html_name}}" type="text" class="validate slide2-input">
-                  <label for="{{form.phone_number.id_for_label}}">Teléfono</label>
+                  <label for="{{form.phone_number.id_for_label}}">{% blocktrans %}Teléfono{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m4">
                   <input required id="{{form.address.id_for_label}}" name="{{form.address.html_name}}" type="text" class="validate slide2-input">
-                  <label for="{{form.address.id_for_label}}">Direccion</label>
+                  <label for="{{form.address.id_for_label}}">{% blocktrans %}Direccion{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m4">
                   <input required id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" type="text" class="validate slide2-input">
-                  <label for="{{form.email.id_for_label}}">Correo</label>
+                  <label for="{{form.email.id_for_label}}">{% blocktrans %}Correo{% endblocktrans %}</label>
                 </div>
               </div>
               <div class="row">
@@ -123,18 +145,18 @@
                     <option value="{{choice.id}}">{{choice}}</option>
                     {% endfor %}
                   </select>
-                  <label for="{{form.communities.id_for_label}}">Comunidades</label>
+                  <label for="{{form.communities.id_for_label}}">{% blocktrans %}Comunidades{% endblocktrans %}</label>
                 </div>
               </div>
-              <h4 class="left-align col s12">Información del recado</h4>
+              <h4 class="left-align col s12">{% blocktrans %}Información del recado{% endblocktrans %}</h4>
               <div class="row">
                 <div class="input-field col s12 m6">
                   <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
-                  <label for="{{form.contact_name.id_for_label}}">Nombre de recado</label>
+                  <label for="{{form.contact_name.id_for_label}}">{% blocktrans %}Nombre de recado{% endblocktrans %}</label>
                 </div>
                 <div class="input-field col s12 m6">
                   <input required id="{{form.contact_phone_number.id_for_label}}" name="{{form.contact_phone_number.html_name}}" type="text" class="validate">
-                  <label for="{{form.contact_phone_number.id_for_label}}">Teléfono de recado</label>
+                  <label for="{{form.contact_phone_number.id_for_label}}">{% blocktrans %}Teléfono de recado{% endblocktrans %}</label>
                 </div>
               </div>
               <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
