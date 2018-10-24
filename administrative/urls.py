@@ -14,12 +14,13 @@ urlpatterns = [
     path('production_report_list/', views.production_report_list, name='production_report_list'),
     path('weekly_sessions/', views.weekly_sessions, name='weekly_sessions'),
     path('get_weekly_session/<int:pk>/', views.get_weekly_session,  name='get_weekly_session'),
-    path('new_saving_account/', views.saving_account, name='new_saving_account'),
+    #path('new_saving_account/', views.saving_account, name='new_saving_account'),
     path('payments/', views.payments, name='payments'),
     path('get_payment/<int:pk>/', views.get_payment,  name='get_payment'),
     path('pay/<int:pk>/', views.payments, name='pay'),
     path('add_payment/', views.add_payment, name='add_payment'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
-    path('training_sessions/', views.training_session, name='training_session')
+    path('training_sessions/', views.training_session, name='training_session'),
+    path('ajax/load_communities/', views.load_communities, name='ajax_load_communities')
 ]
