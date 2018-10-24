@@ -53,6 +53,9 @@ class ProductionReportForm(forms.ModelForm):
     exch_leaf = forms.DecimalField(required=False)
     want_for_seed = forms.CharField(required=False)
     want_for_leaf = forms.CharField(required=False)
+    get_for_seed_qty = forms.CharField(required=False)
+    get_for_leaf_qty = forms.CharField(required=False)
+    paid = forms.BooleanField(required=False)
 
     class Meta:
         model = ProductionReport
@@ -63,7 +66,11 @@ class ProductionReportForm(forms.ModelForm):
                     'exch_seed',
                     'want_for_seed',
                     'exch_leaf',
-                    'want_for_leaf']
+                    'want_for_leaf',
+                    'get_for_seed_qty',
+                    'get_for_leaf_qty',
+                    'paid'
+                    ]
 
 class WeeklySessionForm(forms.ModelForm):
     evidence = forms.ImageField(required=False)
