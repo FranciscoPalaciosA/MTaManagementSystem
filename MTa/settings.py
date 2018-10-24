@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'profiles.apps.ProfilesConfig',
     'directory.apps.DirectoryConfig',
     'administrative.apps.AdministrativeConfig',
+    'gallery.apps.GalleryConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
