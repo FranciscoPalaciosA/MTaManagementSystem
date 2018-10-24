@@ -29,6 +29,7 @@ class BeneficiaryForm(forms.Form):
     savings_account_role = forms.CharField(required=False)
 
 class BeneficiaryInProgramForm(forms.Form):
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects)
     program = forms.ModelMultipleChoiceField(queryset=Program.objects)
     curp = forms.CharField(required=False)
     house_address = forms.CharField(required=False)
@@ -81,6 +82,22 @@ class WeeklySessionForm(forms.ModelForm):
             'assistants': forms.CheckboxSelectMultiple,
         }
 
+class TrainingForm(forms.ModelForm):
+    evidence = forms.ImageField(required=False)
+    class Meta:
+        model = TrainingSession
+        fields = [
+                    'topic',
+                    'assistants',
+                    'date',
+                    'start_time',
+                    'end_time',
+                    'comments',
+                    'evidence'
+                ]
+        widgets = {
+            'assistants': forms.CheckboxSelectMultiple,
+        }
 
 class PaymentForm(forms.ModelForm):
     class Meta:
@@ -91,8 +108,20 @@ class PaymentForm(forms.ModelForm):
                   'due_date',
                   'pay_date']
 
+class SavingAccountForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    community = forms.CharField(max_length=50)
+    municipality = forms.CharField(max_length=50)
+    location = forms.CharField(max_length=50)
+    list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())
+    total_saved_amount = forms.IntegerField()
+    president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    treasurer_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    partner_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+
 #For to check a payment as "paid" and add a comment
 class PayForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ['comment']
+

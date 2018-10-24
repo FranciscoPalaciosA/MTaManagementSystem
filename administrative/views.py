@@ -1,3 +1,10 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 19/10/2018
+"""
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -9,6 +16,7 @@ from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
 from .forms import *
+from datetime import datetime, time
 
 def is_promoter(user):
     #Description: Check if a user is a promoter
@@ -100,10 +108,13 @@ def beneficiaries(request, pk):
             except Beneficiary.DoesNotExist:
                 raise Http404("No existe ese benficiario.")
 
-            program = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)[0].program
-            programs = Program.objects.exclude(id=program.id)
+            programs = BeneficiaryInProgram.objects.filter(beneficiary=beneficiary)
+            allowed_programs = Program.objects.all()
+            for prog in programs:
+                allowed_programs = allowed_programs.exclude(id=prog.program.id)
+
             form = BeneficiaryInProgramForm()
-            context = {'beneficiary': beneficiary, 'program': program, 'form': form, 'programs': programs}
+            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
             return render(request, 'administrative/beneficiary.html', context)
 
 
@@ -150,12 +161,42 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-            #print(program_form.errors)
-            print("\n\n\n\n\n")
+
     elif request.method == 'GET':
         form = BeneficiaryForm()
         context = {'form': form}
         return render(request, 'administrative/new_beneficiary.html', context)
+
+@login_required
+def modify_beneficiary(request):
+    if request.method == 'POST':
+        form = BeneficiaryInProgramForm(request.POST)
+        if form.is_valid():
+            if not form.cleaned_data['water_capacity']:
+                water_capacity = 0
+            else:
+                water_capacity = form.cleaned_data['water_capacity']
+
+            beneficiary = form.cleaned_data['beneficiary'][0]
+            beneficiary_in_program = BeneficiaryInProgram(
+                                                        beneficiary=beneficiary,
+                                                        program=form.cleaned_data['program'][0],
+                                                        curp=form.cleaned_data['curp'],
+                                                        house_address=form.cleaned_data['house_address'],
+                                                        house_references=form.cleaned_data['house_references'],
+                                                        huerto_coordinates=form.cleaned_data['huerto_coordinates'],
+                                                        water_capacity=water_capacity,
+                                                        savings_account_role=form.cleaned_data['savings_account_role']
+                                                        )
+            beneficiary_in_program.save()
+
+            return HttpResponseRedirect('/administrative/beneficiaries/'+ str(beneficiary.id))
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
 
 @login_required
 def communities(request):
@@ -316,6 +357,11 @@ def payments(request, pk=0):
 
 @login_required
 def get_payment(request, pk):
+    """
+    Description: Gets the information of a specific payment
+    Parameters: request, pk -> the id of the specific payment
+    Return: Json containing the payment information
+    """
     if request.method == 'GET':
         payment = Payment.objects.get(pk=pk)
         promoter = "" + str(payment.promoter)
@@ -326,21 +372,6 @@ def get_payment(request, pk):
                             'quantity': payment.quantity
                         }
         return JsonResponse(json_payment)
-
-@login_required
-def pay(request, pk):
-    if request.method == 'POST':
-        form = PayForm(request.POST)
-        if form.is_valid():
-            payment = Payment.objects.get(pk=pk)
-            time = timezone.now()
-            payment.pay_date=time
-            payment.comment=form.cleaned_data['comment']
-            payment.updated_at=time
-            payment.save()
-        else:
-            messages.warning(request,'Favor de llenar los campos.')
-        return HttpResponseRedirect('/administrative/payments/')
 
 @login_required
 def add_payment(request):
@@ -358,6 +389,11 @@ def add_payment(request):
 
 @login_required
 def alert_list(request):
+    """
+    Description: Renders a list of alerts
+    Parameters: request
+    Return: Render
+    """
     if request.method == 'GET':
         solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
         pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
@@ -365,8 +401,94 @@ def alert_list(request):
 
 @login_required
 def resolve_alert(request, pk):
+    """
+    Description: Updates an alert, setting the resolved_at time to now, as well
+    as the updated_at date.
+    Parameters: pk -> id of the alert to be modified
+    Returns: HttpResponseRedirect to the alerts page
+    """
     alert = HelpAlert.objects.get(pk=pk)
     alert.resolved_at=timezone.now()
     alert.updated_at=timezone.now()
     alert.save()
     return HttpResponseRedirect('/administrative/alerts/')
+
+@login_required
+def add_saving_account(request):
+    if request.method == 'POST':
+        form = SavingAccountForm(request.POST)
+        if form.is_valid():
+            print("-----------------------------")
+            print("form is valid")
+            print("-----------------------------")
+            saving_account = SavingAccount(
+                                    name=form.cleaned_data['name'],
+                                    community=form.cleaned_data['community'],
+                                    municipality=form.cleaned_data['municipality'],
+                                    location=form.cleaned_data['location'],
+                                    total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                )
+            saving_account.save()
+            saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+            saving_account.save()
+            return HttpResponseRedirect('/administrative/')
+        else:
+
+            print("-----------------------------")
+            print("form is not valid")
+            print(form.errors)
+            print("-----------------------------")
+    elif request.method == 'GET':
+        form = SavingAccountForm()
+        context = {'form': form}
+        return render(request, 'administrative/new_saving_account.html', context)
+      
+def training_session(request):
+    """
+    Description: Handles the creation and rendering of training sessions
+    Parameters: request
+    Returns: Render
+    """
+    if request.method == 'POST':
+        date = request.POST['date']
+        date_obj = datetime.strptime(date, "%d-%m-%Y")
+        data = {
+                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                    'topic': request.POST['topic'],
+                    'date': date_obj,
+                    'start_time':request.POST['start_time'],
+                    'end_time':request.POST['end_time'],
+                    'comments': request.POST['comments'],
+                    'assistants': request.POST.getlist("assistants")
+                }
+        form = TrainingForm(data, request.FILES)
+        print("evidence: " + str(request.FILES.getlist('evidence')))
+        images = request.FILES.getlist('evidence')
+        if form.is_valid():
+            base_user = BaseUser.objects.get(user=request.user)
+            session = TrainingSession   (
+                                            topic=form.cleaned_data['topic'],
+                                            trainer=base_user,
+                                            date=form.cleaned_data['date'],
+                                            start_time=form.cleaned_data['start_time'],
+                                            end_time=form.cleaned_data['end_time'],
+                                            comments=form.cleaned_data['comments']
+                                        )
+            session.save()
+            assistants = request.POST.getlist("assistants")
+            session.assistants.set(assistants)
+            for evidence in images:
+                ev = TrainingSessionEvidence (
+                                                training_session = session,
+                                                evidence = evidence
+                                            )
+                ev.save()
+        else:
+            print(form.errors)
+            messages.warning(request,'Hubo errores en la forma, intente de nuevo')
+    form = TrainingForm()
+    curdate = timezone.now()
+    return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})

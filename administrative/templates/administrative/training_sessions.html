@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sesiones de Entrenamiento{% endblock %}
+
+{% block nav_title %}Sesiones de Entrenamiento{% endblock %}
+{% block nav_tabs %}
+
+
+<!-- Should be doing this based on the current logged user -->
+<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
+      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
+      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
+      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
+      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
+      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
+      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
+      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
+      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
+      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
+      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
+      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
+    </ul>
+  </div>
+</li>
+<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
+  <div class="collapsible-body">
+    <ul>
+      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
+      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
+    </ul>
+  </div>
+</li>
+{% endblock nav_tabs %}
+
+{% block content %}
+    <main>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
+          <i class="large material-icons">add</i>
+        </a>
+      </div>
+      <!-- Modal Structure -->
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+          <h4>Nueva Sesión</h4>
+          <form action="/administrative/training_sessions/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+              <div class="input-field col s12 m6">
+                <select required id="{{form.topic.id_for_label}}" name="{{form.topic.html_name}}">
+                  <option value="" disabled selected> Seleccione un tema</option>
+                  {% for id, topic in form.topic.field.choices %}
+                  <option value="{{id}}">{{topic}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="input-field col s12 m6">
+                <label for="{{form.date.id_for_label}}">Fecha</label>
+                <input required id="{{form.date.id_for_label}}" name="{{form.date.html_name}}" type="text" class="validate datepicker" max="{{curdate}}">
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12 m6">
+                <label for="{{form.start_time.id_for_label}}">Hora de Inicio</label>
+                <input required id="{{form.start_time.id_for_label}}" name="{{form.start_time.html_name}}" type="text" class="validate timepicker">
+              </div>
+              <div class="input-field col s12 m6">
+                <label for="{{form.end_time.id_for_label}}">Hora de Fin</label>
+                <input required id="{{form.end_time.id_for_label}}" name="{{form.end_time.html_name}}" type="text" class="validate timepicker">
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <label for="{{form.comments.id_for_label}}">Comentarios</label>
+                <textarea required id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate materialize-textarea" data-length="250"></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s12">
+                <label for="{{form.assistants.id_for_label}}" class="active">Asistentes</label>
+                <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
+                {% for choice in form.assistants.field.queryset %}
+                  <div class="input-field"><br>
+                    <label name=assistant_check>
+                      <input type="checkbox" id="{{form.assistants.id_for_label}}" name="{{form.assistants.html_name}}" value="{{choice.id}}">
+                      <span>{{choice}}</span>
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            </div>
+            <br><br><br>
+            <div class="row">
+              <div class="col s12">
+                <div class="file-field input-field">
+                  <div class="btn">
+                    <span>Evidencia</span>
+                    <input type="file" id="{{form.evidence.id_for_label}}" name="{{form.evidence.html_name}}" accept="image/*" multiple>
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Sube una o más fotos de evidencia!">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s12">
+                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                  <i class="material-icons right">send</i>
+                </button>
+              </div>
+            </div>
+
+            <br><br>
+          </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div> -->
+      </div>
+    </main>
+{% endblock content %}
+{% block init_scripts %}
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('.fixed-action-btn').floatingActionButton();
+    $('.timepicker').timepicker();
+    var d = new Date();
+    console.log(d);
+    $('.datepicker').datepicker({
+      minDate:d,
+      format:'dd-mm-yyyy'
+    });
+  });
+
+  function filter_assistants() {
+    // Declare variables
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("search");
+    filter = input.value.toUpperCase();
+    option = document.getElementsByName("assistant_check");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < option.length; i++) {
+      td = option[i].children[1];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          option[i].parentElement.style.display = "";
+        } else {
+          option[i].parentElement.style.display = "none";
+        }
+      }
+    }
+  }
+
+
+</script>
+{% endblock js %}
