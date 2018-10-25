@@ -59,6 +59,8 @@ def production_report(request):
             else:
                 want_for_leaf = form.cleaned_data['want_for_leaf']
 
+            print("\n\n beneficiary: "+ str(form.cleaned_data['beneficiary'][0]))
+
             newProductionReport = ProductionReport(
                                                     beneficiary = form.cleaned_data['beneficiary'][0],
                                                     self_seed = form.cleaned_data['self_seed'],

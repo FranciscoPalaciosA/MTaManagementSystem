@@ -105,7 +105,6 @@ class ProductionReportTest(TestCase):
                                                  bank_name="Banamets")
         beneficiary.save()
         self.client.login(username="user", password="testpassword")
-        #print(Beneficiary.objects.get(id=1))
         response = self.client.post('/administrative/production_report/', {     'beneficiary': [beneficiary.id],
                                                                                 'self_seed': 1,
                                                                                 'self_leaf': 3,
