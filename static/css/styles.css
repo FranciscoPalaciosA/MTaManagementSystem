@@ -5,3 +5,7 @@
 .tabs .tab a, .tabs .tab a.active {
   color: #faaca8;
 }
+
+.pt-0{
+  padding-top: 1px !important;
+}
