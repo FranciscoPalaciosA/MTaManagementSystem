@@ -8,7 +8,7 @@ Modify date: 19/10/2018
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-
+from django.db.models import Sum
 from django.contrib import messages
 from django.utils import timezone
 
@@ -29,6 +29,25 @@ def is_promoter(user):
         return False
     return True
 
+
+def charts(request):
+    datasets = Payment.objects.values('promoter').annotate(Sum('quantity'))
+    promoterids = []
+    names=[]
+    amount = []
+    for obj in datasets:
+        promoterids.append(obj['promoter'])
+        amount.append(obj['quantity__sum'])
+
+    for id in promoterids:
+        names.append(str(Promoter.objects.get(pk=id)))
+    print(names)
+    print(amount)
+    context ={
+        'names': names,
+        'data': amount
+    }
+    return render(request, 'administrative/charts.html', context)
 
 # Create your views here.
 @login_required
