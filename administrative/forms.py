@@ -48,8 +48,12 @@ class CommunityForm(forms.ModelForm):
                   'municipality',
                   'state']
 
-class ProductionReportForm(forms.ModelForm):
-    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects)
+class ProductionReportForm(forms.Form):
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects, required=False)
+    self_seed = forms.DecimalField(required=False)
+    self_leaf = forms.DecimalField(required=False)
+    self_flour = forms.DecimalField(required=False)
+    days_per_month = forms.IntegerField(required=False)
     exch_seed = forms.DecimalField(required=False)
     exch_leaf = forms.DecimalField(required=False)
     want_for_seed = forms.CharField(required=False)
@@ -57,22 +61,6 @@ class ProductionReportForm(forms.ModelForm):
     get_for_seed_qty = forms.CharField(required=False)
     get_for_leaf_qty = forms.CharField(required=False)
     paid = forms.BooleanField(required=False)
-
-    class Meta:
-        model = ProductionReport
-        fields = [  'beneficiary',
-                    'self_seed',
-                    'self_leaf',
-                    'self_flour',
-                    'days_per_month',
-                    'exch_seed',
-                    'want_for_seed',
-                    'exch_leaf',
-                    'want_for_leaf',
-                    'get_for_seed_qty',
-                    'get_for_leaf_qty',
-                    'paid'
-                    ]
 
 class WeeklySessionForm(forms.ModelForm):
     evidence = forms.ImageField(required=False)

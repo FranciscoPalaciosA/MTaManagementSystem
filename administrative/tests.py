@@ -103,7 +103,7 @@ class ProductionReportTest(TestCase):
                                                  contact_phone="4424325671",
                                                  account_number=123456,
                                                  bank_name="Banamets")
-        beneficiary.save()
+
         self.client.login(username="user", password="testpassword")
         response = self.client.post('/administrative/production_report/', {     'beneficiary': [beneficiary.id],
                                                                                 'self_seed': 1,

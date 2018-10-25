@@ -58,11 +58,14 @@ def production_report(request):
                 want_for_leaf = ' '
             else:
                 want_for_leaf = form.cleaned_data['want_for_leaf']
+            if not form.cleaned_data['beneficiary']:
+                beneficiary = Beneficiary.objects.get(id=1)
+            else:
+                beneficiary = form.cleaned_data['beneficiary'][0]
 
-            print("\n\n beneficiary: "+ str(form.cleaned_data['beneficiary'][0]))
 
             newProductionReport = ProductionReport(
-                                                    beneficiary = form.cleaned_data['beneficiary'][0],
+                                                    beneficiary = beneficiary,
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
