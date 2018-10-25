@@ -62,52 +62,236 @@
 {% endblock nav_tabs %}
 
 {% block content %}
-    <main>
+    <main class="">
+      <div class="row">
+        <div class="row valign-wrapper">
+          <div class="col s8">
+            <h2>Contactos</h2>
+          </div>
+        </div>
+        {% if contact_list.admin %}
+        <div class="col s12">
+          <div id="admin" class="card z-depth-3">
+            <div class="card-content pt-0">
+              <div class="row">
+                <h5>Administrativos</h5>
+                <table class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Teléfono</th>
+                      <th>Correo</th>
+                      <th>Insitución</th>
+                      <th>Notas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for contact in contact_list.admin %}
+                      <tr>
+                        <td>
+                          {{contact}}
+                        </td>
+                        <td>
+                          {{contact.phone_number}}
+                        </td>
+                        <td>
+                          {{contact.email}}
+                        </td>
+                        <td>
+                          {{contact.institution}}
+                        </td>
+                        <td>
+                          {{contact.comment}}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% if contact_list.volunteer %}
+        <div class="col s12">
+          <div id="volunteer" class="card z-depth-3">
+            <div class="card-content pt-0">
+              <div class="row">
+                <h5>Voluntarios</h5>
+                <table class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Teléfono</th>
+                      <th>Correo</th>
+                      <th>Insitución</th>
+                      <th>Notas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for contact in contact_list.volunteer %}
+                      <tr>
+                        <td>
+                          {{contact}}
+                        </td>
+                        <td>
+                          {{contact.phone_number}}
+                        </td>
+                        <td>
+                          {{contact.email}}
+                        </td>
+                        <td>
+                          {{contact.institution}}
+                        </td>
+                        <td>
+                          {{contact.comment}}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% if contact_list.ext_cons %}
+        <div class="col s12">
+          <div id="ext_cons" class="card z-depth-3">
+            <div class="card-content pt-0">
+              <div class="row">
+                <h5>Consultores Externos</h5>
+                <table class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Teléfono</th>
+                      <th>Correo</th>
+                      <th>Insitución</th>
+                      <th>Notas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for contact in contact_list.ext_cons %}
+                      <tr>
+                        <td>
+                          {{contact}}
+                        </td>
+                        <td>
+                          {{contact.phone_number}}
+                        </td>
+                        <td>
+                          {{contact.email}}
+                        </td>
+                        <td>
+                          {{contact.institution}}
+                        </td>
+                        <td>
+                          {{contact.comment}}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% if contact_list.simp %}
+        <div class="col s12">
+          <div id="simp" class="card z-depth-3">
+            <div class="card-content pt-0">
+              <div class="row">
+                <h5>Simpatizantes</h5>
+                <table class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Teléfono</th>
+                      <th>Correo</th>
+                      <th>Insitución</th>
+                      <th>Notas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for contact in contact_list.simp %}
+                      <tr>
+                        <td>
+                          {{contact}}
+                        </td>
+                        <td>
+                          {{contact.phone_number}}
+                        </td>
+                        <td>
+                          {{contact.email}}
+                        </td>
+                        <td>
+                          {{contact.institution}}
+                        </td>
+                        <td>
+                          {{contact.comment}}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% if contact_list.other %}
+        <div class="col s12">
+          <div id="other" class="card z-depth-3">
+            <div class="card-content pt-0">
+              <div class="row">
+                <h5>Otros</h5>
+                <table class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Teléfono</th>
+                      <th>Correo</th>
+                      <th>Insitución</th>
+                      <th>Notas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for contact in contact_list.other %}
+                      <tr>
+                        <td>
+                          {{contact}}
+                        </td>
+                        <td>
+                          {{contact.phone_number}}
+                        </td>
+                        <td>
+                          {{contact.email}}
+                        </td>
+                        <td>
+                          {{contact.institution}}
+                        </td>
+                        <td>
+                          {{contact.comment}}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
           <i class="large material-icons">add</i>
         </a>
       </div>
-      <div class="row">
-        <div class="col s12">
-          <h2>Contactos</h2>
-        </div>
-        <div class="col l6 m8 s12">
-        {% if contacts %}
-          <ul class="collection">
-          {% for contact in contacts %}
-            <li class="collection-item">
-              <b>{{contact.first_name}} {{contact.last_name}}</b>
-              <span>({{contact.institution}}) - </span>
-              <span>{{contact.phone_number}}</span>
-            </li>
-          {% endfor %}
-          </ul>
-        {% else %}
-          <p>No hay contactos.</p>
-        {% endif %}
-        </div>
-      </div>
-
-      <!-- Modal Structure -->
-      <div id="modal1" class="modal">
-        <div class="modal-content">
-          <h4>Nuevo Contacto</h4>
-          <form action="/directory/" method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit">
-          </form>
-        </div>
-        <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
-      </div>
     </main>
 {% endblock content %}
-{% block init_scripts %}
-<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
-{% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
