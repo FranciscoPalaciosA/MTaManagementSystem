@@ -194,6 +194,28 @@ class PaymentsTest(TestCase):
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
+    def test_promoter_checks_no_payments(self):
+        promoter = create_promoter()
+        promoter.save()
+        self.client.login(username="test", password="testpassword")
+        response = self.client.get('/administrative/payments/')
+        self.assertEquals(response.status_code, 200)
+
+    def test_promoter_checks_has_payments(self):
+        promoter = create_promoter()
+        promoter.save()
+        self.client.login(username="test", password="testpassword")
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "Pago por cultivo")
+
+
 class NewSavingAccount(TestCase):
     def test_add_new_saving_account_with_one_beneficiary(self):
         """
@@ -274,7 +296,7 @@ class NewSavingAccount(TestCase):
                                                                                 "partner_beneficiary": beneficiary3.id
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        
+
     def test_pay_ok(self):
         user = create_user()
         self.client.login(username="test", password="testpassword")
