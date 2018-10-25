@@ -423,7 +423,7 @@ def add_payment(request):
                                     )
                 new_payment.save()
             else:
-                print(form.errors)
+                messages.warning(request,'No se pudo registrar el pago, intente de nuevo')
             return HttpResponseRedirect('/administrative/payments/')
     return HttpResponseRedirect('/administrative/')
 
@@ -455,9 +455,7 @@ def resolve_alert(request, pk):
         alert.resolved_at=timezone.now()
         alert.updated_at=timezone.now()
         alert.save()
-        return HttpResponseRedirect('/administrative/alerts/')
-    else:
-        return HttpResponseRedirect('/administrative/')
+    return HttpResponseRedirect('/administrative/')
 
 @login_required
 def add_saving_account(request):
@@ -498,42 +496,45 @@ def training_session(request):
     Parameters: request
     Returns: Render
     """
-    if request.method == 'POST':
-        date = request.POST['date']
-        date_obj = datetime.strptime(date, "%d-%m-%Y")
-        data = {
-                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
-                    'topic': request.POST['topic'],
-                    'date': date_obj,
-                    'start_time':request.POST['start_time'],
-                    'end_time':request.POST['end_time'],
-                    'comments': request.POST['comments'],
-                    'assistants': request.POST.getlist("assistants")
-                }
-        form = TrainingForm(data, request.FILES)
-        images = request.FILES.getlist('evidence')
-        if form.is_valid():
-            base_user = BaseUser.objects.get(user=request.user)
-            session = TrainingSession   (
-                                            topic=form.cleaned_data['topic'],
-                                            trainer=base_user,
-                                            date=form.cleaned_data['date'],
-                                            start_time=form.cleaned_data['start_time'],
-                                            end_time=form.cleaned_data['end_time'],
-                                            comments=form.cleaned_data['comments']
-                                        )
-            session.save()
-            assistants = request.POST.getlist("assistants")
-            session.assistants.set(assistants)
-            for evidence in images:
-                ev = TrainingSessionEvidence (
-                                                training_session = session,
-                                                evidence = evidence
+    if(not is_promoter(request.user)):
+        if request.method == 'POST':
+            date = request.POST['date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                        'topic': request.POST['topic'],
+                        'date': date_obj,
+                        'start_time':request.POST['start_time'],
+                        'end_time':request.POST['end_time'],
+                        'comments': request.POST['comments'],
+                        'assistants': request.POST.getlist("assistants")
+                    }
+            form = TrainingForm(data, request.FILES)
+            images = request.FILES.getlist('evidence')
+            if form.is_valid():
+                base_user = BaseUser.objects.get(user=request.user)
+                session = TrainingSession   (
+                                                topic=form.cleaned_data['topic'],
+                                                trainer=base_user,
+                                                date=form.cleaned_data['date'],
+                                                start_time=form.cleaned_data['start_time'],
+                                                end_time=form.cleaned_data['end_time'],
+                                                comments=form.cleaned_data['comments']
                                             )
-                ev.save()
-        else:
-            print(form.errors)
-            messages.warning(request,'Hubo errores en la forma, intente de nuevo')
-    form = TrainingForm()
-    curdate = timezone.now()
-    return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
+                session.save()
+                assistants = request.POST.getlist("assistants")
+                session.assistants.set(assistants)
+                for evidence in images:
+                    ev = TrainingSessionEvidence (
+                                                    training_session = session,
+                                                    evidence = evidence
+                                                )
+                    ev.save()
+            else:
+                print(form.errors)
+                messages.warning(request,'Hubo errores en la forma, intente de nuevo')
+        form = TrainingForm()
+        curdate = timezone.now()
+        return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
+    else:
+        return HttpResponseRedirect('/administrative/')

@@ -193,7 +193,20 @@ class PaymentsTest(TestCase):
         payment.save()
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
-
+        
+    def test_promoter_checks_has_payments(self):
+        promoter = create_promoter()
+        promoter.save()
+        self.client.login(username="test", password="testpassword")
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "Pago por cultivo")
     def test_admin_add_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
@@ -279,13 +292,6 @@ class PaymentsTest(TestCase):
                                             contact_phone_number = "1234512312"
                                             )
         promoter.save()
-        payment = Payment.objects.create(
-                                            promoter=promoter,
-                                            description="Pago por cultivo",
-                                            quantity=1000,
-                                            due_date=timezone.now() + timezone.timedelta(days=1)
-                                        )
-        payment.save()
         response = self.client.post('/administrative/pay/' + str(payment.id) + '/', {'comment':'comment'})
         p = Payment.objects.get(promoter=promoter)
         self.assertEqual(p.comment, 'comment')
