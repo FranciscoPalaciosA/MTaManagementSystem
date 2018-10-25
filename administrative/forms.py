@@ -49,6 +49,7 @@ class CommunityForm(forms.ModelForm):
                   'state']
 
 class ProductionReportForm(forms.ModelForm):
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects)
     exch_seed = forms.DecimalField(required=False)
     exch_leaf = forms.DecimalField(required=False)
     want_for_seed = forms.CharField(required=False)
@@ -59,7 +60,8 @@ class ProductionReportForm(forms.ModelForm):
 
     class Meta:
         model = ProductionReport
-        fields = [  'self_seed',
+        fields = [  'beneficiary',
+                    'self_seed',
                     'self_leaf',
                     'self_flour',
                     'days_per_month',

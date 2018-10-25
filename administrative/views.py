@@ -21,7 +21,7 @@ from datetime import datetime, time
 def is_promoter(user):
     #Description: Check if a user is a promoter
     #Parameter: user
-    #Return: boolean indicating wheter the user is a promoter
+    #Return: boolean indicating whether the user is a promoter
     base = BaseUser.objects.get(pk=user.id)
     try:
         promoter = Promoter.objects.get(pk=base.id)
@@ -33,12 +33,13 @@ def is_promoter(user):
 # Create your views here.
 @login_required
 def index(request):
-    return HttpResponse("Administrative Index")
+    return render(request, 'administrative/index.html')
 
 @login_required
 def production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
+        print("\n\n\nPost: " + str(request.POST))
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0
@@ -59,7 +60,7 @@ def production_report(request):
                 want_for_leaf = form.cleaned_data['want_for_leaf']
 
             newProductionReport = ProductionReport(
-                                                    beneficiary = Beneficiary.objects.get(id = 22),
+                                                    beneficiary = form.cleaned_data['beneficiary'][0],
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
@@ -152,7 +153,7 @@ def load_communities(request):
 def add_beneficiary(request):
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
-        if all([form.is_valid()]):
+        if form.is_valid():
             beneficiary = Beneficiary   (
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
@@ -193,9 +194,12 @@ def add_beneficiary(request):
             print("\n\n\n\n\n")
 
     elif request.method == 'GET':
-        form = BeneficiaryForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_beneficiary.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = BeneficiaryForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_beneficiary.html', context)
 
 @login_required
 def modify_beneficiary(request):
@@ -227,6 +231,7 @@ def modify_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
+
 
 @login_required
 def communities(request):
