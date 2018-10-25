@@ -4,7 +4,7 @@ from profiles.models import *
 
 # Create your models here.
 class Contact(models.Model):
-    type_choices = (('Other', 'Otro'),('Admin', 'Administrativo'), ('Volunteer','Voluntario'),('Ext_Cons','Consultor Externo'),('Simp','Simpatizante'))
+    type_choices = (('Admin', 'Administrativo'), ('Volunteer','Voluntario'),('Ext_Cons','Consultor Externo'),('Simp','Simpatizante'), ('Other', 'Otro'))
 
     first_name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
@@ -18,3 +18,6 @@ class Contact(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name_paternal + " " + self.last_name_maternal

@@ -22,9 +22,9 @@ def is_promoter(user):
     #Description: Check if a user is a promoter
     #Parameter: user
     #Return: boolean indicating wheter the user is a promoter
-    base = BaseUser.objects.get(pk=user.id)
+    base = BaseUser.objects.get(user=user)
     try:
-        promoter = Promoter.objects.get(pk=base.id)
+        promoter = Promoter.objects.get(base_user=base)
     except Promoter.DoesNotExist:
         return False
     return True
@@ -363,27 +363,33 @@ def payments(request, pk=0):
                         }
             return render(request, 'administrative/Admin_payments.html', context)
     elif request.method == 'POST':
-        form = PayForm(request.POST)
-        if form.is_valid():
-            payment = Payment.objects.get(pk=pk)
-            time = timezone.now()
-            payment.pay_date=time
-            payment.comment=form.cleaned_data['comment']
-            payment.updated_at=time
-            payment.save()
+        if not is_promoter(request.user):
+            form = PayForm(request.POST)
+            if form.is_valid():
+                print('paying')
+                payment = Payment.objects.get(pk=pk)
+                time = timezone.now()
+                payment.pay_date=time
+                payment.comment=form.cleaned_data['comment']
+                payment.updated_at=time
+                payment.save()
+                print(payment.comment)
+            else:
+                print('not paying')
+                messages.warning(request,'Favor de llenar los campos.')
+            upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
+            past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
+            curdate = timezone.now()
+            form = PayForm()
+            context = {
+                        'upcoming_payments': upcoming_payments,
+                        'past_payments': past_payments,
+                        'curdate':curdate,
+                        'form':form
+                        }
+            return render(request, 'administrative/Admin_payments.html', context)
         else:
-            messages.warning(request,'Favor de llenar los campos.')
-        upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
-        past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
-        curdate = timezone.now()
-        form = PayForm()
-        context = {
-                    'upcoming_payments': upcoming_payments,
-                    'past_payments': past_payments,
-                    'curdate':curdate,
-                    'form':form
-                    }
-        return render(request, 'administrative/Admin_payments.html', context)
+            return HttpResponseRedirect('/administrative/')
 
 @login_required
 def get_payment(request, pk):
@@ -405,17 +411,21 @@ def get_payment(request, pk):
 
 @login_required
 def add_payment(request):
-    if request.method == 'POST':
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            new_payment = Payment(
-                                promoter=form.cleaned_data['promoter'],
-                                description=form.cleaned_data['description'],
-                                quantity=form.cleaned_data['quantity'],
-                                due_date=form.cleaned_data['due_date']
-                                )
-            new_payment.save()
+    if not is_promoter(request.user):
+        if request.method == 'POST':
+            form = PaymentForm(request.POST)
+            if form.is_valid():
+                new_payment = Payment(
+                                    promoter=form.cleaned_data['promoter'],
+                                    description=form.cleaned_data['description'],
+                                    quantity=form.cleaned_data['quantity'],
+                                    due_date=form.cleaned_data['due_date']
+                                    )
+                new_payment.save()
+            else:
+                print(form.errors)
             return HttpResponseRedirect('/administrative/payments/')
+    return HttpResponseRedirect('/administrative/')
 
 @login_required
 def alert_list(request):
@@ -424,10 +434,13 @@ def alert_list(request):
     Parameters: request
     Return: Render
     """
-    if request.method == 'GET':
-        solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
-        pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
-        return render(request, 'administrative/alert_list.html', {'solved_alerts': solved_alerts, 'pending_alerts': pending_alerts})
+    if not is_promoter(request.user):
+        if request.method == 'GET':
+            solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
+            pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
+            return render(request, 'administrative/alert_list.html', {'solved_alerts': solved_alerts, 'pending_alerts': pending_alerts})
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def resolve_alert(request, pk):
@@ -437,11 +450,14 @@ def resolve_alert(request, pk):
     Parameters: pk -> id of the alert to be modified
     Returns: HttpResponseRedirect to the alerts page
     """
-    alert = HelpAlert.objects.get(pk=pk)
-    alert.resolved_at=timezone.now()
-    alert.updated_at=timezone.now()
-    alert.save()
-    return HttpResponseRedirect('/administrative/alerts/')
+    if not is_promoter(request.user):
+        alert = HelpAlert.objects.get(pk=pk)
+        alert.resolved_at=timezone.now()
+        alert.updated_at=timezone.now()
+        alert.save()
+        return HttpResponseRedirect('/administrative/alerts/')
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def add_saving_account(request):
