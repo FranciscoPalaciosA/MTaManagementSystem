@@ -194,6 +194,131 @@ class PaymentsTest(TestCase):
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
+    def test_admin_add_payment(self):
+        user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        self.client.login(username="test_1", password="testpassword")
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        data = {
+            'promoter': promoter.id,
+            'description': 'razon de pago',
+            'quantity': 1000,
+            'due_date': '10/10/2018'
+        }
+        response = self.client.post('/administrative/add_payment/', data)
+        self.assertRedirects(response, '/administrative/payments/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        payment = Payment.objects.filter(promoter=promoter)[0]
+        self.assertEquals(payment.description,'razon de pago' )
+
+    def test_promoter_add_payment(self):
+        user = create_promoter()
+        self.client.login(username="test", password="testpassword")
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        data = {
+            'promoter': promoter.id,
+            'description': 'razon de pago',
+            'quantity': 1000,
+            'due_date': '10/10/2018'
+        }
+        response = self.client.post('/administrative/add_payment/', data)
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        payment = Payment.objects.filter(promoter=promoter)
+        self.assertEquals(len(payment),0 )
+
+    def test_admin_resolve_payment(self):
+        user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        self.client.login(username="test_1", password="testpassword")
+
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+        response = self.client.post('/administrative/pay/' + str(payment.id) + '/', {'comment':'comment'})
+        p = Payment.objects.get(promoter=promoter)
+        self.assertEqual(p.comment, 'comment')
+
+    def test_promoter_resolve_payment(self):
+        prom = create_promoter()
+        prom.save()
+        self.client.login(username="test", password="testpassword")
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+        response = self.client.post('/administrative/pay/' + str(payment.id) + '/', {'comment':'comment'})
+        p = Payment.objects.get(promoter=promoter)
+        #Payment did not update
+        self.assertEqual(p.comment, '')
+
 class NewSavingAccount(TestCase):
     def test_add_new_saving_account_with_one_beneficiary(self):
         """
@@ -274,7 +399,7 @@ class NewSavingAccount(TestCase):
                                                                                 "partner_beneficiary": beneficiary3.id
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        
+
     def test_pay_ok(self):
         user = create_user()
         self.client.login(username="test", password="testpassword")
