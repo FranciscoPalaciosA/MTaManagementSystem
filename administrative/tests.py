@@ -113,6 +113,186 @@ class ProductionReportTest(TestCase):
                                                                              })
 
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        production_rep = ProductionReport.objects.get(beneficiary=beneficiary)
+        self.assertEqual(production_rep.beneficiary, beneficiary)
+
+    def test_new_report_complete(self):
+        """
+        Creating a new production report with correct information. Expecting a redirect to /administrative/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+
+        self.client.login(username="user", password="testpassword")
+        response = self.client.post('/administrative/production_report/', {     'beneficiary': [beneficiary.id],
+                                                                                'self_seed': 1,
+                                                                                'self_leaf': 3,
+                                                                                'self_flour': 4,
+                                                                                'days_per_month': 15,
+                                                                                'exch_leaf': 5,
+                                                                                'exch_sead': 7,
+                                                                                'want_for_leaf': 'Efectivo',
+                                                                                'want_for_seed': 'Efectivo'
+                                                                             })
+
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        production_rep = ProductionReport.objects.get(beneficiary=beneficiary)
+        self.assertEqual(production_rep.want_for_leaf, 'Efectivo')
+        self.assertEqual(production_rep.want_for_seed, 'Efectivo')
+
+    def test_new_report_complete_as_assistant(self):
+        """
+        Creating a new production report with correct information. Expecting a redirect to /administrative/
+        """
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        create_user_for_group('Assistant')
+        self.client.login(username="Assistant", password="testpassword")
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+
+        self.client.login(username="user", password="testpassword")
+        response = self.client.get('/administrative/production_report/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_new_report_complete_as_Field_Tech(self):
+        """
+        Creating a new production report with correct information. Expecting a redirect to /administrative/
+        """
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        create_user_for_group('FieldTech')
+        self.client.login(username="FieldTech", password="testpassword")
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+
+        self.client.login(username="user", password="testpassword")
+        response = self.client.get('/administrative/production_report/')
+        self.assertEqual(response.status_code, 302)
+
+
+    def test_new_report_complete_as_Director(self):
+        """
+        Creating a new production report with correct information. Expecting a redirect to /administrative/
+        """
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        create_user_for_group('Director')
+        self.client.login(username="Director", password="testpassword")
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+
+        self.client.login(username="user", password="testpassword")
+        response = self.client.get('/administrative/production_report/')
+        self.assertEqual(response.status_code, 302)
 
 class BeneficiaryTest(TestCase):
     def test_add_program_to_beneficiary(self):

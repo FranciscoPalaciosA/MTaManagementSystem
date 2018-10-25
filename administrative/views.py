@@ -39,7 +39,6 @@ def index(request):
 def production_report(request):
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
-        print("\n\n\nPost: " + str(request.POST))
         if form.is_valid():
             if not form.cleaned_data['exch_seed']:
                 exch_seed = 0
@@ -85,17 +84,21 @@ def production_report(request):
             print(form.errors)
             print("\n\n\n\n\n")
     elif request.method == 'GET':
-        production_report_form = ProductionReportForm()
-        context = {'production_report_form': production_report_form}
-        return render(request, 'administrative/Production_Report.html', context)
+        if is_promoter(request.user):
+            print("\n\n IS PROMOTER")
+            production_report_form = ProductionReportForm()
+            context = {'production_report_form': production_report_form}
+            return render(request, 'administrative/Production_Report.html', context)
+        else:
+            return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required
 def production_report_list(request):
-    if request.method == 'GET':
-        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
-        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
-        paid_reports = ProductionReport.objects.filter(paid=True)
-        return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+    #if request.method == 'GET':
+    review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
+    pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
+    paid_reports = ProductionReport.objects.filter(paid=True)
+    return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 @login_required
 def administrative_production_report(request, pk):
