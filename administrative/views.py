@@ -12,6 +12,7 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.utils import timezone
 
+
 from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
@@ -30,20 +31,21 @@ def is_promoter(user):
     return True
 
 
+def queryset_to_data(q, key):
+    data=[]
+    for e in q:
+        data.append(e[key])
+    return data
+
 def charts(request):
     datasets = Payment.objects.values('promoter').annotate(Sum('quantity'))
-    promoterids = []
     names=[]
-    amount = []
-    for obj in datasets:
-        promoterids.append(obj['promoter'])
-        amount.append(obj['quantity__sum'])
-
+    promoterids = queryset_to_data(datasets.values('promoter'), 'promoter')
+    amount = queryset_to_data(datasets.values('quantity__sum'), 'quantity__sum')
     for id in promoterids:
         names.append(str(Promoter.objects.get(pk=id)))
-    print(names)
-    print(amount)
-    context ={
+
+    context = {
         'names': names,
         'data': amount
     }
