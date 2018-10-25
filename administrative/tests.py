@@ -60,23 +60,61 @@ def create_user_for_group(group_name):
     base_user.save()
     return base_user
 
-#class ProductionReportTest(TestCase):
-#    def test_new_report_only_selfconsumption(self):
-#        """
-#        Creating a new production report with correct information. Expecting a redirect to /administrative/
-#        """
-#        create_database()
-#        self.client.login(username="user", password="testpassword")
-#        #print(Beneficiary.objects.get(id=1))
-#        response = self.client.post('/administrative/production_report/', {     'beneficiary': Beneficiary.objects.get(id=1),
-#                                                                                'self_seed': 1,
-#                                                                                'self_leaf': 3,
-#                                                                                'self_flour': 4,
-#                                                                                'days_per_month': 15
-#                                                                             })
-#
-#        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-#
+class ProductionReportTest(TestCase):
+    def test_new_report_only_selfconsumption(self):
+        """
+        Creating a new production report with correct information. Expecting a redirect to /administrative/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+        beneficiary.save()
+        self.client.login(username="user", password="testpassword")
+        #print(Beneficiary.objects.get(id=1))
+        response = self.client.post('/administrative/production_report/', {     'beneficiary': [beneficiary.id],
+                                                                                'self_seed': 1,
+                                                                                'self_leaf': 3,
+                                                                                'self_flour': 4,
+                                                                                'days_per_month': 15
+                                                                             })
+
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
 class BeneficiaryTest(TestCase):
     def test_add_program_to_beneficiary(self):
         """
@@ -555,15 +593,16 @@ class BeneficiaryTest(TestCase):
                                                                                 'program': [program2.id]
                                                                              })
         self.assertRedirects(response, '/administrative/beneficiaries/'+str(beneficiary.id), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-    #def test_add_new_beneficiary_as_promoter(self):
-    #    user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-    #    base_user_promoter = BaseUser.objects.create(user=user_promoter, name="name",
-    #                                                    last_name_paternal="last_name_paternal",
-    #                                                    last_name_maternal="last_name_maternal",
-    #                                                    phone_number="phone_number",
-    #                                                    email="email@email.com",
-    #                                                    address="address")
-    #    base_user_promoter.save()
-    #    self.client.login(username="promoter", password="testpassword")
-    #    response = self.client.get('/administrative/new_beneficiary/')
-    #    self.assertRedirects(response, '/administrative/', status_code=200, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_add_new_beneficiary_as_promoter(self):
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="name",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+        self.client.login(username="promoter", password="testpassword")
+        response = self.client.get('/administrative/new_beneficiary/')
+        self.assertEqual(response.status_code, 200)
