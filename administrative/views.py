@@ -59,7 +59,7 @@ def production_report(request):
                 want_for_leaf = form.cleaned_data['want_for_leaf']
 
             newProductionReport = ProductionReport(
-                                                    beneficiary = Beneficiary.objects.get(id = 22),
+                                                    beneficiary = Beneficiary.objects.get(id = 3),
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
@@ -496,12 +496,11 @@ def training_session(request):
     Parameters: request
     Returns: Render
     """
-    if(not is_promoter(request.user)):
+    if not is_promoter(request.user):
         if request.method == 'POST':
             date = request.POST['date']
             date_obj = datetime.strptime(date, "%d-%m-%Y")
             data = {
-                        'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                         'topic': request.POST['topic'],
                         'date': date_obj,
                         'start_time':request.POST['start_time'],
