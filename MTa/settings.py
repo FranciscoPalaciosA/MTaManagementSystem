@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^2@a36%#sgg7^j7lj1h7@k(ar5dq!h$mzjzy8wte)bizvh^^v8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['104.248.120.225', 'localhost']
 
 
 # Application definition
@@ -81,8 +81,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mtaadmin',
-        'USER': 'mtaadmin1',
-        'PASSWORD': 'mtaAdmin',
+        'USER': 'mta',
+        'PASSWORD': 'i57400GsKill16@',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -132,4 +132,4 @@ STATICFILES_DIRS = [
 ]
 
 
-LOGIN_REDIRECT_URL = '/directory/'
+LOGIN_REDIRECT_URL = '/administrative/'
