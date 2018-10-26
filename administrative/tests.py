@@ -6,6 +6,45 @@ from administrative.models import *
 from profiles.models import *
 import datetime
 
+def create_user():
+    user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
+    base_user = BaseUser.objects.create(user=user, name="name",
+                                        last_name_paternal="last_name_paternal",
+                                        last_name_maternal="last_name_maternal",
+                                        phone_number="phone_number",
+                                        email="email@email.com",
+                                        address="address")
+    base_user.save()
+    return base_user
+
+def create_promoter():
+    base_user = create_user()
+    promoter = Promoter.objects.create(base_user=base_user,
+                                        contact_name = "Contacto",
+                                        contact_phone_number = "1234512312"
+                                        )
+    return promoter
+
+def create_program():
+    program = Program.objects.create(name="Productores")
+    return program
+
+def create_beneficiary():
+    beneficiary = Beneficiary.objects.create(id=1,
+                                             name="Rodolfo",
+                                             last_name_paternal="Rodriguez",
+                                             last_name_maternal="Rocha",
+                                             state="Querétaro",
+                                             municipality="Peñamiller",
+                                             community_name="Río Blanco",
+                                             num_of_family_beneficiaries=16,
+                                             contact_name="Juan",
+                                             contact_phone="4424325671",
+                                             account_number=123456,
+                                             bank_name="Banamets")
+    beneficiary.save()
+    return beneficiary
+
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
         """
@@ -70,10 +109,10 @@ class BeneficiariestTest(TestCase):
                                                                              })
         self.assertRedirects(response, '/administrative/beneficiary/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-class CommunitiesTests(TestCase):
-    def test_new_community(self):
+class CommunityTests(TestCase):
+    def test_administrative_adds_new_community(self):
         """
-        Creating a new community. Expecting a redirect to /administrative/communities/
+        An administrative registers a new community
 
         """
         user = create_user()
@@ -83,11 +122,14 @@ class CommunitiesTests(TestCase):
                                                                      'state': 'Querétaro',
                                                                     })
         self.assertRedirects(response, '/administrative/communities/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        community = Community.objects.get(name='Río Blanco')
+        self.assertEqual(community.municipality, 'Peñamiller')
+        self.assertEqual(community.state, 'Querétaro')
 
 class WeeklySessionTests(TestCase):
-    def test_add_new_weekly_session(self):
+    def test_promoter_adds_new_weekly_session(self):
         """
-        Register a weekly session
+        Promoter registers a weekly session
         """
         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
@@ -149,7 +191,150 @@ class WeeklySessionTests(TestCase):
         self.assertEqual(weekly_session.end_time, '5:00 PM')
         self.assertEqual(assistant, beneficiary)
 
-class PaymentsTest(TestCase):
+    def test_promoter_checks_log_has_no_past_sessions(self):
+        """
+        Promoter checks previous weekly sessions buy there are none
+        """
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        self.client.login(username="promoter", password="testpassword")
+
+        response = self.client.get('/administrative/weekly_sessions/')
+        self.assertContains(response, "No hay sesiones pasadas")
+
+    def test_promoter_checks_log_has_past_sessions(self):
+        """
+        Promoter checks previous weekly sessions and there are
+        """
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+        beneficiary.save()
+
+        weekly_session = WeeklySession.objects.create(date = datetime.date.today(),
+                                                      type = "session_type",
+                                                      topic = "session_topic",
+                                                      start_time = "4:00 PM",
+                                                      end_time = "5:00 PM",
+                                                      promoter = promoter)
+        weekly_session.assistants.add(beneficiary)
+
+        self.client.login(username="promoter", password="testpassword")
+
+        response = self.client.get('/administrative/weekly_sessions/')
+        self.assertContains(response, "session_type")
+        self.assertContains(response, "session_topic")
+
+    def test_administrative_checks_log_has_no_past_sessions(self):
+        """
+        An administrative checks previous weekly sessions buy there are none
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        self.client.login(username="user", password="testpassword")
+
+        response = self.client.get('/administrative/weekly_sessions/')
+        self.assertContains(response, "No hay sesiones pasadas")
+
+    def test_promoter_checks_log_has_past_sessions(self):
+        """
+        An administrative check previous weekly sessions and there are
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4424325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+        beneficiary.save()
+
+        weekly_session = WeeklySession.objects.create(date = datetime.date.today(),
+                                                      type = "session_type",
+                                                      topic = "session_topic",
+                                                      start_time = "4:00 PM",
+                                                      end_time = "5:00 PM",
+                                                      promoter = promoter)
+        weekly_session.assistants.add(beneficiary)
+
+        self.client.login(username="user", password="testpassword")
+
+        response = self.client.get('/administrative/weekly_sessions/')
+        self.assertContains(response, "session_type")
+        self.assertContains(response, "session_topic")
+
+class PaymentsTests(TestCase):
     def test_admin_no_pending_payments(self):
         """
         Admin checks pending payments buy there are none to be paid.
@@ -202,6 +387,7 @@ class PaymentsTest(TestCase):
         payment.save()
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
+
     def test_admin_add_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
