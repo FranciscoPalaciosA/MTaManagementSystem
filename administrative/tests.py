@@ -200,36 +200,81 @@ class NewSavingAccount(TestCase):
         Creating a new sabing account. Expecting a redirect to /administrative/
 
         """
-        user = create_user()
+
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+
         self.client.login(username="test", password="testpassword")
-        beneficiary = Beneficiary.objects.create(promoter_id=1,
-                                                 name="Rodolfo",
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
                                                  last_name_paternal="Rodriguez",
                                                  last_name_maternal="Rocha",
                                                  num_of_family_beneficiaries=16,
                                                  contact_name="Juan",
                                                  contact_phone="4325671",
                                                  account_number=123456,
-                                                 bank_name="Banamets")
-        beneficary.save()
+                                                 bank_name="Banamets",
+                                                 promoter = promoter)
+        beneficiary.save()
+        self.client.login(username="user", password="testpassword")
         response = self.client.post('/administrative/new_saving_account/', {'name': 'beneTest',
                                                                                 "name": "testAccount",
                                                                                 "community": "testCommunity",
                                                                                 "municipality": "testMunicipality",
                                                                                 "location": "testLocation",
-                                                                                "list_of_beneficiaries": beneficiary.id,
-                                                                                "total saved ammount": "222222",
-                                                                                "president_beneficiary": beneficiary.id,
-                                                                                "treasurer_beneficiary": beneficiary.id,
-                                                                                "partner_beneficiary": beneficiary.id
+                                                                                "list_of_beneficiaries":[beneficiary.id],
+                                                                                "total_saved_amount": 222222,
+                                                                                "president_beneficiary": [beneficiary.id],
+                                                                                "treasurer_beneficiary": [beneficiary.id],
+                                                                                "partner_beneficiary": [beneficiary.id]
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
     def test_add_new_saving_account_with_multiple_beneficiaries(self):
         """
         Creating a new sabing account. Expecting a redirect to /administrative/
 
         """
-        user = create_user()
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
         self.client.login(username="test", password="testpassword")
         beneficiary1 = Beneficiary.objects.create(
                                                  name="Rodolfo",
@@ -239,7 +284,8 @@ class NewSavingAccount(TestCase):
                                                  contact_name="Juan",
                                                  contact_phone="4325671",
                                                  account_number=123456,
-                                                 bank_name="Banamets")
+                                                 bank_name="Banamets",
+                                                 promoter=promoter)
         beneficiary1.save()
         beneficiary2 = Beneficiary.objects.create(
                                                  name="Juan",
@@ -249,7 +295,8 @@ class NewSavingAccount(TestCase):
                                                  contact_name="José",
                                                  contact_phone="4325671",
                                                  account_number=123456,
-                                                 bank_name="Bankomer")
+                                                 bank_name="Bankomer",
+                                                 promoter=promoter)
         beneficiary2.save()
         beneficiary3 = Beneficiary.objects.create(
                                                  name="Jose",
@@ -259,22 +306,26 @@ class NewSavingAccount(TestCase):
                                                  contact_name="José",
                                                  contact_phone="4325671",
                                                  account_number=123456,
-                                                 bank_name="Bankomer")
+                                                 bank_name="Bankomer",
+                                                 promoter=promoter)
         beneficiary3.save()
         beneficiaries = [beneficiary1.id,beneficiary2.id,beneficiary3.id]
+        self.client.login(username="user", password="testpassword")
         response = self.client.post('/administrative/new_saving_account/', {'name': 'beneTest',
                                                                                 "name": "testAccount",
                                                                                 "community": "testCommunity",
                                                                                 "municipality": "testMunicipality",
                                                                                 "location": "testLocation",
                                                                                 "list_of_beneficiaries": beneficiaries,
-                                                                                "total saved ammount": "222222",
-                                                                                "president_beneficiary": beneficiary1.id,
-                                                                                "treasurer_beneficiary": beneficiary2.id,
-                                                                                "partner_beneficiary": beneficiary3.id
+                                                                                "total_saved_amount": 222222,
+                                                                                "president_beneficiary":[beneficiary1.id],
+                                                                                "treasurer_beneficiary": [beneficiary2.id],
+                                                                                "partner_beneficiary": [beneficiary3.id]
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         
+
+class TestPay(TestCase):
     def test_pay_ok(self):
         user = create_user()
         self.client.login(username="test", password="testpassword")
@@ -308,5 +359,4 @@ class TrainingTests(TestCase):
     def test_new_training(self):
         user = create_user()
         self.client.login(username="test", password="testpassword")
-         beneficiary = create_beneficiary()
-
+        beneficiary = create_beneficiary()
