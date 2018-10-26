@@ -4,46 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from administrative.models import *
 from profiles.models import *
-
-def create_user():
-    user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
-    base_user = BaseUser.objects.create(user=user, name="name",
-                                        last_name_paternal="last_name_paternal",
-                                        last_name_maternal="last_name_maternal",
-                                        phone_number="phone_number",
-                                        email="email@email.com",
-                                        address="address")
-    base_user.save()
-    return base_user
-
-def create_promoter():
-    base_user = create_user()
-    promoter = Promoter.objects.create(base_user=base_user,
-                                        contact_name = "Contacto",
-                                        contact_phone_number = "1234512312"
-                                        )
-    return promoter
-
-def create_program():
-    program = Program.objects.create(name="Productores")
-    return program
-
-def create_beneficiary():
-    beneficiary = Beneficiary.objects.create(id=1,
-                                             name="Rodolfo",
-                                             last_name_paternal="Rodriguez",
-                                             last_name_maternal="Rocha",
-                                             state="Querétaro",
-                                             municipality="Peñamiller",
-                                             community_name="Río Blanco",
-                                             num_of_family_beneficiaries=16,
-                                             contact_name="Juan",
-                                             contact_phone="4424325671",
-                                             account_number=123456,
-                                             bank_name="Banamets")
-    beneficiary.save()
-    return beneficiary
-
+import datetime
 
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
@@ -128,31 +89,65 @@ class WeeklySessionTests(TestCase):
         """
         Register a weekly session
         """
-        user = create_user()
-        promoter = Promoter.objects.create(base_user=user,
-                                           contact_name="Juan",
-                                           contact_phone_number="44222345678")
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
         promoter.save()
 
-        beneficiary = Beneficiary.objects.create(promoter_id=1,
-                                                 name="Rodolfo",
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
                                                  last_name_paternal="Rodriguez",
                                                  last_name_maternal="Rocha",
+                                                 community=community,
+                                                 promoter=promoter,
                                                  num_of_family_beneficiaries=16,
                                                  contact_name="Juan",
-                                                 contact_phone="4325671",
+                                                 contact_phone="4424325671",
                                                  account_number=123456,
                                                  bank_name="Banamets")
         beneficiary.save()
 
-        self.client.login(username="test", password="testpassword")
-        response = self.client.post('/administrative/weekly_sessions/', {'type': 'session_type',
+        self.client.login(username="promoter", password="testpassword")
+
+        response = self.client.post('/administrative/weekly_sessions/', {'date': datetime.date.today().strftime('%d-%m-%Y'),
+                                                                         'type': 'session_type',
                                                                          'topic': 'session_topic',
                                                                          'assistants': 1,
                                                                          'start_time': '4:00 PM',
                                                                          'end_time': '5:00 PM',
-                                                                         'promoter_id': 1})
+                                                                         'promoter_id': [promoter.id]})
         self.assertRedirects(response, '/administrative/weekly_sessions/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+        weekly_session = WeeklySession.objects.get(promoter=promoter)
+        assistant = weekly_session.assistants.get()
+
+        self.assertEqual(weekly_session.type, 'session_type')
+        self.assertEqual(weekly_session.topic, 'session_topic')
+        self.assertEqual(weekly_session.start_time, '4:00 PM')
+        self.assertEqual(weekly_session.end_time, '5:00 PM')
+        self.assertEqual(assistant, beneficiary)
 
 class PaymentsTest(TestCase):
     def test_admin_no_pending_payments(self):
@@ -193,7 +188,7 @@ class PaymentsTest(TestCase):
         payment.save()
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
-        
+
     def test_promoter_checks_has_payments(self):
         promoter = create_promoter()
         promoter.save()

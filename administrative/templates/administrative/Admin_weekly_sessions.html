@@ -98,7 +98,7 @@
                         <td>{{ session.promoter }}</td>
                         <td>{{ session.type }}</td>
                         <td>{{ session.topic }}</td>
-                        <td>{{ session.created_at|date:"d / m / Y" }}</td>
+                        <td>{{ session.date|date:"d / m / Y" }}</td>
                         <td>{{ session.assistant_count }}</td>
                         <td>
                           <a class="modal-trigger " onclick="ajaxCall({{session.id}})">
