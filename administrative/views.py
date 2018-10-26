@@ -21,10 +21,10 @@ from datetime import datetime, time
 def is_promoter(user):
     #Description: Check if a user is a promoter
     #Parameter: user
-    #Return: boolean indicating whether the user is a promoter
-    base = BaseUser.objects.get(pk=user.id)
+    #Return: boolean indicating wheter the user is a promoter
+    base = BaseUser.objects.get(user=user)
     try:
-        promoter = Promoter.objects.get(pk=base.id)
+        promoter = Promoter.objects.get(base_user=base)
     except Promoter.DoesNotExist:
         return False
     return True
@@ -94,11 +94,12 @@ def production_report(request):
 
 @login_required
 def production_report_list(request):
-    #if request.method == 'GET':
-    review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
-    pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
-    paid_reports = ProductionReport.objects.filter(paid=True)
-    return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+    if request.method == 'GET':
+        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
+        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
+        paid_reports = ProductionReport.objects.filter(paid=True)
+        return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+
 
 @login_required
 def administrative_production_report(request, pk):
@@ -376,27 +377,33 @@ def payments(request, pk=0):
                         }
             return render(request, 'administrative/Admin_payments.html', context)
     elif request.method == 'POST':
-        form = PayForm(request.POST)
-        if form.is_valid():
-            payment = Payment.objects.get(pk=pk)
-            time = timezone.now()
-            payment.pay_date=time
-            payment.comment=form.cleaned_data['comment']
-            payment.updated_at=time
-            payment.save()
+        if not is_promoter(request.user):
+            form = PayForm(request.POST)
+            if form.is_valid():
+                print('paying')
+                payment = Payment.objects.get(pk=pk)
+                time = timezone.now()
+                payment.pay_date=time
+                payment.comment=form.cleaned_data['comment']
+                payment.updated_at=time
+                payment.save()
+                print(payment.comment)
+            else:
+                print('not paying')
+                messages.warning(request,'Favor de llenar los campos.')
+            upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
+            past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
+            curdate = timezone.now()
+            form = PayForm()
+            context = {
+                        'upcoming_payments': upcoming_payments,
+                        'past_payments': past_payments,
+                        'curdate':curdate,
+                        'form':form
+                        }
+            return render(request, 'administrative/Admin_payments.html', context)
         else:
-            messages.warning(request,'Favor de llenar los campos.')
-        upcoming_payments = Payment.objects.filter(pay_date__isnull=True).order_by('due_date')
-        past_payments = Payment.objects.filter(pay_date__isnull=False).order_by('-due_date')
-        curdate = timezone.now()
-        form = PayForm()
-        context = {
-                    'upcoming_payments': upcoming_payments,
-                    'past_payments': past_payments,
-                    'curdate':curdate,
-                    'form':form
-                    }
-        return render(request, 'administrative/Admin_payments.html', context)
+            return HttpResponseRedirect('/administrative/')
 
 @login_required
 def get_payment(request, pk):
@@ -418,17 +425,21 @@ def get_payment(request, pk):
 
 @login_required
 def add_payment(request):
-    if request.method == 'POST':
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            new_payment = Payment(
-                                promoter=form.cleaned_data['promoter'],
-                                description=form.cleaned_data['description'],
-                                quantity=form.cleaned_data['quantity'],
-                                due_date=form.cleaned_data['due_date']
-                                )
-            new_payment.save()
+    if not is_promoter(request.user):
+        if request.method == 'POST':
+            form = PaymentForm(request.POST)
+            if form.is_valid():
+                new_payment = Payment(
+                                    promoter=form.cleaned_data['promoter'],
+                                    description=form.cleaned_data['description'],
+                                    quantity=form.cleaned_data['quantity'],
+                                    due_date=form.cleaned_data['due_date']
+                                    )
+                new_payment.save()
+            else:
+                messages.warning(request,'No se pudo registrar el pago, intente de nuevo')
             return HttpResponseRedirect('/administrative/payments/')
+    return HttpResponseRedirect('/administrative/')
 
 @login_required
 def alert_list(request):
@@ -437,10 +448,13 @@ def alert_list(request):
     Parameters: request
     Return: Render
     """
-    if request.method == 'GET':
-        solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
-        pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
-        return render(request, 'administrative/alert_list.html', {'solved_alerts': solved_alerts, 'pending_alerts': pending_alerts})
+    if not is_promoter(request.user):
+        if request.method == 'GET':
+            solved_alerts = HelpAlert.objects.exclude(resolved_at__isnull=True)
+            pending_alerts = HelpAlert.objects.filter(resolved_at__isnull=True)
+            return render(request, 'administrative/alert_list.html', {'solved_alerts': solved_alerts, 'pending_alerts': pending_alerts})
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def resolve_alert(request, pk):
@@ -450,11 +464,12 @@ def resolve_alert(request, pk):
     Parameters: pk -> id of the alert to be modified
     Returns: HttpResponseRedirect to the alerts page
     """
-    alert = HelpAlert.objects.get(pk=pk)
-    alert.resolved_at=timezone.now()
-    alert.updated_at=timezone.now()
-    alert.save()
-    return HttpResponseRedirect('/administrative/alerts/')
+    if not is_promoter(request.user):
+        alert = HelpAlert.objects.get(pk=pk)
+        alert.resolved_at=timezone.now()
+        alert.updated_at=timezone.now()
+        alert.save()
+    return HttpResponseRedirect('/administrative/')
 
 @login_required
 def add_saving_account(request):
@@ -495,42 +510,45 @@ def training_session(request):
     Parameters: request
     Returns: Render
     """
-    if request.method == 'POST':
-        date = request.POST['date']
-        date_obj = datetime.strptime(date, "%d-%m-%Y")
-        data = {
-                    'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
-                    'topic': request.POST['topic'],
-                    'date': date_obj,
-                    'start_time':request.POST['start_time'],
-                    'end_time':request.POST['end_time'],
-                    'comments': request.POST['comments'],
-                    'assistants': request.POST.getlist("assistants")
-                }
-        form = TrainingForm(data, request.FILES)
-        images = request.FILES.getlist('evidence')
-        if form.is_valid():
-            base_user = BaseUser.objects.get(user=request.user)
-            session = TrainingSession   (
-                                            topic=form.cleaned_data['topic'],
-                                            trainer=base_user,
-                                            date=form.cleaned_data['date'],
-                                            start_time=form.cleaned_data['start_time'],
-                                            end_time=form.cleaned_data['end_time'],
-                                            comments=form.cleaned_data['comments']
-                                        )
-            session.save()
-            assistants = request.POST.getlist("assistants")
-            session.assistants.set(assistants)
-            for evidence in images:
-                ev = TrainingSessionEvidence (
-                                                training_session = session,
-                                                evidence = evidence
+    if(not is_promoter(request.user)):
+        if request.method == 'POST':
+            date = request.POST['date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+                        'topic': request.POST['topic'],
+                        'date': date_obj,
+                        'start_time':request.POST['start_time'],
+                        'end_time':request.POST['end_time'],
+                        'comments': request.POST['comments'],
+                        'assistants': request.POST.getlist("assistants")
+                    }
+            form = TrainingForm(data, request.FILES)
+            images = request.FILES.getlist('evidence')
+            if form.is_valid():
+                base_user = BaseUser.objects.get(user=request.user)
+                session = TrainingSession   (
+                                                topic=form.cleaned_data['topic'],
+                                                trainer=base_user,
+                                                date=form.cleaned_data['date'],
+                                                start_time=form.cleaned_data['start_time'],
+                                                end_time=form.cleaned_data['end_time'],
+                                                comments=form.cleaned_data['comments']
                                             )
-                ev.save()
-        else:
-            print(form.errors)
-            messages.warning(request,'Hubo errores en la forma, intente de nuevo')
-    form = TrainingForm()
-    curdate = timezone.now()
-    return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
+                session.save()
+                assistants = request.POST.getlist("assistants")
+                session.assistants.set(assistants)
+                for evidence in images:
+                    ev = TrainingSessionEvidence (
+                                                    training_session = session,
+                                                    evidence = evidence
+                                                )
+                    ev.save()
+            else:
+                print(form.errors)
+                messages.warning(request,'Hubo errores en la forma, intente de nuevo')
+        form = TrainingForm()
+        curdate = timezone.now()
+        return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
+    else:
+        return HttpResponseRedirect('/administrative/')
