@@ -485,9 +485,9 @@ def add_saving_account(request):
                                     municipality=form.cleaned_data['municipality'],
                                     location=form.cleaned_data['location'],
                                     total_saved_amount=form.cleaned_data['total_saved_amount'],
-                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
-                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
-                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary']
                                 )
             saving_account.save()
             saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
@@ -500,9 +500,13 @@ def add_saving_account(request):
             print(form.errors)
             print("-----------------------------")
     elif request.method == 'GET':
-        form = SavingAccountForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_saving_account.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = SavingAccountForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_saving_account.html', context)
+
 
 def training_session(request):
     """

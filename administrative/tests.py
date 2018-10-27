@@ -47,6 +47,7 @@ def create_database():
                                              bank_name="Banamets")
     beneficiary.save()
 
+
 def create_user_for_group(group_name):
     user = User.objects.create_user(group_name, 'fieldtech@testuser.com', 'testpassword')
     group, created = Group.objects.get_or_create(name=group_name)
@@ -849,6 +850,7 @@ class BeneficiaryTest(TestCase):
         payment = Payment.objects.filter(promoter=promoter)[0]
         self.assertEquals(payment.description,'razon de pago' )
 
+
     def test_promoter_add_payment(self):
         user = create_promoter()
         self.client.login(username="test", password="testpassword")
@@ -878,15 +880,11 @@ class BeneficiaryTest(TestCase):
 
     def test_admin_resolve_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
-        base_user = BaseUser.objects.create(user=user, name="name",
-                                            last_name_paternal="last_name_paternal",
-                                            last_name_maternal="last_name_maternal",
-                                            phone_number="phone_number",
-                                            email="email@email.com",
-                                            address="address")
-        base_user.save()
-        self.client.login(username="test_1", password="testpassword")
 
+class TestPay(TestCase):
+    def test_pay_ok(self):
+        user = create_user()
+        self.client.login(username="test_1", password="testpassword")
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
                                             last_name_paternal="last_name_paternal",
@@ -933,3 +931,166 @@ class BeneficiaryTest(TestCase):
         #Payment did not update
         self.assertEqual(p.comment, '')
         """
+     
+class NewSavingAccount(TestCase):
+    def test_add_new_saving_account_assistant(self):
+        """
+        Creating a new sabing account. Expecting a redirect to /administrative/
+
+        """
+
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+
+        self.client.login(username="test", password="testpassword")
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets",
+                                                 promoter = promoter)
+        beneficiary.save()
+        create_user_for_group('Assistant')
+        self.client.login(username="Assistant", password="testpassword")
+        response = self.client.post('/administrative/new_saving_account/', {
+                                                                                "name": "testAccount",
+                                                                                "community": "testCommunity",
+                                                                                "municipality": "testMunicipality",
+                                                                                "location": "testLocation",
+                                                                                "list_of_beneficiaries":[beneficiary.id],
+                                                                                "total_saved_amount": 222222,
+                                                                                "president_beneficiary": [beneficiary.id],
+                                                                                "treasurer_beneficiary": [beneficiary.id],
+                                                                                "partner_beneficiary": [beneficiary.id]
+                                                                             })
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+         base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+
+        self.client.login(username="test", password="testpassword")
+        beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets",
+                                                 promoter = promoter)
+        beneficiary.save()
+        create_user_for_group('Coordinator')
+        self.client.login(username="Coordinator", password="testpassword")
+        response = self.client.post('/administrative/new_saving_account/', {
+                                                                                "name": "testAccount",
+                                                                                "community": "testCommunity",
+                                                                                "municipality": "testMunicipality",
+                                                                                "location": "testLocation",
+                                                                                "list_of_beneficiaries":[beneficiary.id],
+                                                                                "total_saved_amount": 222222,
+                                                                                "president_beneficiary": [beneficiary.id],
+                                                                                "treasurer_beneficiary": [beneficiary.id],
+                                                                                "partner_beneficiary": [beneficiary.id]
+                                                                             })
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_add_new_saving_account_technician(self):
+            """
+            Creating a new sabing account. Expecting a redirect to /administrative/
+
+            """
+
+            user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+            base_user = BaseUser.objects.create(user=user, name="name",
+                                                last_name_paternal="last_name_paternal",
+                                                last_name_maternal="last_name_maternal",
+                                                phone_number="phone_number",
+                                                email="email@email.com",
+                                                address="address")
+            base_user.save()
+            user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+            base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                            last_name_paternal="last_name_paternal",
+                                                            last_name_maternal="last_name_maternal",
+                                                            phone_number="phone_number",
+                                                            email="email@email.com",
+                                                            address="address")
+            base_user_promoter.save()
+            promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                                contact_name = "Contacto",
+                                                contact_phone_number = "1234512312"
+                                                )
+            promoter.save()
+
+
+            self.client.login(username="test", password="testpassword")
+            beneficiary = Beneficiary.objects.create(name="Rodolfo",
+                                                     last_name_paternal="Rodriguez",
+                                                     last_name_maternal="Rocha",
+                                                     num_of_family_beneficiaries=16,
+                                                     contact_name="Juan",
+                                                     contact_phone="4325671",
+                                                     account_number=123456,
+                                                     bank_name="Banamets",
+                                                     promoter = promoter)
+            beneficiary.save()
+            create_user_for_group('Technician')
+            self.client.login(username="Technician", password="testpassword")
+            response = self.client.post('/administrative/new_saving_account/', {
+                                                                                    "name": "testAccount",
+                                                                                    "community": "testCommunity",
+                                                                                    "municipality": "testMunicipality",
+                                                                                    "location": "testLocation",
+                                                                                    "list_of_beneficiaries":[beneficiary.id],
+                                                                                    "total_saved_amount": 222222,
+                                                                                    "president_beneficiary": [beneficiary.id],
+                                                                                    "treasurer_beneficiary": [beneficiary.id],
+                                                                                    "partner_beneficiary": [beneficiary.id]
+                                                                                 })
+            self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+
+
+
+
