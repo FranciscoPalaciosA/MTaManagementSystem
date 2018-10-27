@@ -426,9 +426,12 @@ def add_saving_account(request):
             print(form.errors)
             print("-----------------------------")
     elif request.method == 'GET':
-        form = SavingAccountForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_saving_account.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = SavingAccountForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_saving_account.html', context)
 
 def training_session(request):
     """
