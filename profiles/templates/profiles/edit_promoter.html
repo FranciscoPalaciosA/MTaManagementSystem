@@ -73,11 +73,7 @@
             <form action="/profiles/edit_promoter/{{promoter.id}}/" method="post">
               {% csrf_token %}
               <div class="row">
-                <h4 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h3>
-                <div class="input-field col s12">
-                  <input required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate" value="{{promoter.base_user.user.username}}">
-                  <label for="{{form.username.id_for_label}}">Usuario</label>
-                </div>
+                <h4 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h4>
                 <div class="input-field col s12 m4">
                   <input required id="{{form.previous_password.id_for_label}}" name="{{form.previous_password.html_name}}" type="password" class="validate">
                   <label for="{{form.previous_password.id_for_label}}">Contraseña Anterior</label>
@@ -122,8 +118,8 @@
               </div>
               <div class="row">
                 <div class="input-field col s12">
-                  <select id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
-                  <label for="{{form.email.id_for_label}}">Correo</label>multiple>
+                  <select required id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
+                    <option value="{{promoter.communities}}">{{choice}}</option>                
                     {% for choice in form.communities.field.queryset %}
                     <option value="{{choice.id}}">{{choice}}</option>
                     {% endfor %}
