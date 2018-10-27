@@ -81,26 +81,32 @@
                     <th>Beneficiario</th>
                     <th>Cambia</th>
                     <th>Por</th>
+                    <th>Ver</th>
                 </tr>
               </thead>
               <tbody>
                 {% for report in review_reports %}
                   <tr>
-                    <td>
-                      {{report.beneficiary}}
-                    </td>
-                    <td>
-                      Semilla:
-                      {{report.exch_seed}} kg
-                      <br>
-                      Hoja:
-                      {{report.exch_leaf}} kg
-                    </td>
-                    <td>
-                      {{report.want_for_seed}}
-                      <br>
-                      {{report.want_for_leaf}}
-                    </td>
+                      <td>
+                        {{report.beneficiary}}
+                      </td>
+                      <td>
+                        Semilla:
+                        {{report.exch_seed}} kg
+                        <br>
+                        Hoja:
+                        {{report.exch_leaf}} kg
+                      </td>
+                      <td>
+                        {{report.want_for_seed}}
+                        <br>
+                        {{report.want_for_leaf}}
+                      </td>
+                      <td>
+                        <a href="{% url 'administrative:administrative_production_report' report.id %}">
+                          <i class="material-icons">remove_red_eye</i>
+                        </a>
+                      </td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -147,6 +153,11 @@
                         kg
                       {% endif %}
                     </td>
+                    <td>
+                      <a href="{% url 'administrative:administrative_production_report' report.id %}">
+                        <i class="material-icons">remove_red_eye</i>
+                      </a>
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -178,6 +189,11 @@
                     {{report.want_for_seed}}
                     <br>
                     {{report.want_for_leaf}}
+                  </td>
+                  <td>
+                    <a href="{% url 'administrative:administrative_production_report' report.id %}">
+                      <i class="material-icons">remove_red_eye</i>
+                    </a>
                   </td>
                 {% endfor %}
               </tbody>

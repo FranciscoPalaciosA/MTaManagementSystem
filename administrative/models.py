@@ -35,6 +35,7 @@ class Beneficiary(models.Model):
     account_number = models.IntegerField(default=0)
     bank_name = models.CharField(max_length=100)
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
     member_in = models.ManyToManyField(Program, through='BeneficiaryInProgram')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)

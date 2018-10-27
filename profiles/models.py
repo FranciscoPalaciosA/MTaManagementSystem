@@ -12,14 +12,12 @@ class BaseUser(models.Model):
     phone_number = models.CharField(max_length=50)
     address = models.CharField(max_length=200)
     email = models.EmailField(max_length=200)
+    position = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
     def __str__(self):
         return self.user.username
-
-class AdminUser(models.Model):
-    base_user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
 
 class Promoter(models.Model):
     base_user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)

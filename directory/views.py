@@ -8,7 +8,22 @@ from .forms import *
 # Create your views here.
 @login_required
 def index(request):
-    return HttpResponse("Directory Index")
+    contact_list = {
+        'admin': Contact.objects.filter(deleted_at__isnull=True, contact_type='Admin'),
+        'volunteer': Contact.objects.filter(deleted_at__isnull=True, contact_type='Volunteer'),
+        'volunteer': Contact.objects.filter(deleted_at__isnull=True, contact_type='Volunteer'),
+        'ext_cons': Contact.objects.filter(deleted_at__isnull=True, contact_type='Ext_Cons'),
+        'simp': Contact.objects.filter(deleted_at__isnull=True, contact_type='Simp'),
+        'other': Contact.objects.filter(deleted_at__isnull=True, contact_type='Other'),
+    }
+    print("-----------------------------------------------")
+    print(contact_list)
+    print("-----------------------------------------------")
+    context = {
+        'type_list': Contact.type_choices,
+        'contact_list': contact_list
+    }
+    return render(request, 'directory/index.html', context)
 
 @login_required
 def contact(request):

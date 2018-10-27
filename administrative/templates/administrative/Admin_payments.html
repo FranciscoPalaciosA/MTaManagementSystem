@@ -164,6 +164,11 @@
       </div>
     </div>
   </div>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger"  href="#new_payment">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
 </main>
 <div id="pay-modal" class="modal">
   <div class="modal-content">
@@ -190,6 +195,43 @@
     <br>
   </div>
 </div>
+<div id="new_payment" class="modal">
+  <div class="modal-content">
+    <h4>Nuevo pago</h4>
+    <form action="/administrative/add_payment/" method="POST">
+      {% csrf_token %}
+      <div class="row">
+        <div class="input-field col s4 m4">
+          <label for="{{new_payment.promoter.id_for_label}}" class="active">Promotora</label>
+          <select id="{{new_payment.promoter.id_for_label}}" name="{{new_payment.promoter.html_name}}" required>
+            <option value="" disabled selected>Selecciona uno</option>
+            {% for choice in new_payment.promoter.field.queryset %}
+              <option value="{{choice.id}}">{{choice.contact_name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="input-field col s4 m4">
+          <label class="active" for="{{new_payment.quantity.id_for_label}}">Cantidad</label>
+          <input required id="{{new_payment.quantity.id_for_label}}" name="{{new_payment.quantity.html_name}}" type="number" class="validate">
+        </div>
+        <div class="input-field col s4 m4">
+          <label for="{{new_payment.due_date.id_for_label}}" class="active">Pagar antes de</label>
+          <input required id="{{new_payment.due_date.id_for_label}}" name="{{new_payment.due_date.html_name}}" type="date" class="validate">
+        </div>
+        <div class="input-field col s12 m12">
+          <label for="{{new_payment.description.id_for_label}}" class="active">Descripcion</label>
+          <input required id="{{new_payment.description.id_for_label}}" name="{{new_payment.description.html_name}}" type="text" class="validate" maxlength="100">
+        </div>
+
+        <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+          <i class="material-icons right">send</i>
+        </button>
+      </div>
+
+      <br><br>
+    </form>
+  </div>
+</div>
 {% endblock content %}
 {% block init_scripts %}
 {% endblock init_scripts %}
@@ -200,6 +242,16 @@
     $('.tabs').tabs(
       swipeable=true
     );
+    /*$('.datepicker').pickadate({
+      alert("Juan");
+
+    		months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    		monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+    		weekdaysFull: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+    		weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+        weekdaysAbbrev: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        format: 'dd/mm/yyyy'
+    });*/
   });
   function ajaxCall(id){
     path = "/administrative/get_payment/" + id;

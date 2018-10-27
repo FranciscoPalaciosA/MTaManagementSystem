@@ -6,15 +6,13 @@ class BeneficiaryForm(forms.Form):
     name = forms.CharField(max_length=50)
     last_name_paternal = forms.CharField(max_length=50)
     last_name_maternal = forms.CharField(max_length=50)
-    state = forms.CharField(max_length=50)
-    municipality = forms.CharField(max_length=50)
-    community_name = forms.CharField(max_length=50)
     num_of_family_beneficiaries = forms.IntegerField(required=True)
     contact_name = forms.CharField(max_length=200)
     contact_phone = forms.IntegerField()
     account_number = forms.IntegerField()
     bank_name = forms.CharField(max_length=100)
     promoter = forms.ModelMultipleChoiceField(queryset=Promoter.objects)
+    community = forms.ModelMultipleChoiceField(queryset=Community.objects)
     member_in = forms.ModelMultipleChoiceField(queryset=Program.objects)
     curp = forms.CharField(max_length=50, required=False)
     house_address = forms.CharField(max_length=100, required=False)
@@ -50,22 +48,19 @@ class CommunityForm(forms.ModelForm):
                   'municipality',
                   'state']
 
-class ProductionReportForm(forms.ModelForm):
+class ProductionReportForm(forms.Form):
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects, required=False)
+    self_seed = forms.DecimalField(required=False)
+    self_leaf = forms.DecimalField(required=False)
+    self_flour = forms.DecimalField(required=False)
+    days_per_month = forms.IntegerField(required=False)
     exch_seed = forms.DecimalField(required=False)
     exch_leaf = forms.DecimalField(required=False)
     want_for_seed = forms.CharField(required=False)
     want_for_leaf = forms.CharField(required=False)
-
-    class Meta:
-        model = ProductionReport
-        fields = [  'self_seed',
-                    'self_leaf',
-                    'self_flour',
-                    'days_per_month',
-                    'exch_seed',
-                    'want_for_seed',
-                    'exch_leaf',
-                    'want_for_leaf']
+    get_for_seed_qty = forms.CharField(required=False)
+    get_for_leaf_qty = forms.CharField(required=False)
+    paid = forms.BooleanField(required=False)
 
 class WeeklySessionForm(forms.ModelForm):
     evidence = forms.ImageField(required=False)
@@ -124,4 +119,3 @@ class PayForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ['comment']
-
