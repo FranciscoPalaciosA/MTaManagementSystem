@@ -87,3 +87,19 @@ class AddInstitutionTest(TestCase):
         new_institution = Institution.objects.get(name="Test")
         self.assertEqual(new_institution.type_of_institution, 'Education')
         self.assertEqual(new_institution.comments, 'test')
+
+class InstitutionDirectoryTest(TestCase):
+    def test_new_institution_directory(self):
+        institution = Institution.objects.create(name="Test1",
+                                         type_of_institution="Other",
+                                         comments="test"
+                                        )
+        institution.save()
+        new_institution = Institution.objects.get(name="Test1")
+        self.assertEqual(new_institution.type_of_institution, 'Other')
+        self.assertEqual(new_institution.comments, 'test')
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+        response = self.client.get('/directory/institution_directory/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test1')
