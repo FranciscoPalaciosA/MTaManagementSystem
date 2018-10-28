@@ -99,3 +99,10 @@ def add_user(request):
         form = BaseUserForm()
         context = {'form': form}
         return render(request, 'profiles/new_user.html', context)
+
+@login_required
+def get_promoter_profile(request,pk):
+    if request.method == 'GET':
+        promoter = Promoter.objects.get(pk=pk)
+        context = {'promoter': promoter} 
+        return render(request, 'profiles/promoter_profile.html', context)
