@@ -88,3 +88,20 @@ def add_institution(request):
         form = InstitutionForm()
         context = {'form': form}
         return render(request, 'directory/new_institution.html', context)
+
+@login_required
+def institution_directory(request):
+    institution_list = {
+        'foundations': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Foundations'),
+        'enterprise': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Enterprise'),
+        'local_gob': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Local_Gob'),
+        'fed_gob': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Fed_Gob'),
+        'education': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Education'),
+        'scientific': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Scientific'),
+        'other': Institution.objects.filter(deleted_at__isnull=True, type_of_institution='Other'),
+    }
+    context = {
+        'type_list': Institution.institution_choices,
+        'institution_list': institution_list
+    }
+    return render(request, 'directory/list_of_institutions.html', context)
