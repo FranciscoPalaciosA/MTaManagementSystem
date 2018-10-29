@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.urls import reverse
 from django.utils import timezone
 from administrative.models import *
@@ -103,7 +103,6 @@ class ProductionReportTest(TestCase):
         #print("\n\n\n\n"+str(response))
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-
 class BeneficiariestTest(TestCase):
     def test_new_beneficary(self):
         """
@@ -184,7 +183,7 @@ class PaymentsTest(TestCase):
         """
         user = create_user()
         create_groups()
-        user.groups.add(Group.objects.get(name='owner'))
+        user.user.groups.add(Group.objects.get(name='owner'))
         self.client.login(username="test", password="testpassword")
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "No hay pagos pendientes.")
@@ -195,7 +194,7 @@ class PaymentsTest(TestCase):
         """
         user = create_user()
         create_groups()
-        user.groups.add(Group.objects.get(name='fieldTech'))
+        user.user.groups.add(Group.objects.get(name='fieldTech'))
         self.client.login(username="test", password="testpassword")
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "No hay pagos pendientes.")
@@ -206,7 +205,7 @@ class PaymentsTest(TestCase):
         """
         user = create_user()
         create_groups()
-        user.groups.add(Group.objects.get(name='assistant'))
+        user.user.groups.add(Group.objects.get(name='assistant'))
         self.client.login(username="test", password="testpassword")
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "No hay pagos pendientes.")
@@ -216,6 +215,8 @@ class PaymentsTest(TestCase):
         Admin checks pending payments.
         """
         user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='owner'))
         self.client.login(username="test", password="testpassword")
 
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
@@ -233,7 +234,7 @@ class PaymentsTest(TestCase):
         promoter.save()
         payment = Payment.objects.create(
                                             promoter=promoter,
-                                            description="Pago por cultivo",
+                                            description="Pago",
                                             quantity=1000,
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
@@ -244,6 +245,8 @@ class PaymentsTest(TestCase):
     def test_promoter_checks_has_payments(self):
         promoter = create_promoter()
         promoter.save()
+        create_groups()
+        promoter.base_user.user.groups.add(Group.objects.get(name='promoter'))
         self.client.login(username="test", password="testpassword")
         payment = Payment.objects.create(
                                             promoter=promoter,
@@ -257,6 +260,8 @@ class PaymentsTest(TestCase):
 
     def test_admin_add_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        create_groups()
+        user.groups.add(Group.objects.get(name='owner'))
         base_user = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",
                                             last_name_maternal="last_name_maternal",
@@ -291,6 +296,8 @@ class PaymentsTest(TestCase):
 
     def test_promoter_add_payment(self):
         user = create_promoter()
+        create_groups()
+        user.base_user.user.groups.add(Group.objects.get(name='owner'))
         self.client.login(username="test", password="testpassword")
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
@@ -318,6 +325,8 @@ class PaymentsTest(TestCase):
 
     def test_admin_resolve_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        create_groups()
+        user.groups.add(Group.objects.get(name='owner'))
         base_user = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",
                                             last_name_maternal="last_name_maternal",
@@ -340,13 +349,22 @@ class PaymentsTest(TestCase):
                                             contact_phone_number = "1234512312"
                                             )
         promoter.save()
+        payment = Payment.objects.create    (
+                                                promoter=promoter,
+                                                description='desc',
+                                                quantity=1000,
+                                                due_date=timezone.now()
+                                            )
         response = self.client.post('/administrative/pay/' + str(payment.id) + '/', {'comment':'comment'})
         p = Payment.objects.get(promoter=promoter)
         self.assertEqual(p.comment, 'comment')
 
     def test_promoter_resolve_payment(self):
-        prom = create_promoter()
-        prom.save()
+        promoter = create_promoter()
+        promoter.save()
+        create_groups()
+        promoter.base_user.user.groups.add(Group.objects.get(name='promoter'))
+
         self.client.login(username="test", password="testpassword")
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
@@ -488,6 +506,8 @@ class NewSavingAccount(TestCase):
 class TrainingTests(TestCase):
     def test_new_training(self):
         user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='assistant'))
         self.client.login(username="test", password="testpassword")
         beneficiary = create_beneficiary()
         image = Image.open('gallery/images/mta_logo.png')
@@ -511,6 +531,8 @@ class TrainingTests(TestCase):
                                             contact_name = "Contacto",
                                             contact_phone_number = "1234512312"
                                             )
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='promoter'))
         self.client.login(username="test", password="testpassword")
         beneficiary = create_beneficiary()
         image = Image.open('gallery/images/mta_logo.png')

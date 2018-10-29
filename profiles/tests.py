@@ -76,6 +76,9 @@ class NewUserTests(TestCase):
                                             email="email@email.com",
                                             address="address")
         base_user.save()
+        promoter = Promoter.objects.create(base_user=base_user,
+                                            contact_name="asdfasdf",
+                                            contact_phone_number="4422234")
         group, created = Group.objects.get_or_create(name='test_group')
         user_info = {
                         "username": "testUser",
