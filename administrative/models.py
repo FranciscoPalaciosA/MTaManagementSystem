@@ -1,4 +1,4 @@
-from django.db import models
+  from django.db import models
 from django.utils import timezone
 from profiles.models import *
 
@@ -110,6 +110,9 @@ class SavingAccount(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name) + "-" +str(self.community)
 
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
