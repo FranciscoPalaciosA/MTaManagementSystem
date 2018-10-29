@@ -66,7 +66,8 @@ class WeeklySessionForm(forms.ModelForm):
     evidence = forms.ImageField(required=False)
     class Meta:
         model = WeeklySession
-        fields = ['type',
+        fields = ['date',
+                  'type',
                   'topic',
                   'assistants',
                   'start_time',
