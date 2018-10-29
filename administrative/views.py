@@ -29,11 +29,21 @@ def is_promoter(user):
         return False
     return True
 
+def is_administrative_assistant(user):
+    if user:
+        return user.groups.filter(name='administrative_assistant').count() == 1
+    return False
+
+def is_administrative_coordinator(user):
+    if user:
+        return user.groups.filter(name='administrative_coordinator').count() == 1
+    return False
 
 # Create your views here.
 @login_required
 def index(request):
-    return HttpResponse("Administrative Index")
+    context = {}
+    return render(request, 'administrative/index.html', context)
 
 @login_required
 def production_report(request):
@@ -230,22 +240,27 @@ def modify_beneficiary(request):
 
 @login_required
 def communities(request):
-    #Description: Renders the view to register a new community on the system, when posted stores the data
-    #Parameters: request
-    #Function return expected: For POST request: redirect, For GET request: render
-    if request.method == 'POST':
-        form = CommunityForm(request.POST)
-        if form.is_valid():
-            community = Community(  name=form.cleaned_data['name'],
-                                    state=form.cleaned_data['state'],
-                                    municipality=form.cleaned_data['municipality'],
-                                 )
-            community.save()
-            return HttpResponseRedirect('/administrative/communities/')
-    elif request.method == 'GET':
-        community_form = CommunityForm()
-        context = {'community_form': community_form}
-        return render(request, 'administrative/communities.html', context)
+    """ Description: Renders the view to register a new community on the system, when posted stores the data
+        Parameters: request
+        return: For POST request: redirect, For GET request: render
+    """
+    if(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
+        if request.method == 'POST':
+            form = CommunityForm(request.POST)
+            if form.is_valid():
+                community = Community(  name=form.cleaned_data['name'],
+                                        state=form.cleaned_data['state'],
+                                        municipality=form.cleaned_data['municipality'],
+                                     )
+                community.save()
+                return HttpResponseRedirect('/administrative/communities/')
+        elif request.method == 'GET':
+            community_form = CommunityForm()
+            context = {'community_form': community_form}
+            return render(request, 'administrative/communities.html', context)
+    else:
+        if(is_promoter(request.user)):
+            return HttpResponseRedirect('/administrative/')
 
 @login_required
 def weekly_sessions(request):
@@ -306,13 +321,14 @@ def weekly_sessions(request):
             context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'weekly_sessions': weekly_sessions}
             return render(request, 'administrative/weekly_sessions.html', context)
     else:
-        weekly_sessions = WeeklySession.objects.filter().order_by('-date')
+        if(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
+            weekly_sessions = WeeklySession.objects.filter().order_by('-date')
 
-        for session in weekly_sessions:
-            session.assistant_count = session.assistants.all().count()
+            for session in weekly_sessions:
+                session.assistant_count = session.assistants.all().count()
 
-        context = {'weekly_sessions': weekly_sessions}
-        return render(request, 'administrative/Admin_weekly_sessions.html', context)
+            context = {'weekly_sessions': weekly_sessions}
+            return render(request, 'administrative/Admin_weekly_sessions.html', context)
 
 @login_required
 def get_weekly_session(request, pk):

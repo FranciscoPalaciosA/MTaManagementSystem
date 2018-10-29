@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.urls import reverse
 from django.utils import timezone
 from administrative.models import *
@@ -47,9 +47,9 @@ def create_beneficiary():
 
 
 class CommunityTests(TestCase):
-    def test_view_uses_correct_template(self):
+    def test_view_uses_correct_template_for_administrative_assistant(self):
         """
-        An adminstrative enters /administrative/communities/ and the correct template loads
+        An adminstrative_assistant enters /administrative/communities/ and the correct template loads
         """
         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
@@ -59,6 +59,30 @@ class CommunityTests(TestCase):
                                             email="email@email.com",
                                             address="address")
         base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        user.groups.add(group)
+
+        self.client.login(username="user", password="testpassword")
+
+        response = self.client.get('/administrative/communities/')
+        self.assertTemplateUsed(response, 'administrative/communities.html')
+
+    def test_view_uses_correct_template_for_administrative_coordinator(self):
+        """
+        An adminstrative_coordinator enters /administrative/communities/ and the correct template loads
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
 
@@ -70,8 +94,20 @@ class CommunityTests(TestCase):
         An administrative registers a new community
 
         """
-        user = create_user()
-        self.client.login(username="test", password="testpassword")
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        user.groups.add(group)
+
+        self.client.login(username="user", password="testpassword")
+
         response = self.client.post('/administrative/communities/', {'name': 'Río Blanco',
                                                                      'municipality': 'Peñamiller',
                                                                      'state': 'Querétaro',
@@ -82,9 +118,9 @@ class CommunityTests(TestCase):
         self.assertEqual(community.state, 'Querétaro')
 
 class WeeklySessionTests(TestCase):
-    def test_view_uses_correct_template_for_promoter(self):
+    def test_view_uses_correct_template_for_administrative_assistant(self):
         """
-        An adminstrative enters /administrative/communities/ and the correct template loads
+        An adminstrative_ enters /administrative/weekly_sessions/ and the correct template loads
         """
         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
@@ -94,6 +130,30 @@ class WeeklySessionTests(TestCase):
                                             email="email@email.com",
                                             address="address")
         base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        user.groups.add(group)
+
+        self.client.login(username="user", password="testpassword")
+
+        response = self.client.get('/administrative/weekly_sessions/')
+        self.assertTemplateUsed(response, 'administrative/Admin_weekly_sessions.html')
+
+    def test_view_uses_correct_template_for_administrative_coordinator(self):
+        """
+        An adminstrative_ enters /administrative/weekly_session/ and the correct template loads
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
 
@@ -205,6 +265,12 @@ class WeeklySessionTests(TestCase):
                                                         address="address")
         base_user_promoter.save()
 
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
         self.client.login(username="promoter", password="testpassword")
 
         response = self.client.get('/administrative/weekly_sessions/')
@@ -215,6 +281,8 @@ class WeeklySessionTests(TestCase):
         Promoter checks previous weekly sessions and there are
         """
         user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        user_promoter.save()
+
         base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
                                                         last_name_maternal="last_name_maternal",
@@ -272,6 +340,9 @@ class WeeklySessionTests(TestCase):
                                             address="address")
         base_user.save()
 
+        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        user.groups.add(group)
+
         self.client.login(username="user", password="testpassword")
 
         response = self.client.get('/administrative/weekly_sessions/')
@@ -279,17 +350,8 @@ class WeeklySessionTests(TestCase):
 
     def test_promoter_checks_log_has_past_sessions(self):
         """
-        An administrative check previous weekly sessions and there are
+        A promoter check previous weekly sessions and there are
         """
-        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
-        base_user = BaseUser.objects.create(user=user, name="name",
-                                            last_name_paternal="last_name_paternal",
-                                            last_name_maternal="last_name_maternal",
-                                            phone_number="phone_number",
-                                            email="email@email.com",
-                                            address="address")
-        base_user.save()
-
         user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
         base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
@@ -329,7 +391,7 @@ class WeeklySessionTests(TestCase):
                                                       promoter = promoter)
         weekly_session.assistants.add(beneficiary)
 
-        self.client.login(username="user", password="testpassword")
+        self.client.login(username="promoter", password="testpassword")
 
         response = self.client.get('/administrative/weekly_sessions/')
         self.assertContains(response, "session_type")
@@ -348,6 +410,9 @@ class PaymentsTests(TestCase):
                                             email="email@email.com",
                                             address="address")
         base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
 
@@ -386,7 +451,19 @@ class PaymentsTests(TestCase):
         """
         Admin checks pending payments buy there are none to be paid.
         """
-        user = create_user()
+        user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
+        user.save()
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        user.groups.add(group)
+
         self.client.login(username="test", password="testpassword")
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "No hay pagos pendientes.")
@@ -396,9 +473,8 @@ class PaymentsTests(TestCase):
         Admin checks pending payments.
         """
         user = create_user()
-        self.client.login(username="test", password="testpassword")
 
-        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        user_p = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
                                             last_name_paternal="last_name_paternal",
                                             last_name_maternal="last_name_maternal",
@@ -418,13 +494,30 @@ class PaymentsTests(TestCase):
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
         payment.save()
+
+        self.client.login(username="test", password="testpassword")
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
-    def test_promoter_checks_has_payments(self):
-        promoter = create_promoter()
+    def test_promoter_pending_payments(self):
+        """
+        Promoter checks pending payments.
+        """
+        user = create_user()
+
+        user_p = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
         promoter.save()
-        self.client.login(username="test", password="testpassword")
         payment = Payment.objects.create(
                                             promoter=promoter,
                                             description="Pago por cultivo",
@@ -432,10 +525,12 @@ class PaymentsTests(TestCase):
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
         payment.save()
+        
+        self.client.login(username="promoter", password="testpassword")
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
-    def test_admin_add_payment(self):
+    def test_administrative_assistant_add_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",
@@ -444,7 +539,12 @@ class PaymentsTests(TestCase):
                                             email="email@email.com",
                                             address="address")
         base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        user.groups.add(group)
+
         self.client.login(username="test_1", password="testpassword")
+
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
                                             last_name_paternal="last_name_paternal",
@@ -469,9 +569,21 @@ class PaymentsTests(TestCase):
         payment = Payment.objects.filter(promoter=promoter)[0]
         self.assertEquals(payment.description,'razon de pago' )
 
-    def test_promoter_add_payment(self):
-        user = create_promoter()
-        self.client.login(username="test", password="testpassword")
+    def test_administrative_coordinator_add_payment(self):
+        user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        user.groups.add(group)
+
+        self.client.login(username="test_1", password="testpassword")
+
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
                                             last_name_paternal="last_name_paternal",
@@ -492,6 +604,6 @@ class PaymentsTests(TestCase):
             'due_date': '10/10/2018'
         }
         response = self.client.post('/administrative/add_payment/', data)
-        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        payment = Payment.objects.filter(promoter=promoter)
-        self.assertEquals(len(payment),0 )
+        self.assertRedirects(response, '/administrative/payments/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        payment = Payment.objects.filter(promoter=promoter)[0]
+        self.assertEquals(payment.description,'razon de pago' )
