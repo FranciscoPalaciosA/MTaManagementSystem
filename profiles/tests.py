@@ -127,3 +127,36 @@ class NewUserTests(TestCase):
         self.client.force_login(user)
         response = self.client.post('/profiles/new_promoter/', user_info)
         self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+class PromoterProfileTests(TestCase):
+    def test_promoter_profile_view(self):
+        group, created = Group.objects.get_or_create(name='test_group')
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.communities.set([community.id])
+        promoter.save()
+        self.client.login(username="user", password="testpassword")
+        response = self.client.get('/profiles/promoter_profile/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'email@email.com')

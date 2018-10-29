@@ -104,5 +104,7 @@ def add_user(request):
 def get_promoter_profile(request,pk):
     if request.method == 'GET':
         promoter = Promoter.objects.get(pk=pk)
-        context = {'promoter': promoter} 
+        communities =  Community.objects.filter(deleted_at__isnull=True, promoter__id=pk)
+        print(communities)
+        context = {'promoter': promoter, 'communities': communities}
         return render(request, 'profiles/promoter_profile.html', context)

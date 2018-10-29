@@ -109,14 +109,12 @@
                 </div>
               </div>
               <div class="row">
-                <div class="input-field col s12">
-                  <select id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
-                  <label for="{{form.email.id_for_label}}">Correo</label>multiple>
-                    {% for choice in form.communities.field.queryset %}
-                    <option value="{{choice.id}}">{{choice}}</option>
-                    {% endfor %}
-                  </select>
+                <div class=" col s12">
                   <label for="{{form.communities.id_for_label}}">Comunidades</label>
+                  <br>
+                    {% for community in communities %}
+                      <h6>{{community.name}}</h6>
+                    {% endfor %}
                 </div>
               </div>
               <h4 class="left-align col s12">Información del Recado</h4>
