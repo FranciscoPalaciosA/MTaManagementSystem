@@ -234,7 +234,7 @@ class PaymentsTest(TestCase):
         promoter.save()
         payment = Payment.objects.create(
                                             promoter=promoter,
-                                            description="Pago",
+                                            description="Pago por cultivo",
                                             quantity=1000,
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
