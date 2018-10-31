@@ -74,6 +74,7 @@ def production_report(request):
 
 
             newProductionReport = ProductionReport(
+
                                                     beneficiary = beneficiary,
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
@@ -542,12 +543,11 @@ def training_session(request):
     Parameters: request
     Returns: Render
     """
-    if(not is_promoter(request.user)):
+    if not is_promoter(request.user):
         if request.method == 'POST':
             date = request.POST['date']
             date_obj = datetime.strptime(date, "%d-%m-%Y")
             data = {
-                        'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                         'topic': request.POST['topic'],
                         'date': date_obj,
                         'start_time':request.POST['start_time'],

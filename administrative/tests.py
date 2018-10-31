@@ -5,7 +5,13 @@ from django.utils import timezone
 from administrative.models import *
 from profiles.models import *
 import datetime
+from PIL import Image
 
+def create_groups():
+    group, created = Group.objects.get_or_create(name='fieldTech')
+    group, created = Group.objects.get_or_create(name='promoter')
+    group, created = Group.objects.get_or_create(name='owner')
+    group, created = Group.objects.get_or_create(name='assistant')
 
 def create_database():
     user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
@@ -87,14 +93,30 @@ def create_program():
     return program
 
 def create_beneficiary():
+    community = Community.objects.create(
+                                            name='name',
+                                            municipality='municipality',
+                                            state='state'
+                                        )
+    user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+    base_user = BaseUser.objects.create(user=user, name="name",
+                                        last_name_paternal="last_name_paternal",
+                                        last_name_maternal="last_name_maternal",
+                                        phone_number="phone_number",
+                                        email="email@email.com",
+                                        address="address")
+    base_user.save()
+    promoter = Promoter.objects.create(base_user=base_user,
+                                        contact_name = "Contacto",
+                                        contact_phone_number = "1234512312"
+                                        )
     beneficiary = Beneficiary.objects.create(id=1,
                                              name="Rodolfo",
                                              last_name_paternal="Rodriguez",
                                              last_name_maternal="Rocha",
-                                             state="Querétaro",
-                                             municipality="Peñamiller",
-                                             community_name="Río Blanco",
+                                             community= community,
                                              num_of_family_beneficiaries=16,
+                                             promoter=promoter,
                                              contact_name="Juan",
                                              contact_phone="4424325671",
                                              account_number=123456,
@@ -1470,6 +1492,37 @@ class PaymentsTests(TestCase):
         response = self.client.get('/administrative/payments/')
         self.assertTemplateUsed(response, 'administrative/payments.html')
 
+class PaymentsTest(TestCase):
+    def test_owner_no_pending_payments(self):
+        """
+        Admin checks pending payments buy there are none to be paid.
+        """
+        user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='owner'))
+        self.client.login(username="test", password="testpassword")
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "No hay pagos pendientes.")
+
+    def test_field_tech_no_pending_payments(self):
+        """
+        Admin checks pending payments buy there are none to be paid.
+        """
+        user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='fieldTech'))
+        self.client.login(username="test", password="testpassword")
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "No hay pagos pendientes.")
+
+    def test_assistant_no_pending_payments(self):
+        """
+        Admin checks pending payments buy there are none to be paid.
+        """
+        user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='assistant'))
+
     def test_admin_no_pending_payments(self):
         """
         Admin checks pending payments buy there are none to be paid.
@@ -1496,6 +1549,9 @@ class PaymentsTests(TestCase):
         Admin checks pending payments.
         """
         user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='owner'))
+        self.client.login(username="test", password="testpassword")
 
         user_p = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
@@ -1522,11 +1578,13 @@ class PaymentsTests(TestCase):
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
-    def test_promoter_pending_payments(self):
-        """
-        Promoter checks pending payments.
-        """
-        user = create_user()
+        
+    def test_promoter_checks_has_payments(self):
+        promoter = create_promoter()
+        promoter.save()
+        create_groups()
+        promoter.base_user.user.groups.add(Group.objects.get(name='promoter'))
+        self.client.login(username="test", password="testpassword")
 
         user_p = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
@@ -1536,25 +1594,27 @@ class PaymentsTests(TestCase):
                                             email="email@email.com",
                                             address="address")
         base_user_p.save()
-        promoter = Promoter.objects.create(base_user=base_user_p,
+        promoter_p = Promoter.objects.create(base_user=base_user_p,
                                             contact_name = "Contacto",
                                             contact_phone_number = "1234512312"
                                             )
-        promoter.save()
+        promoter_p.save()
         payment = Payment.objects.create(
-                                            promoter=promoter,
+                                            promoter=promoter_p,
                                             description="Pago por cultivo",
                                             quantity=1000,
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
         payment.save()
-        
-        self.client.login(username="promoter", password="testpassword")
+       
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
+
     def test_administrative_assistant_add_payment(self):
         user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        create_groups()
+        user.groups.add(Group.objects.get(name='owner'))
         base_user = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",
                                             last_name_maternal="last_name_maternal",
@@ -1592,21 +1652,12 @@ class PaymentsTests(TestCase):
         payment = Payment.objects.filter(promoter=promoter)[0]
         self.assertEquals(payment.description,'razon de pago' )
 
-    def test_administrative_coordinator_add_payment(self):
-        user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
-        base_user = BaseUser.objects.create(user=user, name="name",
-                                            last_name_paternal="last_name_paternal",
-                                            last_name_maternal="last_name_maternal",
-                                            phone_number="phone_number",
-                                            email="email@email.com",
-                                            address="address")
-        base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_coordinator')
-        user.groups.add(group)
-
-        self.client.login(username="test_1", password="testpassword")
-
+    def test_promoter_add_payment(self):
+        user = create_promoter()
+        create_groups()
+        user.base_user.user.groups.add(Group.objects.get(name='owner'))
+        self.client.login(username="test", password="testpassword")
         user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
         base_user_p = BaseUser.objects.create(user=user_p, name="name",
                                             last_name_paternal="last_name_paternal",
@@ -1627,6 +1678,180 @@ class PaymentsTests(TestCase):
             'due_date': '10/10/2018'
         }
         response = self.client.post('/administrative/add_payment/', data)
-        self.assertRedirects(response, '/administrative/payments/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-        payment = Payment.objects.filter(promoter=promoter)[0]
-        self.assertEquals(payment.description,'razon de pago' )
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        payment = Payment.objects.filter(promoter=promoter)
+        self.assertEquals(len(payment),0 )
+
+    def test_admin_resolve_payment(self):
+
+        user = User.objects.create_user('test_1', 'test_1@testuser.com', 'testpassword')
+        create_groups()
+        user.groups.add(Group.objects.get(name='owner'))
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        self.client.login(username="test_1", password="testpassword")
+
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create    (
+                                                promoter=promoter,
+                                                description='desc',
+                                                quantity=1000,
+                                                due_date=timezone.now()
+                                            )
+        response = self.client.post('/administrative/pay/' + str(payment.id) + '/', {'comment':'comment'})
+        p = Payment.objects.get(promoter=promoter)
+        self.assertEqual(p.comment, 'comment')
+
+    def test_promoter_resolve_payment(self):
+        promoter = create_promoter()
+        promoter.save()
+        create_groups()
+        promoter.base_user.user.groups.add(Group.objects.get(name='promoter'))
+
+        self.client.login(username="test", password="testpassword")
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+        response = self.client.post('/administrative/pay/' + str(payment.id) + '/', {'comment':'comment'})
+        p = Payment.objects.get(promoter=promoter)
+        #Payment did not update
+        self.assertEqual(p.comment, '')
+
+class NewSavingAccount(TestCase):
+    def test_add_new_saving_account_with_one_beneficiary(self):
+        """
+        Creating a new sabing account. Expecting a redirect to /administrative/
+
+        """
+        user = create_user()
+        self.client.login(username="test", password="testpassword")
+        beneficiary = Beneficiary.objects.create(promoter_id=1,
+                                                 name="Rodolfo",
+                                                 last_name_paternal="Rodriguez",
+                                                 last_name_maternal="Rocha",
+                                                 num_of_family_beneficiaries=16,
+                                                 contact_name="Juan",
+                                                 contact_phone="4325671",
+                                                 account_number=123456,
+                                                 bank_name="Banamets")
+        beneficary.save()
+        response = self.client.post('/administrative/new_saving_account/', {'name': 'beneTest',
+                                                                                "name": "testAccount",
+                                                                                "community": "testCommunity",
+                                                                                "municipality": "testMunicipality",
+                                                                                "location": "testLocation",
+                                                                                "list_of_beneficiaries": beneficiary.id,
+                                                                                "total saved ammount": "222222",
+                                                                                "president_beneficiary": beneficiary.id,
+                                                                                "treasurer_beneficiary": beneficiary.id,
+                                                                                "partner_beneficiary": beneficiary.id
+                                                                             })
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+
+    def test_add_new_saving_account_with_multiple_beneficiaries(self):
+        """
+        Creating a new sabing account. Expecting a redirect to /administrative/
+        """
+
+        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        user.groups.add(group)
+
+        self.client.login(username="test_1", password="testpassword")
+
+        user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+
+class TrainingTests(TestCase):
+    def test_new_training(self):
+        user = create_user()
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='assistant'))
+        self.client.login(username="test", password="testpassword")
+        beneficiary = create_beneficiary()
+        image = Image.open('gallery/images/mta_logo.png')
+        data = {
+            'topic': 'Health',
+            'date': '10-10-2010',
+            'start_time':'10:00 AM',
+            'end_time':'11:00 AM',
+            'comments': 'This is a comment',
+            'assistants': beneficiary.id,
+            'evidence': image
+        }
+        response = self.client.post('/administrative/training_sessions/', data)
+        session = TrainingSession.objects.all()
+        self.assertEqual(len(session), 1)
+        self.assertEqual(response.status_code, 200)
+
+    def test_promoter_new_training(self):
+        user = create_user()
+        promoter = Promoter.objects.create(base_user=user,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        create_groups()
+        user.user.groups.add(Group.objects.get(name='promoter'))
+        self.client.login(username="test", password="testpassword")
+        beneficiary = create_beneficiary()
+        image = Image.open('gallery/images/mta_logo.png')
+        data = {
+            'topic': 'Health',
+            'date': '10-10-2010',
+            'start_time':'10:00 AM',
+            'end_time':'11:00 AM',
+            'comments': 'This is a comment',
+            'assistants': beneficiary.id,
+            'evidence': image
+        }
+        response = self.client.post('/administrative/training_sessions/', data)
+        session = TrainingSession.objects.all()
+        self.assertEqual(len(session), 0)
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
