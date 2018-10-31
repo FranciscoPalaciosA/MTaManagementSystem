@@ -1,4 +1,4 @@
-from django.db import models
+  from django.db import models
 from django.utils import timezone
 from profiles.models import *
 
@@ -42,7 +42,7 @@ class Beneficiary(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name) + " " + str(self.id)
+        return str(self.name)
 
 class BeneficiaryInProgram(models.Model):
     status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
@@ -86,14 +86,12 @@ class ProductionReport(models.Model):
 
 class WeeklySession(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    date = models.DateField()
     type = models.CharField(max_length=50)
     topic = models.CharField(max_length=50)
     assistants = models.ManyToManyField(Beneficiary, verbose_name="list of assistants")
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
-    deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
@@ -112,6 +110,9 @@ class SavingAccount(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name) + "-" +str(self.community)
 
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)

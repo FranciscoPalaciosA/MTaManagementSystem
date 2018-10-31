@@ -96,6 +96,12 @@
                         <td>{{ payment.quantity }}</td>
                         <td>{{ payment.due_date|date:"d / m / Y" }}</td>
                       </tr>
+                    {% empty %}
+                      <tr>
+                        <td>No hay pagos próximos.</td>
+                        <td></td>
+                        <td></td>
+                      </tr>
                     {% endfor %}
 
                   </tbody>
@@ -128,7 +134,14 @@
                         <td>{{ payment.due_date|date:"d / m / Y" }}</td>
                         <td>{{ payment.pay_date|date:"d / m / Y" }}</td>
                       </tr>
-                    {% endfor %}
+                      {% empty %}
+                        <tr>
+                          <td>No hay pagos anteriores.</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      {% endfor %}
 
                   </tbody>
                 </table>

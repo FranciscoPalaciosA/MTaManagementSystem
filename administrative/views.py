@@ -29,11 +29,21 @@ def is_promoter(user):
         return False
     return True
 
+def is_administrative_assistant(user):
+    if user:
+        return user.groups.filter(name='administrative_assistant').count() == 1
+    return False
+
+def is_administrative_coordinator(user):
+    if user:
+        return user.groups.filter(name='administrative_coordinator').count() == 1
+    return False
 
 # Create your views here.
 @login_required
 def index(request):
-    return HttpResponse("Administrative Index")
+    return render(request, 'administrative/index.html')
+
 
 @login_required
 def production_report(request):
@@ -57,9 +67,15 @@ def production_report(request):
                 want_for_leaf = ' '
             else:
                 want_for_leaf = form.cleaned_data['want_for_leaf']
+            if not form.cleaned_data['beneficiary']:
+                beneficiary = Beneficiary.objects.get(id=1)
+            else:
+                beneficiary = form.cleaned_data['beneficiary'][0]
+
 
             newProductionReport = ProductionReport(
-                                                    beneficiary = Beneficiary.objects.get(id = 3),
+
+                                                    beneficiary = beneficiary,
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
@@ -79,17 +95,22 @@ def production_report(request):
             print(form.errors)
             print("\n\n\n\n\n")
     elif request.method == 'GET':
-        production_report_form = ProductionReportForm()
-        context = {'production_report_form': production_report_form}
-        return render(request, 'administrative/Production_Report.html', context)
+        if is_promoter(request.user):
+            print("\n\n IS PROMOTER")
+            production_report_form = ProductionReportForm()
+            context = {'production_report_form': production_report_form}
+            return render(request, 'administrative/Production_Report.html', context)
+        else:
+            return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
         review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
-        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
+        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+
 
 @login_required
 def administrative_production_report(request, pk):
@@ -152,7 +173,7 @@ def load_communities(request):
 def add_beneficiary(request):
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
-        if all([form.is_valid()]):
+        if form.is_valid():
             beneficiary = Beneficiary   (
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
@@ -193,9 +214,12 @@ def add_beneficiary(request):
             print("\n\n\n\n\n")
 
     elif request.method == 'GET':
-        form = BeneficiaryForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_beneficiary.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = BeneficiaryForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_beneficiary.html', context)
 
 @login_required
 def modify_beneficiary(request):
@@ -228,72 +252,92 @@ def modify_beneficiary(request):
             print(form.errors)
             print("\n\n\n\n\n")
 
+
 @login_required
 def communities(request):
-    #Description: Renders the view to register a new community on the system, when posted stores the data
-    #Parameters: request
-    #Function return expected: For POST request: redirect, For GET request: render
-    if request.method == 'POST':
-        form = CommunityForm(request.POST)
-        if form.is_valid():
-            community = Community(  name=form.cleaned_data['name'],
-                                    state=form.cleaned_data['state'],
-                                    municipality=form.cleaned_data['municipality'],
-                                 )
-            community.save()
-            return HttpResponseRedirect('/administrative/communities/')
-    elif request.method == 'GET':
-        community_form = CommunityForm()
-        context = {'community_form': community_form}
-        return render(request, 'administrative/communities.html', context)
+    """ Description: Renders the view to register a new community on the system, when posted stores the data
+        Parameters: request
+        return: For POST request: redirect, For GET request: render
+    """
+    if(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
+        if request.method == 'POST':
+            form = CommunityForm(request.POST)
+            if form.is_valid():
+                community = Community(  name=form.cleaned_data['name'],
+                                        state=form.cleaned_data['state'],
+                                        municipality=form.cleaned_data['municipality'],
+                                     )
+                community.save()
+                return HttpResponseRedirect('/administrative/communities/')
+        elif request.method == 'GET':
+            community_form = CommunityForm()
+            context = {'community_form': community_form}
+            return render(request, 'administrative/communities.html', context)
+    else:
+        if(is_promoter(request.user)):
+            return HttpResponseRedirect('/administrative/')
 
 @login_required
 def weekly_sessions(request):
-    if request.method == 'POST':
-        form = WeeklySessionForm(request.POST, request.FILES)
-        evidences = request.FILES.getlist('evidence')
-        #print("\n\n\n getlist('evidence')" + str(request.FILES.getlist('evidence')))
-        if form.is_valid():
-            base_user = BaseUser.objects.get(user = request.user.id)
-            promoter = Promoter.objects.get(base_user = base_user.id)
-            newSession = WeeklySession(
-                                        promoter=promoter,
-                                        type=form.cleaned_data['type'],
-                                        topic=form.cleaned_data['topic'],
-                                        start_time=form.cleaned_data['start_time'],
-                                        end_time=form.cleaned_data['end_time'],
-                                       )
-            newSession.save()
+    if(is_promoter(request.user)):
+        if request.method == 'POST':
+            date = request.POST['date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'date': date_obj,
+                        'type': request.POST['type'],
+                        'topic': request.POST['topic'],
+                        'start_time':request.POST['start_time'],
+                        'end_time':request.POST['end_time'],
+                        'assistants': request.POST.getlist("assistants")
+                    }
+            form = WeeklySessionForm(data, request.FILES)
+            evidences = request.FILES.getlist('evidence')
 
-            list = request.POST.getlist("assistants")
-            for assistant in list:
-                newSession.assistants.add(Beneficiary.objects.get(id = assistant))
+            if form.is_valid():
+                base_user = BaseUser.objects.get(user = request.user.id)
+                promoter = Promoter.objects.get(base_user = base_user.id)
+                newSession = WeeklySession(
+                                            promoter=promoter,
+                                            date=form.cleaned_data['date'],
+                                            type=form.cleaned_data['type'],
+                                            topic=form.cleaned_data['topic'],
+                                            start_time=form.cleaned_data['start_time'],
+                                            end_time=form.cleaned_data['end_time'],
+                                           )
+                newSession.save()
 
-            print("\n\n\n newSession.id = " + str(newSession.id))
-            for e in evidences:
-                newEvidence = WeeklySessionEvidence(
-                                                    weekly_session = newSession,
-                                                    evidence = e
-                                                    )
-                newEvidence.save()
+                list = request.POST.getlist("assistants")
+                for assistant in list:
+                    newSession.assistants.add(Beneficiary.objects.get(id = assistant))
 
-            return HttpResponseRedirect('/administrative/weekly_sessions/')
+                for e in evidences:
+                    newEvidence = WeeklySessionEvidence(
+                                                        weekly_session = newSession,
+                                                        evidence = e
+                                                        )
+                    newEvidence.save()
+
+                return HttpResponseRedirect('/administrative/weekly_sessions/')
         else:
-            print("-------------------")
-            print("Form is not valid")
-            print(form.errors)
-    else:
-        if is_promoter(request.user):
             base_user = BaseUser.objects.get(user = request.user.id)
             promoter = Promoter.objects.get(base_user = base_user.id)
 
             beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
             weekly_session_form = WeeklySessionForm()
-            context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries}
+
+            #Existing sessions
+            weekly_sessions = WeeklySession.objects.filter(promoter=promoter).order_by('-date')
+
+            for session in weekly_sessions:
+                session.assistant_count = session.assistants.all().count()
+
+            context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'weekly_sessions': weekly_sessions}
             return render(request, 'administrative/weekly_sessions.html', context)
-        else:
-            weekly_sessions = WeeklySession.objects.filter().order_by('-created_at')
+    else:
+        if(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
+            weekly_sessions = WeeklySession.objects.filter().order_by('-date')
 
             for session in weekly_sessions:
                 session.assistant_count = session.assistants.all().count()
@@ -325,10 +369,9 @@ def get_weekly_session(request, pk):
                             'promoter': promoter,
                             'type': weekly_session.type,
                             'topic': weekly_session.topic,
-                            'date': weekly_session.created_at,
+                            'date': weekly_session.date,
                             'start': weekly_session.start_time,
                             'end': weekly_session.end_time,
-                            #'assistants': serializers.serialize('json', weekly_session.assistants.all())
                             'assistants': assistantJSON,
                             'evidences': evidenceJSON
                         }
@@ -471,9 +514,9 @@ def add_saving_account(request):
                                     municipality=form.cleaned_data['municipality'],
                                     location=form.cleaned_data['location'],
                                     total_saved_amount=form.cleaned_data['total_saved_amount'],
-                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
-                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
-                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary']
                                 )
             saving_account.save()
             saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
@@ -486,9 +529,13 @@ def add_saving_account(request):
             print(form.errors)
             print("-----------------------------")
     elif request.method == 'GET':
-        form = SavingAccountForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_saving_account.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = SavingAccountForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_saving_account.html', context)
+
 
 def training_session(request):
     """

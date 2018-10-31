@@ -111,3 +111,13 @@ def add_user(request):
             return render(request, 'profiles/new_user.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
+
+@login_required
+def get_promoter_profile(request,pk):
+    if request.method == 'GET':
+        promoter = Promoter.objects.get(pk=pk)
+        communities =  Community.objects.filter(deleted_at__isnull=True, promoter__id=pk)
+        print(communities)
+        context = {'promoter': promoter, 'communities': communities}
+        return render(request, 'profiles/promoter_profile.html', context)
+
