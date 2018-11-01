@@ -1,4 +1,5 @@
 {% load static %}
+{% load administrative_extras %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -38,6 +39,12 @@
         <li><a href="dashboard.html" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
+            {% if request.user|has_group:"Director" %}
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+            {% endif %}
             {% block nav_tabs %}{% endblock nav_tabs %}
           </ul>
         </li>

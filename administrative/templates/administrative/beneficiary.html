@@ -3,85 +3,154 @@
 {% block title %}MTA - Beneficiario {% endblock %}
 {% block nav_title %} Beneficiario {% endblock %}
 {% block nav_tabs %}
-<!-- Should be doing this based on the current logged user -->
-<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
-      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
-      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
-      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
-      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
-      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
-      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
-      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
-      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
-      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
-      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
-      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
-      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
 {% endblock nav_tabs %}
 {% block content %}
 <main>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large blue modal-trigger" href="#">
+      <i class="large material-icons">edit</i>
+    </a>
+  </div>
   <br><br>
   <div class="container">
     <br><br>
     <div class="row">
       <div class="col s12 m12">
         <div class="card z-depth-3">
-          <div class="card-content">
+          <div class="card-content" style="padding:24px 48px;">
             <h3>{{beneficiary.name}} {{beneficiary.last_name_paternal}}</h3>
             <div class="row">
               <div class="col s6">
-                <h6>Pertenece a programa(s) :</h6>
-                  {% for prog in programs %}
-                    <p>{{prog.program.name}}</p>
-                  {% endfor %}
+                <h6>Teléfono/Celular</h6>
+                <p>{{beneficiary.phone}}</p>
               </div>
-              <div class="col s3">
-              </div>
-              <div class="col s3">
-                <a class="waves-effect waves-light btn-small" onclick="add_program()"><i class="large material-icons left" style="font-size: 28px">add</i>Programa</a>
+              <div class="col s6">
+                <h6>Correo Electrónico</h6>
+                <p>{{beneficiary.email}}</p>
               </div>
             </div>
+            <div class="row">
+              <div class="col s6">
+                <h6>Comunidad</h6>
+                <p>{{beneficiary.community}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Promotora</h6>
+                <p>{{beneficiary.promoter}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s6">
+                <h6>Cuenta</h6>
+                <p>{{beneficiary.account_number}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Banco</h6>
+                <p>{{beneficiary.bank_name}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s6">
+                <h6>Num. Beneficiarios</h6>
+                <p>{{beneficiary.num_of_family_beneficiaries}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Agregado</h6>
+                <p>{{beneficiary.created_at}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <h5>Recado</h5>
+              <div class="col s6">
+                <h6>Nombre</h6>
+                <p>{{beneficiary.contact_name}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Teléfono</h6>
+                <p>{{beneficiary.contact_phone}}</p>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <h5>Programas</h5>
+              <div class="row">
+                <div class="col 12">
+                  {% for prog in programs %}
+                  <div class="col s12">
+                    <div class="card">
+                      <div class="card-content">
+                        <span class="card-title">{{prog.program.name}}</span>
+                        {% if prog.program.name == 'Productores' %}
+                        <div class="row">
+                          <div class="col">
+                            <h6>CURP</h6>
+                            <p>{{prog.curp}}</p>
+                          </div>
+                          <div class="col">
+                            <h6>Dirección</h6>
+                            <p>{{prog.house_address}}</p>
+                          </div>
+                          <div class="col">
+                            <h6>Referencias</h6>
+                            <p>{{prog.house_references}}</p>
+                          </div>
+                          <div class="col">
+                            <h6>Ubicación del huerto</h6>
+                            <p>{{prog.huerto_coordinates}}</p>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% if prog.program.name == 'Cisternas' %}
+                        <div class="row">
+                          <div class="col">
+                            <h6>Capacidad de cisterna</h6>
+                            <p>{{prog.water_capacity}}</p>
+                            <h6>Ubicación</h6>
+                            <p>{{prog.cisterna_location}}</p>
+                            <h6>Status</h6>
+                            <p>{{prog.cisterna_status}}</p>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% if prog.program.name == 'Cajas de ahorro' %}
+                        <div class="row">
+                          <div class="col">
+                            <h6>Rol</h6>
+                            <p>{{prog.savings_account_role}}</p>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% if prog.program.name == 'Ecónomas' %}
+                        <div class="row">
+                          <div class="col">
+                            <h6>Escuela</h6>
+                            <p>{{prog.school}}</p>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% if prog.program.name == 'Desayunos con amaranto' %}
+                        <div class="row">
+                          <div class="col">
+                            <h6>Escuela</h6>
+                            <p>{{prog.school}}</p>
+                            <h6>Edad</h6>
+                            <p>{{prog.age}}</p>
+                            <h6>Peso inicial</h6>
+                            <p>{{prog.initial_weight}}</p>
+                          </div>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="row center">
+              <a class="waves-effect waves-light btn-small" onclick="add_program()"><i class="large material-icons left" style="font-size: 28px">add</i>Programa</a>
+            </div>
+            <br>
             <div id="add_program" class="row" hidden>
               <form action="/administrative/modify_beneficiary/" method="POST">
                 {% csrf_token %}
@@ -124,9 +193,9 @@
                     <label for="{{form.cisterna_status.id_for_label}}">Status</label>
                     <select id="{{form.cisterna_status.id_for_label}}" name="{{form.cisterna_status.html_name}}" class="change_req">
                       <option value="" disabled selected> Seleccione un status </option>
-                      <option value="Done">Concluída</option>
-                      <option value="In use">En uso</option>
-                      <option value="Not done">En obra</option>
+                      <option value="Concluída">Concluída</option>
+                      <option value="En uso">En uso</option>
+                      <option value="En obra">En obra</option>
                     </select>
                   </div>
                   <div id="fields_for_saving_account" hidden>

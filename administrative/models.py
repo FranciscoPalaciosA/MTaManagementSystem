@@ -29,6 +29,8 @@ class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
     last_name_maternal = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50)
+    email = models.CharField(max_length=200)
     num_of_family_beneficiaries = models.IntegerField(default=0)
     contact_name = models.CharField(max_length=200)
     contact_phone = models.CharField(max_length=50, default=0)
@@ -45,7 +47,7 @@ class Beneficiary(models.Model):
         return str(self.name)
 
 class BeneficiaryInProgram(models.Model):
-    status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
+    status_choices = (('Otro', 'Otro'), ('Concluída', 'Concluída'), ('En uso', 'En uso'), ('En obra', 'En obra'))
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     curp = models.CharField(max_length=50)
