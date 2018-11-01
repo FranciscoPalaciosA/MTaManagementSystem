@@ -42,7 +42,11 @@ def is_administrative_coordinator(user):
 # Create your views here.
 @login_required
 def index(request):
-    return render(request, 'administrative/index.html')
+    if is_promoter(request.user):
+        return render(request, 'administrative/index/promoter.html')
+    else:
+        return render(request, 'administrative/index.html')
+    return
 
 
 @login_required
