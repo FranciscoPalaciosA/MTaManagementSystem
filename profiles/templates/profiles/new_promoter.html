@@ -159,20 +159,18 @@
   });
 
   //Validar contraseña
-  $("#{{form.password.id_for_label}}").on("focusout", function (e) {
-    if ($(this).val() != $("#passwordConfirm").val()) {
-      $("#passwordConfirm").removeClass("valid").addClass("invalid");
-    } else {
-      $("#passwordConfirm").removeClass("invalid").addClass("valid");
-    }
-  });
+  var password = document.getElementById("password")
+  , confirm_password = document.getElementById("passwordConfirm");
 
-  $("#passwordConfirm").on("keyup", function (e) {
-      if ($("#{{form.password.id_for_label}}").val() != $(this).val()) {
-          $(this).removeClass("valid").addClass("invalid");
-      } else {
-          $(this).removeClass("invalid").addClass("valid");
-      }
-  });
+function validatePassword(){
+  if(password.value != confirm_password.value) {
+    confirm_password.setCustomValidity("Passwords Don't Match");
+  } else {
+    confirm_password.setCustomValidity('');
+  }
+}
+
+password.onchange = validatePassword;
+confirm_password.onkeyup = validatePassword;
 </script>
 {% endblock js %}
