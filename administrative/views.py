@@ -184,6 +184,7 @@ def load_communities(request):
 
 @login_required
 def add_beneficiary(request):
+    print(request.POST)
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
         if form.is_valid():
@@ -217,7 +218,13 @@ def add_beneficiary(request):
                                                         house_references=form.cleaned_data['house_references'],
                                                         huerto_coordinates=form.cleaned_data['huerto_coordinates'],
                                                         water_capacity=water_capacity,
-                                                        savings_account_role=form.cleaned_data['savings_account_role']
+                                                        savings_account_role=form.cleaned_data['savings_account_role'],
+                                                        cisterna_location = form.cleaned_data['cisterna_location'],
+                                                        cisterna_status = form.cleaned_data['cisterna_status'],
+                                                        school = form.cleaned_data['school'],
+                                                        age = form.cleaned_data['age'],
+                                                        initial_weight = form.cleaned_data['initial_weight']
+
                                                         )
             beneficiary_in_program.save()
             return HttpResponseRedirect('/administrative/beneficiaries/0')
@@ -238,6 +245,7 @@ def add_beneficiary(request):
 
 @login_required
 def modify_beneficiary(request):
+    print(request.POST)
     if request.method == 'POST':
         form = BeneficiaryInProgramForm(request.POST)
         if form.is_valid():
@@ -246,6 +254,17 @@ def modify_beneficiary(request):
             else:
                 water_capacity = form.cleaned_data['water_capacity']
 
+            if not form.cleaned_data['age']:
+                age = 0
+            else:
+                age = form.cleaned_data['age']
+
+            if not form.cleaned_data['initial_weight']:
+                initial_weight = 0
+            else:
+                initial_weight = form.cleaned_data['initial_weight']
+
+            print(age)
             beneficiary = form.cleaned_data['beneficiary'][0]
             beneficiary_in_program = BeneficiaryInProgram(
                                                         beneficiary=beneficiary,
@@ -255,7 +274,12 @@ def modify_beneficiary(request):
                                                         house_references=form.cleaned_data['house_references'],
                                                         huerto_coordinates=form.cleaned_data['huerto_coordinates'],
                                                         water_capacity=water_capacity,
-                                                        savings_account_role=form.cleaned_data['savings_account_role']
+                                                        savings_account_role=form.cleaned_data['savings_account_role'],
+                                                        cisterna_location = form.cleaned_data['cisterna_location'],
+                                                        cisterna_status = form.cleaned_data['cisterna_status'],
+                                                        school = form.cleaned_data['school'],
+                                                        age = age,
+                                                        initial_weight = initial_weight
                                                         )
             beneficiary_in_program.save()
 
@@ -274,7 +298,7 @@ def communities(request):
         Parameters: request
         return: For POST request: redirect, For GET request: render
     """
-    if(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
+    if not (is_promoter(request.user)):
         if request.method == 'POST':
             form = CommunityForm(request.POST)
             if form.is_valid():
