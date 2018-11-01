@@ -149,9 +149,8 @@ def administrative_production_report(request, pk):
 def beneficiaries(request, pk):
     if request.method == 'GET':
         if pk == 0:
-            form = BeneficiaryForm()
-            context = {'form': form}
-            return render(request, 'administrative/beneficiaries.html', context)
+            beneficiaries = Beneficiary.objects.all()
+            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries})
         else:
             try:
                 beneficiary = Beneficiary.objects.get(pk=pk)

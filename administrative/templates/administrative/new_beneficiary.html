@@ -147,20 +147,20 @@
               <div id="full_form" hidden>
                 <div class="row">
                   <div class="input-field">
-                    <input value="Rodolfo" required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
+                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
                     <label for="{{form.name.id_for_label}}">Nombre</label>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col s6">
                     <div class="input-field">
-                      <input value="Rodriguez" required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
+                      <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
                       <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno</label>
                     </div>
                   </div>
                   <div class="col s6">
                     <div class="input-field">
-                      <input value="Rocha" required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
+                      <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
                       <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno</label>
                     </div>
                   </div>
@@ -189,7 +189,7 @@
                   </div>
                   <div class="col s4">
                     <div class="input-field">
-                      <input value="3" required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate">
+                      <input required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate">
                       <label for="{{form.num_of_family_beneficiaries.id_for_label}}">Num. Beneficiarios</label>
                     </div>
                   </div>
@@ -197,13 +197,13 @@
                 <div class="row">
                   <div class="col s6">
                     <div class="input-field">
-                      <input value=123 required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="number" class="validate">
+                      <input required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="text" class="validate">
                       <label for="{{form.account_number.id_for_label}}">Número de cuenta</label>
                     </div>
                   </div>
                   <div class="col s6">
                     <div class="input-field">
-                      <input value="Banamex" required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
+                      <input required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate">
                       <label for="{{form.bank_name.id_for_label}}">Nombre del banco</label>
                     </div>
                   </div>
@@ -212,13 +212,13 @@
                 <div class="row">
                   <div class="col s6">
                     <div class="input-field">
-                      <input value="Juan" required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
+                      <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
                       <label for="{{form.contact_name.id_for_label}}">Nombre del recado</label>
                     </div>
                   </div>
                   <div class="col s6">
                     <div class="input-field">
-                      <input value="4325671" required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate">
+                      <input required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate">
                       <label for="{{form.contact_phone.id_for_label}}">Telefono del recado</label>
                     </div>
                   </div>
@@ -278,6 +278,10 @@
         $("#{{form.school.id_for_label}}").prop('required',true);
         break;
       case "Desayunos con amaranto":
+        $("#{{form.num_of_family_beneficiaries.id_for_label}}").prop('required',false);
+        $("#{{form.account_number.id_for_label}}").prop('required',false);
+        $("#{{form.bank_name.id_for_label}}").prop('required',false);
+
         $("#{{form.school.id_for_label}}").prop('required',true);
         $("#{{form.age.id_for_label}}").prop('required',true);
         $("#{{form.initial_weight.id_for_label}}").prop('required',true);

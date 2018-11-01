@@ -61,6 +61,52 @@
 {% endblock nav_tabs %}
 {% block content %}
 <main>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:new_beneficiary' %}">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12">
+            <table id="beneficiaries" class="striped highlight">
+              <thead>
+                <tr>
+                  <th>Beneficiario</th>
+                  <th>Promotora</th>
+                  <th>Comunidad</th>
+                  <th>Ver</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for beneficiary in beneficiaries %}
+                <tr>
+                  <td>
+                    {{beneficiary.name}}
+                  </td>
+                  <td>
+                    {{beneficiary.promoter}}
+                  </td>
+                  <td>
+                    {{beneficiary.community}}
+                  </td>
+                  <td>
+                    <a href="{% url 'administrative:beneficiary' beneficiary.id %}">
+                      <i class="material-icons">remove_red_eye</i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 {% endblock %}
 {% block init_scripts %}
@@ -70,8 +116,33 @@
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
-  $(document).ready(function(){
-    $('select').formSelect();
+  $(document).ready(function() {
+    $('#beneficiaries').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
   });
 </script>
 {% endblock js %}

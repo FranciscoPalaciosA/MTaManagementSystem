@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User, Group
+from django.contrib.auth import logout
 from .models import *
 from .forms import *
 
@@ -121,3 +122,7 @@ def get_promoter_profile(request,pk):
         context = {'promoter': promoter, 'communities': communities}
         return render(request, 'profiles/promoter_profile.html', context)
 
+@login_required
+def logoutUser(request):
+    logout(request)
+    return HttpResponseRedirect('/administrative/')

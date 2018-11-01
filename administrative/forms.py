@@ -9,7 +9,7 @@ class BeneficiaryForm(forms.Form):
     num_of_family_beneficiaries = forms.IntegerField(required=True)
     contact_name = forms.CharField(max_length=200)
     contact_phone = forms.IntegerField()
-    account_number = forms.IntegerField()
+    account_number = forms.CharField(max_length=50)
     bank_name = forms.CharField(max_length=100)
     promoter = forms.ModelMultipleChoiceField(queryset=Promoter.objects)
     community = forms.ModelMultipleChoiceField(queryset=Community.objects)
