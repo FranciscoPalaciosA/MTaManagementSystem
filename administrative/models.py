@@ -29,6 +29,8 @@ class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
     last_name_maternal = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50)
+    email = models.CharField(max_length=200)
     num_of_family_beneficiaries = models.IntegerField(default=0)
     contact_name = models.CharField(max_length=200)
     contact_phone = models.CharField(max_length=50, default=0)

@@ -181,6 +181,8 @@ def add_beneficiary(request):
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
                                         last_name_maternal=form.cleaned_data['last_name_maternal'],
+                                        phone=form.cleaned_data['phone'],
+                                        email=form.cleaned_data['email'],
                                         num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries'],
                                         contact_name=form.cleaned_data['contact_name'],
                                         contact_phone=form.cleaned_data['contact_phone'],

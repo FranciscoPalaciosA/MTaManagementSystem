@@ -6,6 +6,8 @@ class BeneficiaryForm(forms.Form):
     name = forms.CharField(max_length=50)
     last_name_paternal = forms.CharField(max_length=50)
     last_name_maternal = forms.CharField(max_length=50)
+    phone = forms.CharField(max_length=50)
+    email = forms.CharField(max_length=200)
     num_of_family_beneficiaries = forms.IntegerField(required=True)
     contact_name = forms.CharField(max_length=200)
     contact_phone = forms.IntegerField()

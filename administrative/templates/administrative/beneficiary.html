@@ -61,14 +61,60 @@
 {% endblock nav_tabs %}
 {% block content %}
 <main>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large blue modal-trigger" href="#">
+      <i class="large material-icons">edit</i>
+    </a>
+  </div>
   <br><br>
   <div class="container">
     <br><br>
     <div class="row">
       <div class="col s12 m12">
         <div class="card z-depth-3">
-          <div class="card-content">
+          <div class="card-content" style="padding:24px 48px;">
             <h3>{{beneficiary.name}} {{beneficiary.last_name_paternal}}</h3>
+            <div class="row">
+              <div class="col s6">
+                <h6>Teléfono/Celular</h6>
+                <p>{{beneficiary.phone}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Correo Electrónico</h6>
+                <p>{{beneficiary.email}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s6">
+                <h6>Comunidad</h6>
+                <p>{{beneficiary.community}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Promotora</h6>
+                <p>{{beneficiary.promoter}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s6">
+                <h6>Cuenta</h6>
+                <p>{{beneficiary.account_number}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Banco</h6>
+                <p>{{beneficiary.bank_name}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s6">
+                <h6>Num. Beneficiarios</h6>
+                <p>{{beneficiary.num_of_family_beneficiaries}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Agregado</h6>
+                <p>{{beneficiary.created_at}}</p>
+              </div>
+            </div>
+            <br>
             <div class="row">
               <div class="col s6">
                 <h6>Pertenece a programa(s) :</h6>
@@ -76,10 +122,22 @@
                     <p>{{prog.program.name}}</p>
                   {% endfor %}
               </div>
-              <div class="col s3">
+              <div class="col s2">
               </div>
-              <div class="col s3">
+              <div class="col s4">
                 <a class="waves-effect waves-light btn-small" onclick="add_program()"><i class="large material-icons left" style="font-size: 28px">add</i>Programa</a>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <h5>Recado</h5>
+              <div class="col s6">
+                <h6>Nombre</h6>
+                <p>{{beneficiary.contact_name}}</p>
+              </div>
+              <div class="col s6">
+                <h6>Teléfono</h6>
+                <p>{{beneficiary.contact_phone}}</p>
               </div>
             </div>
             <div id="add_program" class="row" hidden>
