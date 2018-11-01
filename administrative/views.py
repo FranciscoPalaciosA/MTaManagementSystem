@@ -31,12 +31,12 @@ def is_promoter(user):
 
 def is_administrative_assistant(user):
     if user:
-        return user.groups.filter(name='administrative_assistant').count() == 1
+        return user.groups.filter(name='Asistente Administrativo').count() == 1
     return False
 
 def is_administrative_coordinator(user):
     if user:
-        return user.groups.filter(name='administrative_coordinator').count() == 1
+        return user.groups.filter(name='Coordinador Administrativo').count() == 1
     return False
 
 # Create your views here.
@@ -259,11 +259,14 @@ def communities(request):
             context = {'community_form': community_form}
             return render(request, 'administrative/communities.html', context)
     else:
-        if(is_promoter(request.user)):
-            return HttpResponseRedirect('/administrative/')
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def weekly_sessions(request):
+    """ Description: Renders the view of weekly sessions for each role
+        Parameters: request
+        return: For POST request: redirect, For GET request: render
+    """
     if(is_promoter(request.user)):
         if request.method == 'POST':
             date = request.POST['date']
@@ -320,15 +323,16 @@ def weekly_sessions(request):
 
             context = {'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'weekly_sessions': weekly_sessions}
             return render(request, 'administrative/weekly_sessions.html', context)
+    elif(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
+        weekly_sessions = WeeklySession.objects.filter().order_by('-date')
+
+        for session in weekly_sessions:
+            session.assistant_count = session.assistants.all().count()
+
+        context = {'weekly_sessions': weekly_sessions}
+        return render(request, 'administrative/Admin_weekly_sessions.html', context)
     else:
-        if(is_administrative_assistant(request.user) | is_administrative_coordinator(request.user)):
-            weekly_sessions = WeeklySession.objects.filter().order_by('-date')
-
-            for session in weekly_sessions:
-                session.assistant_count = session.assistants.all().count()
-
-            context = {'weekly_sessions': weekly_sessions}
-            return render(request, 'administrative/Admin_weekly_sessions.html', context)
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def get_weekly_session(request, pk):
