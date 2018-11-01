@@ -4,7 +4,7 @@ Description: Functions for handling requests to the server
 Modified by: Bernardo, Hugo, Alex, Francisco
 Modify date: 19/10/2018
 """
-
+from django import template
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -28,6 +28,16 @@ def is_promoter(user):
     except Promoter.DoesNotExist:
         return False
     return True
+
+def is_director(user):
+    if user:
+        return user.groups.filter(name='Director').count() == 1
+    return False
+
+def is_trainer(user):
+    if user:
+        return user.groups.filter(name='Capacitador').count() == 1
+    return False
 
 def is_administrative_assistant(user):
     if user:
