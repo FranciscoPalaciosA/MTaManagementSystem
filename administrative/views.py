@@ -42,8 +42,12 @@ def is_administrative_coordinator(user):
 # Create your views here.
 @login_required
 def index(request):
-    context = {}
-    return render(request, 'administrative/index.html', context)
+    if is_promoter(request.user):
+        return render(request, 'administrative/index/promoter.html')
+    else:
+        return render(request, 'administrative/index.html')
+    return
+
 
 @login_required
 def production_report(request):
@@ -67,9 +71,15 @@ def production_report(request):
                 want_for_leaf = ' '
             else:
                 want_for_leaf = form.cleaned_data['want_for_leaf']
+            if not form.cleaned_data['beneficiary']:
+                beneficiary = Beneficiary.objects.get(id=1)
+            else:
+                beneficiary = form.cleaned_data['beneficiary'][0]
+
 
             newProductionReport = ProductionReport(
-                                                    beneficiary = Beneficiary.objects.get(id = 22),
+
+                                                    beneficiary = beneficiary,
                                                     self_seed = form.cleaned_data['self_seed'],
                                                     self_leaf = form.cleaned_data['self_leaf'],
                                                     self_flour = form.cleaned_data['self_seed'],
@@ -89,17 +99,22 @@ def production_report(request):
             print(form.errors)
             print("\n\n\n\n\n")
     elif request.method == 'GET':
-        production_report_form = ProductionReportForm()
-        context = {'production_report_form': production_report_form}
-        return render(request, 'administrative/Production_Report.html', context)
+        if is_promoter(request.user):
+            print("\n\n IS PROMOTER")
+            production_report_form = ProductionReportForm()
+            context = {'production_report_form': production_report_form}
+            return render(request, 'administrative/Production_Report.html', context)
+        else:
+            return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
         review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
-        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(exch_seed=0).exclude(exch_seed=0).exclude(get_for_seed_qty=0).exclude(get_for_leaf_qty=0)
+        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+
 
 @login_required
 def administrative_production_report(request, pk):
@@ -162,7 +177,7 @@ def load_communities(request):
 def add_beneficiary(request):
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
-        if all([form.is_valid()]):
+        if form.is_valid():
             beneficiary = Beneficiary   (
                                         name=form.cleaned_data['name'],
                                         last_name_paternal=form.cleaned_data['last_name_paternal'],
@@ -203,9 +218,12 @@ def add_beneficiary(request):
             print("\n\n\n\n\n")
 
     elif request.method == 'GET':
-        form = BeneficiaryForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_beneficiary.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = BeneficiaryForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_beneficiary.html', context)
 
 @login_required
 def modify_beneficiary(request):
@@ -237,6 +255,7 @@ def modify_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
+
 
 @login_required
 def communities(request):
@@ -503,9 +522,9 @@ def add_saving_account(request):
                                     municipality=form.cleaned_data['municipality'],
                                     location=form.cleaned_data['location'],
                                     total_saved_amount=form.cleaned_data['total_saved_amount'],
-                                    president_beneficiary=form.cleaned_data['president_beneficiary'][0],
-                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'][0],
-                                    partner_beneficiary=form.cleaned_data['partner_beneficiary'][0]
+                                    president_beneficiary=form.cleaned_data['president_beneficiary'],
+                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
+                                    partner_beneficiary=form.cleaned_data['partner_beneficiary']
                                 )
             saving_account.save()
             saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
@@ -518,9 +537,13 @@ def add_saving_account(request):
             print(form.errors)
             print("-----------------------------")
     elif request.method == 'GET':
-        form = SavingAccountForm()
-        context = {'form': form}
-        return render(request, 'administrative/new_saving_account.html', context)
+        if is_promoter(request.user):
+            return HttpResponseRedirect('/administrative/')
+        else:
+            form = SavingAccountForm()
+            context = {'form': form}
+            return render(request, 'administrative/new_saving_account.html', context)
+
 
 def training_session(request):
     """
@@ -528,12 +551,11 @@ def training_session(request):
     Parameters: request
     Returns: Render
     """
-    if(not is_promoter(request.user)):
+    if not is_promoter(request.user):
         if request.method == 'POST':
             date = request.POST['date']
             date_obj = datetime.strptime(date, "%d-%m-%Y")
             data = {
-                        'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
                         'topic': request.POST['topic'],
                         'date': date_obj,
                         'start_time':request.POST['start_time'],

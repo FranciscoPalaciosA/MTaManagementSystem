@@ -153,6 +153,11 @@
                         kg
                       {% endif %}
                     </td>
+                    <td>
+                      <a href="{% url 'administrative:administrative_production_report' report.id %}">
+                        <i class="material-icons">remove_red_eye</i>
+                      </a>
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -184,6 +189,11 @@
                     {{report.want_for_seed}}
                     <br>
                     {{report.want_for_leaf}}
+                  </td>
+                  <td>
+                    <a href="{% url 'administrative:administrative_production_report' report.id %}">
+                      <i class="material-icons">remove_red_eye</i>
+                    </a>
                   </td>
                 {% endfor %}
               </tbody>

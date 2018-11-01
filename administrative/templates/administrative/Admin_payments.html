@@ -206,7 +206,7 @@
           <select id="{{new_payment.promoter.id_for_label}}" name="{{new_payment.promoter.html_name}}" required>
             <option value="" disabled selected>Selecciona uno</option>
             {% for choice in new_payment.promoter.field.queryset %}
-              <option value="{{choice.id}}">{{choice.contact_name}}</option>
+              <option value="{{choice.id}}">{{choice}}</option>
             {% endfor %}
           </select>
         </div>

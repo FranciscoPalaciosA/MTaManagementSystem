@@ -154,10 +154,10 @@
                   <div class="col s6">
                     Por pagar:
                     <div class="input-field inline">
-                      {% if prod_report.exch_seed != 0 %}
-                        <input id="{{production_report_form.get_for_seed_qty.id_for_label}}" name="{{production_report_form.get_for_seed_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_seed_qty}}">
-                      {% else %}
+                      {% if prod_report.exch_seed == 0 or prod_report.paid == True %}
                         <input disabled id="{{production_report_form.get_for_seed_qty.id_for_label}}" name="{{production_report_form.get_for_seed_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_seed_qty}}">
+                      {% else %}
+                        <input id="{{production_report_form.get_for_seed_qty.id_for_label}}" name="{{production_report_form.get_for_seed_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_seed_qty}}">
                       {% endif %}
                       <label for="{{production_report_form.get_for_seed_qty.id_for_label}}">Cantidad</label>
                     </div>
@@ -168,10 +168,10 @@
                   <div class="col s6">
                     Por pagar:
                     <div class="input-field inline">
-                      {% if prod_report.exch_leaf != 0 %}
-                        <input id="{{production_report_form.get_for_leaf_qty.id_for_label}}" name="{{production_report_form.get_for_leaf_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_leaf_qty}}">
-                      {% else %}
+                      {% if prod_report.exch_leaf == 0 or prod_report.paid == True %}
                         <input disabled id="{{production_report_form.get_for_leaf_qty.id_for_label}}" name="{{production_report_form.get_for_leaf_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_leaf_qty}}">
+                      {% else %}
+                        <input id="{{production_report_form.get_for_leaf_qty.id_for_label}}" name="{{production_report_form.get_for_leaf_qty.html_name}}" type="number" class="validate" step="0.1" value="{{prod_report.get_for_leaf_qty}}">
                       {% endif %}
                       <label for="{{production_report_form.get_for_leaf_qty.id_for_label}}">Cantidad</label>
                     </div>
@@ -201,9 +201,11 @@
             </div>
           </div>
           <div class="row">
-            <button class="btn waves-effect waves-light" type="submit" value="Submit" name="action">Guardar
-              <i class="material-icons right">lock</i>
-            </button>
+            {% if prod_report.paid != True %}
+              <button class="btn waves-effect waves-light" type="submit" value="Submit" name="action">Guardar
+                <i class="material-icons right">lock</i>
+              </button>
+            {% endif %}
           </div>
         </div>
       </form>
