@@ -1105,7 +1105,7 @@ class CommunityTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1126,7 +1126,7 @@ class CommunityTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1134,9 +1134,9 @@ class CommunityTests(TestCase):
         response = self.client.get('/administrative/communities/')
         self.assertTemplateUsed(response, 'administrative/communities.html')
 
-    def test_administrative_adds_new_community(self):
+    def test_administrative_assistant_adds_new_community(self):
         """
-        An administrative registers a new community
+        An administrative assistant registers a new community
 
         """
         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
@@ -1148,7 +1148,66 @@ class CommunityTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
+        user.groups.add(group)
+
+        self.client.login(username="user", password="testpassword")
+
+        response = self.client.post('/administrative/communities/', {'name': 'Río Blanco',
+                                                                     'municipality': 'Peñamiller',
+                                                                     'state': 'Querétaro',
+                                                                    })
+        self.assertRedirects(response, '/administrative/communities/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        community = Community.objects.get(name='Río Blanco')
+        self.assertEqual(community.municipality, 'Peñamiller')
+        self.assertEqual(community.state, 'Querétaro')
+
+    def test_promoter_cant_access(self):
+        """
+        A promoter enters /administrative/communities/ and is redirected
+        """
+        user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user, name="PromotoraTest",
+                                                        last_name_paternal="last_name_paternal",
+                                                        last_name_maternal="last_name_maternal",
+                                                        phone_number="phone_number",
+                                                        email="email@email.com",
+                                                        address="address")
+        base_user_promoter.save()
+
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+
+        promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
+
+        self.client.login(username="promoter", password="testpassword")
+
+        response = self.client.get('/administrative/communities/')
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_administrative_coordinator_adds_new_community(self):
+        """
+        An administrative coordinator registers a new community
+
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+
+        group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1176,7 +1235,7 @@ class WeeklySessionTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1197,7 +1256,7 @@ class WeeklySessionTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1207,10 +1266,10 @@ class WeeklySessionTests(TestCase):
 
     def test_view_uses_correct_template_for_promoter(self):
         """
-        A promoter enters /administrative/communities/ and the correct template loads
+        A promoter enters /administrative/weekly_sessions/ and the correct template loads
         """
-        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+        user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
                                                         last_name_maternal="last_name_maternal",
                                                         phone_number="phone_number",
@@ -1227,6 +1286,9 @@ class WeeklySessionTests(TestCase):
                                             contact_phone_number = "1234512312"
                                             )
         promoter.save()
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
 
         self.client.login(username="promoter", password="testpassword")
 
@@ -1265,6 +1327,9 @@ class WeeklySessionTests(TestCase):
                                             )
         promoter.save()
 
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
+
         beneficiary = Beneficiary.objects.create(name="Rodolfo",
                                                  last_name_paternal="Rodriguez",
                                                  last_name_maternal="Rocha",
@@ -1281,7 +1346,7 @@ class WeeklySessionTests(TestCase):
 
         response = self.client.post('/administrative/weekly_sessions/', {'date': datetime.date.today().strftime('%d-%m-%Y'),
                                                                          'type': 'session_type',
-                                                                         'topic': 'session_topic',
+                                                                         'topic': 'session_topicS',
                                                                          'assistants': 1,
                                                                          'start_time': '4:00 PM',
                                                                          'end_time': '5:00 PM',
@@ -1292,7 +1357,6 @@ class WeeklySessionTests(TestCase):
         assistant = weekly_session.assistants.get()
 
         self.assertEqual(weekly_session.type, 'session_type')
-        self.assertEqual(weekly_session.topic, 'session_topic')
         self.assertEqual(weekly_session.start_time, '4:00 PM')
         self.assertEqual(weekly_session.end_time, '5:00 PM')
         self.assertEqual(assistant, beneficiary)
@@ -1301,8 +1365,8 @@ class WeeklySessionTests(TestCase):
         """
         Promoter checks previous weekly sessions buy there are none
         """
-        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+        user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
                                                         last_name_maternal="last_name_maternal",
                                                         phone_number="phone_number",
@@ -1316,6 +1380,9 @@ class WeeklySessionTests(TestCase):
                                             )
         promoter.save()
 
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
+
         self.client.login(username="promoter", password="testpassword")
 
         response = self.client.get('/administrative/weekly_sessions/')
@@ -1325,10 +1392,10 @@ class WeeklySessionTests(TestCase):
         """
         Promoter checks previous weekly sessions and there are
         """
-        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-        user_promoter.save()
+        user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        user.save()
 
-        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+        base_user_promoter = BaseUser.objects.create(user=user, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
                                                         last_name_maternal="last_name_maternal",
                                                         phone_number="phone_number",
@@ -1345,6 +1412,9 @@ class WeeklySessionTests(TestCase):
                                             contact_phone_number = "1234512312"
                                             )
         promoter.save()
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
 
         beneficiary = Beneficiary.objects.create(name="Rodolfo",
                                                  last_name_paternal="Rodriguez",
@@ -1385,7 +1455,7 @@ class WeeklySessionTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1397,8 +1467,8 @@ class WeeklySessionTests(TestCase):
         """
         A promoter check previous weekly sessions and there are
         """
-        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+        user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
                                                         last_name_maternal="last_name_maternal",
                                                         phone_number="phone_number",
@@ -1415,6 +1485,9 @@ class WeeklySessionTests(TestCase):
                                             contact_phone_number = "1234512312"
                                             )
         promoter.save()
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
 
         beneficiary = Beneficiary.objects.create(name="Rodolfo",
                                                  last_name_paternal="Rodriguez",
@@ -1443,7 +1516,7 @@ class WeeklySessionTests(TestCase):
         self.assertContains(response, "session_topic")
 
 class PaymentsTests(TestCase):
-    def test_view_uses_correct_template_for_promoter(self):
+    def test_view_uses_correct_template_for_administrative(self):
         """
         An adminstrative enters /administrative/payments/ and the correct template loads
         """
@@ -1456,7 +1529,7 @@ class PaymentsTests(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
         user.groups.add(group)
 
         self.client.login(username="user", password="testpassword")
@@ -1468,8 +1541,8 @@ class PaymentsTests(TestCase):
         """
         A promoter enters /administrative/payments/ and the correct template loads
         """
-        user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-        base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+        user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+        base_user_promoter = BaseUser.objects.create(user=user, name="PromotoraTest",
                                                         last_name_paternal="last_name_paternal",
                                                         last_name_maternal="last_name_maternal",
                                                         phone_number="phone_number",
@@ -1486,6 +1559,9 @@ class PaymentsTests(TestCase):
                                             contact_phone_number = "1234512312"
                                             )
         promoter.save()
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
 
         self.client.login(username="promoter", password="testpassword")
 
@@ -1537,7 +1613,7 @@ class PaymentsTest(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
         user.groups.add(group)
 
         self.client.login(username="test", password="testpassword")
@@ -1578,16 +1654,12 @@ class PaymentsTest(TestCase):
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
-        
-    def test_promoter_checks_has_payments(self):
-        promoter = create_promoter()
-        promoter.save()
-        create_groups()
-        promoter.base_user.user.groups.add(Group.objects.get(name='promoter'))
-        self.client.login(username="test", password="testpassword")
-
-        user_p = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
-        base_user_p = BaseUser.objects.create(user=user_p, name="name",
+    def test_promoter_upcoming_payments(self):
+        """
+        Promoter checks upcoming payments.
+        """
+        user = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",
                                             last_name_maternal="last_name_maternal",
                                             phone_number="phone_number",
@@ -1606,7 +1678,46 @@ class PaymentsTest(TestCase):
                                             due_date=timezone.now() + timezone.timedelta(days=1)
                                         )
         payment.save()
-       
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
+
+        self.client.login(username="promoter", password="testpassword")
+
+        response = self.client.get('/administrative/payments/')
+        self.assertContains(response, "Pago por cultivo")
+
+    def test_promoter_past_payments(self):
+        """
+        Promoter checks past payments.
+        """
+        user = User.objects.create_user('promoter', 'test_p@testuser.com', 'testpassword')
+        base_user_p = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user_p.save()
+        promoter = Promoter.objects.create(base_user=base_user_p,
+                                            contact_name = "Contacto",
+                                            contact_phone_number = "1234512312"
+                                            )
+        promoter.save()
+        payment = Payment.objects.create(
+                                            promoter=promoter,
+                                            description="Pago por cultivo",
+                                            quantity=1000,
+                                            due_date=timezone.now() + timezone.timedelta(days=1),
+                                            pay_date=timezone.now() + timezone.timedelta(days=1)
+                                        )
+        payment.save()
+
+        group, created = Group.objects.get_or_create(name='promoter')
+        user.groups.add(group)
+
+        self.client.login(username="promoter", password="testpassword")
+        
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
@@ -1623,7 +1734,7 @@ class PaymentsTest(TestCase):
                                             address="address")
         base_user.save()
 
-        group, created = Group.objects.get_or_create(name='administrative_assistant')
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
         user.groups.add(group)
 
         self.client.login(username="test_1", password="testpassword")
@@ -1788,7 +1899,7 @@ class NewSavingAccount(TestCase):
         Creating a new sabing account. Expecting a redirect to /administrative/
         """
 
-        group, created = Group.objects.get_or_create(name='administrative_coordinator')
+        group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
         user.groups.add(group)
 
         self.client.login(username="test_1", password="testpassword")
