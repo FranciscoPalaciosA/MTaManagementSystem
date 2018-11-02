@@ -29,10 +29,27 @@ def is_promoter(user):
         return False
     return True
 
+def is_administrative_assistant(user):
+    if user:
+        return user.groups.filter(name='Asistente Administrativo').count() == 1
+    return False
+
+def is_administrative_coordinator(user):
+    if user:
+        return user.groups.filter(name='Coordinador Administrativo').count() == 1
+    return False
+
+def is_field_technician(user):
+    if user:
+        return user.groups.filter(name='Técnico de Campo').count() == 1
+    return False
+
 # Create your views here.
+@login_required
 def index(request):
     form = PhotoForm()
-    context = {'form': form}
+    videoForm = VideoForm()
+    context = {'form': form, 'videoForm': videoForm}
     return render(request, 'gallery/index.html', context)
 
 @login_required
@@ -51,6 +68,19 @@ def new_photo(request):
                 photo.save()
                 print("SUCCESS!!")
     else:
-        form = PhotoForm()
-    context = {'form': form}
-    return render(request, 'gallery/index.html', context)
+        return HttpResponseRedirect('/gallery/')
+
+@login_required
+def new_video(request):
+    if (is_administrative_assistant(request.user) | is_administrative_coordinator(request.user) | is_field_technician(request.user)):
+        if request.method == 'POST':
+            form = VideoForm(request.POST)
+            if form.is_valid():
+                video = Video(
+                                title=form.cleaned_data['title'],
+                                link=form.cleaned_data['link']
+                            )
+                video.save()
+                return HttpResponseRedirect('/gallery/')
+    else:
+        return HttpResponseRedirect('/gallery/')

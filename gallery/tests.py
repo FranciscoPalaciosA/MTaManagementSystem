@@ -145,3 +145,52 @@ class PhotoTest(TestCase):
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 0)
         self.assertEqual(response.status_code, 200)
+
+class VideoTest(TestCase):
+    def test_new_video_as_administrative_assistant(self):
+        """
+        Adding a new video to the gallery as Administrative Assistant
+        """
+        user = create_user()
+        group, created = Group.objects.get_or_create(name='Asistente Administrativo')
+        user.user.groups.add(group)
+        c = self.client
+        c.login(username="test", password="testpassword")
+        response = c.post('/gallery/new_video/', {  'title': 'video',
+                                                    'link': 'https://www.youtube.com/watch?v=cYlB3dN-udY'})
+
+        self.assertRedirects(response, '/gallery/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        video = Video.objects.get(title='video')
+        self.assertEqual(video.link, 'https://www.youtube.com/watch?v=cYlB3dN-udY')
+
+    def test_new_video_as_administrative_coordinator(self):
+        """
+        Adding a new video to the gallery as Administrative coordinator
+        """
+        user = create_user()
+        group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
+        user.user.groups.add(group)
+        c = self.client
+        c.login(username="test", password="testpassword")
+        response = c.post('/gallery/new_video/', {  'title': 'video',
+                                                    'link': 'https://www.youtube.com/watch?v=cYlB3dN-udY'})
+
+        self.assertRedirects(response, '/gallery/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        video = Video.objects.get(title='video')
+        self.assertEqual(video.link, 'https://www.youtube.com/watch?v=cYlB3dN-udY')
+
+    def test_new_video_as_field_technician(self):
+        """
+        Adding a new video to the gallery as Field Technician
+        """
+        user = create_user()
+        group, created = Group.objects.get_or_create(name='Técnico de Campo')
+        user.user.groups.add(group)
+        c = self.client
+        c.login(username="test", password="testpassword")
+        response = c.post('/gallery/new_video/', {  'title': 'video',
+                                                    'link': 'https://www.youtube.com/watch?v=cYlB3dN-udY'})
+
+        self.assertRedirects(response, '/gallery/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        video = Video.objects.get(title='video')
+        self.assertEqual(video.link, 'https://www.youtube.com/watch?v=cYlB3dN-udY')
