@@ -1,3 +1,9 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 02/11/2018
+"""
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -17,6 +23,30 @@ def is_promoter(user):
         return False
     return True
 
+def is_director(user):
+    if user:
+        return user.groups.filter(name='Director').count() == 1
+    return False
+
+def is_trainer(user):
+    if user:
+        return user.groups.filter(name='Capacitador').count() == 1
+    return False
+
+def is_administrative_assistant(user):
+    if user:
+        return user.groups.filter(name='Asistente Administrativo').count() == 1
+    return False
+
+def is_administrative_coordinator(user):
+    if user:
+        return user.groups.filter(name='Coordinador Administrativo').count() == 1
+    return False
+
+def is_field_technician(user):
+    if user:
+        return user.groups.filter(name='Técnico de Campo').count() == 1
+    return False
 
 # Create your views here.
 @login_required
@@ -24,6 +54,46 @@ def index(request):
     alert_form = AlertForm()
     context = {'alert_form': alert_form}
     return render(request, 'profiles/promoter.html', context)
+
+@login_required
+def accounts(request):
+    """ Description: Renders the view of the accounts
+        Parameters: request
+        return: render
+    """
+    if(is_director(request.user)):
+        users = BaseUser.objects.filter(deleted_at__isnull=True)
+        context = {'users': users}
+        return render(request, 'profiles/accounts.html', context)
+    else:
+        return HttpResponseRedirect('/profiles/')
+
+@login_required
+def edit_account(request,pk):
+    if(is_director(request.user)):
+        if request.method == 'POST':
+            form = BaseUserForm(request.POST)
+
+            if form.is_valid():
+                user =  BaseUser.objects.get(id=pk)
+
+                user.name=form.cleaned_data['name']
+                user.last_name_paternal=form.cleaned_data['last_name_paternal']
+                user.last_name_maternal=form.cleaned_data['last_name_maternal']
+                user.phone_number=form.cleaned_data['phone_number']
+                user.address=form.cleaned_data['address']
+                user.email=form.cleaned_data['email']
+
+                user.save()
+                
+                return HttpResponseRedirect('/profiles/accounts/')
+        else:
+            user = BaseUser.objects.get(id=pk)
+            form = BaseUserForm()
+            context = {'user': user, 'form': form}
+            return render(request, 'profiles/edit_account.html', context)
+    else:
+        return HttpResponseRedirect('/profiles/')
 
 @login_required
 def add_alert(request):
