@@ -7,6 +7,8 @@ from profiles.models import *
 import datetime
 from PIL import Image
 
+# Helper Functions
+
 def create_groups():
     group, created = Group.objects.get_or_create(name='fieldTech')
     group, created = Group.objects.get_or_create(name='promoter')
@@ -54,7 +56,6 @@ def create_database():
                                              bank_name="Banamets")
     beneficiary.save()
 
-
 def create_user_for_group(group_name):
     user = User.objects.create_user(group_name, 'fieldtech@testuser.com', 'testpassword')
     group, created = Group.objects.get_or_create(name=group_name)
@@ -67,7 +68,6 @@ def create_user_for_group(group_name):
                                         address="address")
     base_user.save()
     return base_user
-
 
 def create_user():
     user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
@@ -123,7 +123,8 @@ def create_beneficiary():
                                              bank_name="Banamets")
     beneficiary.save()
     return beneficiary
-  
+
+# Test cases
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
         """
@@ -1717,7 +1718,7 @@ class PaymentsTest(TestCase):
         user.groups.add(group)
 
         self.client.login(username="promoter", password="testpassword")
-        
+
         response = self.client.get('/administrative/payments/')
         self.assertContains(response, "Pago por cultivo")
 
@@ -1918,7 +1919,6 @@ class NewSavingAccount(TestCase):
                                             )
         promoter.save()
 
-
 class TrainingTests(TestCase):
     def test_new_training(self):
         user = create_user()
@@ -1966,3 +1966,8 @@ class TrainingTests(TestCase):
         self.assertEqual(len(session), 0)
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
+class CommunityReportTests(TestCase):
+    def test_check_municipality_info_as_owner(self):
+        director = create_user_for_group('Director')
+        self.client.login(username="Director", password="testpassword")
+        

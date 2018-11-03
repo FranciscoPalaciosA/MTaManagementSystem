@@ -116,6 +116,16 @@ class SavingAccount(models.Model):
     def __str__(self):
         return str(self.name) + "-" +str(self.community)
 
+class SavingsLog(models.Model):
+    saving_account = models.ForeignKey(SavingAccount, on_delete=models.CASCADE)
+    month = models.IntegerField()
+    year = models.IntegerField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return str(self.saving_account) + " : " + str(self.month) + "/" + str(self.year)
+
+
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
     evidence = models.ImageField(upload_to = 'administrative/static/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')

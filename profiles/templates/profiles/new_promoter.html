@@ -73,7 +73,7 @@
             <form action="/profiles/new_promoter/" method="post">
               {% csrf_token %}
               <div class="row">
-                <h4 class="left">Información de la cuenta</h3>
+                <h4 class="left">Información de la cuenta</h4>
                 <div class="input-field col s12">
                   <input required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate">
                   <label for="{{form.username.id_for_label}}">Usuario</label>

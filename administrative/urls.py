@@ -22,5 +22,7 @@ urlpatterns = [
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
     path('training_sessions/', views.training_session, name='training_session'),
-    path('ajax/load_communities/', views.load_communities, name='ajax_load_communities')
+    path('ajax/load_communities/', views.load_communities, name='ajax_load_communities'),
+    path('reports/', views.community_report, name='community_report'),
+    path('reports/municipality_savings/<str:mun>/', views.get_communities_savings, name='ajax_savings'),
 ]
