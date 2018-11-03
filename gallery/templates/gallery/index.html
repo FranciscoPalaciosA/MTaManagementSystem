@@ -13,10 +13,12 @@
   </a>
   <ul>
     <li><a class="btn-floating red modal-trigger" href="#modal-image"><i class="material-icons">add_a_photo</i></a></li>
-    <li><a class="btn-floating yellow darken-1"><i class="material-icons">video_call</i></a></li>
+    <li><a class="btn-floating yellow darken-1 modal-trigger" href="#modal-video"><i class="material-icons">video_call</i></a></li>
   </ul>
 </div>
 </main>
+
+<!-- Image modal -->
 <div id="modal-image" class="modal">
   <div class="modal-content">
     <h4>Agregar Imagen</h4>
@@ -45,6 +47,33 @@
               <input class="file-path validate" type="text" placeholder="Sube una foto!">
             </div>
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+            <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Video modal -->
+<div id="modal-video" class="modal">
+  <div class="modal-content">
+    <h4>Agregar Video</h4>
+    <form action="/gallery/new_video/" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="{{videoForm.title.id_for_label}}" name="{{videoForm.title.html_name}}" type="text" class="validate" required>
+          <label for="{{videoForm.title.id_for_label}}">Título</label>
+        </div>
+        <div class="input-field col s12">
+          <input id="{{videoForm.link.id_for_label}}" name="{{videoForm.link.html_name}}" type="url" class="validate" required>
+          <label for="{{videoForm.link.id_for_label}}">Link</label>
         </div>
       </div>
       <div class="row">

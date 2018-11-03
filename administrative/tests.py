@@ -124,7 +124,6 @@ def create_beneficiary():
     beneficiary.save()
     return beneficiary
 
-# Test cases
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
         """
@@ -1044,7 +1043,7 @@ class NewSavingAccount(TestCase):
                                                                                 "partner_beneficiary": [beneficiary.id]
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-         base_user = BaseUser.objects.create(user=user, name="name",
+        base_user = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",
                                             last_name_maternal="last_name_maternal",
                                             phone_number="phone_number",
@@ -1966,8 +1965,4 @@ class TrainingTests(TestCase):
         self.assertEqual(len(session), 0)
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-class CommunityReportTests(TestCase):
-    def test_check_municipality_info_as_owner(self):
-        director = create_user_for_group('Director')
-        self.client.login(username="Director", password="testpassword")
         

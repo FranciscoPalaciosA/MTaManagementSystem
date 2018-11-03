@@ -50,6 +50,11 @@ def is_administrative_coordinator(user):
         return user.groups.filter(name='Coordinador Administrativo').count() == 1
     return False
 
+def is_field_technician(user):
+    if user:
+        return user.groups.filter(name='Técnico de Campo').count() == 1
+    return False
+    
 # Create your views here.
 @login_required
 def index(request):

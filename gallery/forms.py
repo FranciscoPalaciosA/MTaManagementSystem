@@ -9,3 +9,9 @@ class PhotoForm(forms.ModelForm):
         fields = ['title',
                   'description',
                   'image']
+
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ['title',
+                  'link']
