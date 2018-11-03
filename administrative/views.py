@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
 from django.contrib import messages
 from django.utils import timezone
+from django.db.models import Count, Sum, Func, F
 
 from profiles.models import HelpAlert
 from django.http import Http404
@@ -502,6 +503,10 @@ def get_payment(request, pk):
 
 @login_required
 def add_payment(request):
+    """
+    Description: Creates a new payment
+    Return: HttpResponseRedirect
+    """
     if not is_promoter(request.user):
         if request.method == 'POST':
             form = PaymentForm(request.POST)
@@ -550,6 +555,11 @@ def resolve_alert(request, pk):
 
 @login_required
 def add_saving_account(request):
+    """
+    Description: Creates a new saving account and saves to DB
+    Parameters: request
+    Return: Redirect
+    """
     if request.method == 'POST':
         form = SavingAccountForm(request.POST)
         if form.is_valid():
@@ -632,3 +642,66 @@ def training_session(request):
         return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
     else:
         return HttpResponseRedirect('/administrative/')
+
+
+@login_required
+def community_report(request):
+    if is_director(request.user):
+        data = []
+        municipalities = Community.objects.values('municipality').annotate(
+                                                                            communities=Count('municipality'),
+                                                                            promoters=Count('promoter'),
+                                                                            beneficiaries=Count('beneficiary')
+                                                                        )
+        names = []
+        promoters = []
+        beneficiaries = []
+        for mun in municipalities:
+            data.append(mun)
+            names.append(mun['municipality'])
+            promoters.append(mun['promoters'])
+            beneficiaries.append(mun['beneficiaries'])
+
+        # Savings
+        # communities = Community.objects.values('name')
+        # savings_data = []
+        # curyear = timezone.now().year
+        # for com in communities:
+        #     qset = SavingsLog.objects.filter(saving_account__community=com['name'], year=curyear).values('saving_account__municipality', 'year', 'month', 'amount')
+        #     s = []
+        #     for e in qset:
+        #         s.append(float(e['amount']))
+        #     savings_data.append(s)
+        # print(savings_data)
+
+        # Promoters per municipality
+        context = {'dataset': data, 'names':names, 'promoters':promoters, 'beneficiaries':beneficiaries}
+        return render(request, 'administrative/reports.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/')
+
+@login_required
+def get_communities_savings(request, mun):
+    savings_data = []
+    municipalities = []
+    curyear = timezone.now().year
+    qset = Community.objects.values('municipality').annotate(d=Count('id'))
+    for e in qset:
+        municipalities.append(e['municipality'])
+    for m in municipalities:
+        qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
+        s = []
+        i = 1
+        for e in qset:
+            while i < e['month']:
+                s.append(0)
+                i+=1
+            i = 100
+            s.append(float(e['amount']))
+        savings_data.append(s)
+    print(savings_data)
+    j = {
+        'amounts':savings_data,
+        'labels': municipalities
+    }
+    return JsonResponse(j)

@@ -7,6 +7,8 @@ from profiles.models import *
 import datetime
 from PIL import Image
 
+# Helper Functions
+
 def create_groups():
     group, created = Group.objects.get_or_create(name='fieldTech')
     group, created = Group.objects.get_or_create(name='promoter')
@@ -54,7 +56,6 @@ def create_database():
                                              bank_name="Banamets")
     beneficiary.save()
 
-
 def create_user_for_group(group_name):
     user = User.objects.create_user(group_name, 'fieldtech@testuser.com', 'testpassword')
     group, created = Group.objects.get_or_create(name=group_name)
@@ -67,7 +68,6 @@ def create_user_for_group(group_name):
                                         address="address")
     base_user.save()
     return base_user
-
 
 def create_user():
     user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
@@ -1918,7 +1918,6 @@ class NewSavingAccount(TestCase):
                                             )
         promoter.save()
 
-
 class TrainingTests(TestCase):
     def test_new_training(self):
         user = create_user()
@@ -1965,3 +1964,5 @@ class TrainingTests(TestCase):
         session = TrainingSession.objects.all()
         self.assertEqual(len(session), 0)
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+        
