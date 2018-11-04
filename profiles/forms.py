@@ -33,7 +33,6 @@ class BaseUserForm(forms.Form):
     email = forms.EmailField(max_length=200)
 
 class PromoterFormEdit(forms.Form):
-    username = forms.CharField(max_length=150)
     previous_password = forms.CharField(max_length=150)
     password = forms.CharField(max_length=150, required=False)
     name = forms.CharField(max_length=50)

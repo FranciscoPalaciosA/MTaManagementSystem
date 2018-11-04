@@ -68,6 +68,10 @@ def add_promoter(request):
                                     #,communities=form.cleaned_data['communities']
                                 )
             promoter.save()
+
+            print(promoter.contact_name)
+            print(promoter.contact_phone_number)
+
             promoter.communities.set(form.cleaned_data['communities'])
             return HttpResponseRedirect('/profiles/')
     elif request.method == 'GET':
@@ -111,30 +115,38 @@ def edit_promoter(request, pk):
         if form.is_valid():
             promoter = get_object_or_404(Promoter, pk=pk)
             #Send the new clean data to the Tables
-            print(form.cleaned_data['communities'])
+            #print(form.cleaned_data['communities'])
             if promoter.base_user.user.check_password(form.cleaned_data['previous_password']):
+                base_user = get_object_or_404(BaseUser, pk=promoter.base_user_id)
+                user = get_object_or_404(User, pk=base_user.user_id)
+
                 if form.cleaned_data['password'] != "" and form.cleaned_data['password'] != None:
-                    promoter.base_user.user.password = form.cleaned_data['password'],
+                    user.password = form.cleaned_data['password']
                 #Data from base_user
                 if form.cleaned_data['name'] != "" and form.cleaned_data['name'] != None:
-                    promoter.base_user.name=form.cleaned_data['name'],
+                    base_user.name=form.cleaned_data['name']
                 if form.cleaned_data['last_name_maternal'] != "" and form.cleaned_data['last_name_paternal'] != None:
-                    promoter.base_user.last_name_maternal=form.cleaned_data['last_name_maternal'],
+                    base_user.last_name_maternal=form.cleaned_data['last_name_maternal']
                 if form.cleaned_data['last_name_paternal'] != "" and form.cleaned_data['last_name_paternal'] != None:
-                    promoter.base_user.last_name_paternal=form.cleaned_data['last_name_paternal'],
+                    base_user.last_name_paternal=form.cleaned_data['last_name_paternal']
                 if form.cleaned_data['phone_number'] != "" and form.cleaned_data['phone_number'] != None:
-                    promoter.base_user.phone_number=form.cleaned_data['phone_number'],
-                if form.cleaned_data['adress'] != "" and form.cleaned_data['adress'] != None:
-                    promoter.base_user.address=form.cleaned_data['address'],
+                    base_user.phone_number=form.cleaned_data['phone_number']
+                if form.cleaned_data['address'] != "" and form.cleaned_data['address'] != None:
+                    base_user.address=form.cleaned_data['address']
                 if form.cleaned_data['email'] != "" and form.cleaned_data['email'] != None:
-                    promoter.base_user.email=form.cleaned_data['email'],
+                    base_user.email=form.cleaned_data['email']
                     #Data from promoter
                 if form.cleaned_data['contact_name'] != "" and form.cleaned_data['contact_name'] != None:
-                    promoter.contact_name=form.cleaned_data['contact_name'],
+                    promoter.contact_name=form.cleaned_data['contact_name']
                 if form.cleaned_data['contact_phone_number'] != "" and form.cleaned_data['contact_phone_number'] != None:
-                    promoter.contact_phone_number=form.cleaned_data['contact_phone_number'],
+                     promoter.contact_phone_number=form.cleaned_data['contact_phone_number']
                 promoter.communities.set(form.cleaned_data['communities'])
+
+                user.save()
+                base_user.save()
                 promoter.save()
+
+
                 messages.success(request, 'Datos guardados exitosamente')
                 return HttpResponseRedirect('/profiles/')
             else:
@@ -147,6 +159,7 @@ def edit_promoter(request, pk):
             messages.warning(request, 'No ha llenado todos los espacios de la forma')
             for error in form.errors:
                 print(error)
+            return render(request, 'profiles/edit_promoter.html', context)
     elif request.method == 'GET':
         form = PromoterFormEdit()
         promoter = Promoter.objects.get(pk=pk)
