@@ -51,7 +51,7 @@ class CommunityForm(forms.ModelForm):
                   'state']
 
 class ProductionReportForm(forms.Form):
-    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects, required=False)
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects)
     self_seed = forms.DecimalField(required=False)
     self_leaf = forms.DecimalField(required=False)
     self_flour = forms.DecimalField(required=False)

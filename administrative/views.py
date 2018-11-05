@@ -54,7 +54,7 @@ def is_field_technician(user):
     if user:
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
-    
+
 # Create your views here.
 @login_required
 def index(request):
@@ -116,9 +116,11 @@ def production_report(request):
             print("\n\n\n\n\n")
     elif request.method == 'GET':
         if is_promoter(request.user):
-            print("\n\n IS PROMOTER")
             production_report_form = ProductionReportForm()
-            context = {'production_report_form': production_report_form}
+            base = BaseUser.objects.get(user=request.user)
+            promoter = Promoter.objects.get(base_user=base)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            context = {'production_report_form': production_report_form, 'beneficiaries': beneficiaries}
             return render(request, 'administrative/Production_Report.html', context)
         else:
             return HttpResponseRedirect('/administrative/production_report_list/')
@@ -129,6 +131,7 @@ def production_report_list(request):
         review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
         pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
         paid_reports = ProductionReport.objects.filter(paid=True)
+        #review_reports = review_reports.filter()
         return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 
