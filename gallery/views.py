@@ -67,6 +67,7 @@ def new_photo(request):
                             )
                 photo.save()
                 print("SUCCESS!!")
+            return HttpResponseRedirect('/gallery/')
     else:
         return HttpResponseRedirect('/gallery/')
 
@@ -81,6 +82,6 @@ def new_video(request):
                                 link=form.cleaned_data['link']
                             )
                 video.save()
-                return HttpResponseRedirect('/gallery/')
+            return HttpResponseRedirect('/gallery/')
     else:
         return HttpResponseRedirect('/gallery/')
