@@ -99,9 +99,8 @@ class WeeklySession(models.Model):
 
 class SavingAccount(models.Model):
     name = models.CharField(max_length=50)
-    community = models.CharField(max_length=50)
-    municipality = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
+    # location = models.CharField(max_length=50)
     list_of_beneficiaries =models.ManyToManyField(Beneficiary, verbose_name="list of beneficiaries")
     total_saved_amount = models.IntegerField(default=0)
     president_beneficiary = models.ForeignKey(Beneficiary,related_name='president', on_delete=models.CASCADE)
