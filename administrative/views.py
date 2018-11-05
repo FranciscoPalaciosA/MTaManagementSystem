@@ -54,7 +54,12 @@ def is_field_technician(user):
     if user:
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
-    
+
+def is_counter(user):
+    if user:
+        return user.groups.filter(name='Contador').count() == 1
+    return False
+
 # Create your views here.
 @login_required
 def index(request):
@@ -67,61 +72,68 @@ def index(request):
 
 @login_required
 def production_report(request):
-    if request.method == 'POST':
-        form = ProductionReportForm(request.POST)
-        if form.is_valid():
-            if not form.cleaned_data['exch_seed']:
-                exch_seed = 0
-            else:
-                exch_seed = form.cleaned_data['exch_seed']
+    """ Description: Renders the view to register a new productionn report on the system, when posted stores the data
+        Parameters: request
+        return: For POST request: redirect, For GET request: render
+    """
+    if (is_field_technician(request.user)):
+        if request.method == 'POST':
+            form = ProductionReportForm(request.POST)
+            if form.is_valid():
+                if not form.cleaned_data['exch_seed']:
+                    exch_seed = 0
+                else:
+                    exch_seed = form.cleaned_data['exch_seed']
 
-            if not form.cleaned_data['exch_leaf']:
-                exch_leaf = 0
-            else:
-                exch_leaf = form.cleaned_data['exch_leaf']
-            if not form.cleaned_data['want_for_seed']:
-                want_for_seed = ' '
-            else:
-                want_for_seed = form.cleaned_data['want_for_seed']
-            if not form.cleaned_data['want_for_leaf']:
-                want_for_leaf = ' '
-            else:
-                want_for_leaf = form.cleaned_data['want_for_leaf']
-            if not form.cleaned_data['beneficiary']:
-                beneficiary = Beneficiary.objects.get(id=1)
-            else:
-                beneficiary = form.cleaned_data['beneficiary'][0]
+                if not form.cleaned_data['exch_leaf']:
+                    exch_leaf = 0
+                else:
+                    exch_leaf = form.cleaned_data['exch_leaf']
+                if not form.cleaned_data['want_for_seed']:
+                    want_for_seed = ' '
+                else:
+                    want_for_seed = form.cleaned_data['want_for_seed']
+                if not form.cleaned_data['want_for_leaf']:
+                    want_for_leaf = ' '
+                else:
+                    want_for_leaf = form.cleaned_data['want_for_leaf']
+                if not form.cleaned_data['beneficiary']:
+                    beneficiary = Beneficiary.objects.get(id=1)
+                else:
+                    beneficiary = form.cleaned_data['beneficiary'][0]
 
 
-            newProductionReport = ProductionReport(
+                newProductionReport = ProductionReport(
 
-                                                    beneficiary = beneficiary,
-                                                    self_seed = form.cleaned_data['self_seed'],
-                                                    self_leaf = form.cleaned_data['self_leaf'],
-                                                    self_flour = form.cleaned_data['self_seed'],
-                                                    days_per_month = form.cleaned_data['days_per_month'],
-                                                    exch_seed = exch_seed,
-                                                    want_for_seed = want_for_seed,
-                                                    exch_leaf = exch_leaf,
-                                                    want_for_leaf = want_for_leaf
-                                                    )
-            newProductionReport.save()
-            return HttpResponseRedirect('/administrative/')
+                                                        beneficiary = beneficiary,
+                                                        self_seed = form.cleaned_data['self_seed'],
+                                                        self_leaf = form.cleaned_data['self_leaf'],
+                                                        self_flour = form.cleaned_data['self_seed'],
+                                                        days_per_month = form.cleaned_data['days_per_month'],
+                                                        exch_seed = exch_seed,
+                                                        want_for_seed = want_for_seed,
+                                                        exch_leaf = exch_leaf,
+                                                        want_for_leaf = want_for_leaf
+                                                        )
+                newProductionReport.save()
+                return HttpResponseRedirect('/administrative/')
 
-        else:
-            print("-------------------")
-            print("\n\n\n\n\n")
-            print("Form is not valid")
-            print(form.errors)
-            print("\n\n\n\n\n")
-    elif request.method == 'GET':
-        if is_promoter(request.user):
-            print("\n\n IS PROMOTER")
-            production_report_form = ProductionReportForm()
-            context = {'production_report_form': production_report_form}
-            return render(request, 'administrative/Production_Report.html', context)
-        else:
-            return HttpResponseRedirect('/administrative/production_report_list/')
+            else:
+                print("-------------------")
+                print("\n\n\n\n\n")
+                print("Form is not valid")
+                print(form.errors)
+                print("\n\n\n\n\n")
+        elif request.method == 'GET':
+            if is_promoter(request.user):
+                print("\n\n IS PROMOTER")
+                production_report_form = ProductionReportForm()
+                context = {'production_report_form': production_report_form}
+                return render(request, 'administrative/Production_Report.html', context)
+            else:
+                return HttpResponseRedirect('/administrative/production_report_list/')
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def production_report_list(request):
@@ -560,39 +572,37 @@ def add_saving_account(request):
     Parameters: request
     Return: Redirect
     """
-    if request.method == 'POST':
-        form = SavingAccountForm(request.POST)
-        if form.is_valid():
-            print("-----------------------------")
-            print("form is valid")
-            print("-----------------------------")
-            saving_account = SavingAccount(
-                                    name=form.cleaned_data['name'],
-                                    community=form.cleaned_data['community'],
-                                    municipality=form.cleaned_data['municipality'],
-                                    location=form.cleaned_data['location'],
-                                    total_saved_amount=form.cleaned_data['total_saved_amount'],
-                                    president_beneficiary=form.cleaned_data['president_beneficiary'],
-                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
-                                    partner_beneficiary=form.cleaned_data['partner_beneficiary']
-                                )
-            saving_account.save()
-            saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
-            saving_account.save()
-            return HttpResponseRedirect('/administrative/')
-        else:
+    if (is_administrative_assistant(request.user) | is_administrative_coordinator(request.user) | is_field_technician(request.user)):
+        if request.method == 'POST':
+            form = SavingAccountForm(request.POST)
+            if form.is_valid():
+                print("-----------------------------")
+                print("form is valid")
+                print("-----------------------------")
+                saving_account = SavingAccount(
+                                        name=form.cleaned_data['name'],
+                                        community=form.cleaned_data['community'][0],
+                                        total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                        president_beneficiary=form.cleaned_data['president_beneficiary'],
+                                        treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
+                                        partner_beneficiary=form.cleaned_data['partner_beneficiary']
+                                    )
+                saving_account.save()
+                saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+                saving_account.save()
+                return HttpResponseRedirect('/administrative/')
+            else:
 
-            print("-----------------------------")
-            print("form is not valid")
-            print(form.errors)
-            print("-----------------------------")
-    elif request.method == 'GET':
-        if is_promoter(request.user):
-            return HttpResponseRedirect('/administrative/')
-        else:
+                print("-----------------------------")
+                print("form is not valid")
+                print(form.errors)
+                print("-----------------------------")
+        elif request.method == 'GET':
             form = SavingAccountForm()
             context = {'form': form}
             return render(request, 'administrative/new_saving_account.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 
 def training_session(request):
