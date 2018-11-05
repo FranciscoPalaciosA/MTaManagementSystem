@@ -65,7 +65,6 @@ class BeneficiaryInProgram(models.Model):
     def __str__(self):
         return str(self.beneficiary.name) + " - " + str(self.program.name)
 
-
 class ProductionReport(models.Model):
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     self_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -98,7 +97,6 @@ class WeeklySession(models.Model):
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
 
-
 class SavingAccount(models.Model):
     name = models.CharField(max_length=50)
     community = models.CharField(max_length=50)
@@ -120,11 +118,10 @@ class SavingsLog(models.Model):
     saving_account = models.ForeignKey(SavingAccount, on_delete=models.CASCADE)
     month = models.IntegerField()
     year = models.IntegerField()
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
         return str(self.saving_account) + " : " + str(self.month) + "/" + str(self.year)
-
 
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
