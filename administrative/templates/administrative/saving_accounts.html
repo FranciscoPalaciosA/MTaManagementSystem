@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Beneficiarios{% endblock %}
+{% block nav_title %} Beneficiarios{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+{% block content %}
+<main>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:new_beneficiary' %}">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12">
+            <table id="beneficiaries" class="striped highlight">
+              <thead>
+                <tr>
+                  <th>Cuenta</th>
+                  <th>Municipio</th>
+                  <th>Comunidad</th>
+                  <th>Presidente</th>
+                  <th>Tesorero</th>
+                  <th>Socio</th>
+                  <th>Monto</th>
+                  <th>Editar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for account in account_list %}
+                <tr>
+                  <td>
+                    {{account.name}}
+                  </td>
+                  <td>
+                    {{account.municipality}}
+                  </td>
+                  <td>
+                    {{account.community}}
+                  </td>
+                  <td>
+                    {{account.president_beneficiary}}
+                  </td>
+                  <td>
+                    {{account.treasurer_beneficiary}}
+                  </td>
+                  <td>
+                    {{account.partner_beneficiary}}
+                  </td>
+                  <td>
+                    {{account.total_saved_amount}}
+                  </td>
+                  <td>
+                    <a href="{% url 'administrative:edit_savings' account.id %}">
+                      <i class="material-icons">edit</i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/administrative.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function() {
+    $('#beneficiaries').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
+  });
+</script>
+{% endblock js %}
