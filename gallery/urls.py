@@ -12,5 +12,5 @@ app_name = 'gallery'
 urlpatterns = [
     path('', views.index, name='index'),
     path('new_photo/', views.new_photo, name='index'),
-    path('new_video/', views.new_video, name='new_video')
+    path('new_video/', views.new_video, name='new_video'),
 ]

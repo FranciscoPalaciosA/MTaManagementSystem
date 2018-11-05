@@ -116,6 +116,21 @@ class SavingAccountForm(forms.Form):
     treasurer_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
     partner_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
 
+class UpdateSavingsForm(forms.Form):
+    """
+    This form is to update a savings account, saving the change in a SavingsLog object
+    """
+    pk = forms.IntegerField()
+    name = forms.CharField(max_length=50)
+    community = forms.CharField(max_length=50)
+    municipality = forms.CharField(max_length=50)
+    location = forms.CharField(max_length=50)
+    list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())
+    president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    treasurer_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    partner_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
+    amount = forms.DecimalField(max_digits=12)
+
 #For to check a payment as "paid" and add a comment
 class PayForm(forms.ModelForm):
     class Meta:

@@ -36,21 +36,41 @@
         </nav>
       </div>
       <ul id="sidenav-left" class="sidenav sidenav-fixed">
-        <li><a href="dashboard.html" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
+        <li><a href="{% url 'administrative:index' %}" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
             {% if request.user|has_group:"Director" %}
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+
+            {% elif request.user|has_group:"Asistente Administrativo" %}
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+
+            {% elif request.user|has_group:"Coordinador Administrativo" %}
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_sessions' %}">Sesiones de entrenamiento</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
             {% endif %}
             {% if request.user|has_group:"Técnico de Campo" %}
             <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
             <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:new_saving_account' %}">Registrar Caja de Ahorro</a></li>
             <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galeria</a></li>
             {% endif %}
-            {% block nav_tabs %}{% endblock nav_tabs %}
+            {% block nav_tabs %}
+            {% endblock nav_tabs %}
           </ul>
         </li>
       </ul>
