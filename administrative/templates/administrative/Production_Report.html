@@ -126,6 +126,8 @@
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
+  $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+  
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
   });

@@ -6,7 +6,6 @@
 
 {% block content %}
 <main>
-  aadsfasdf
   <div class="fixed-action-btn">
   <a class="btn-floating btn-large red">
     <i class="large material-icons">add</i>
@@ -22,7 +21,7 @@
 <div id="modal-image" class="modal">
   <div class="modal-content">
     <h4>Agregar Imagen</h4>
-    <form action="/gallery/new_photo" method="POST" enctype="multipart/form-data">
+    <form action="/gallery/new_photo/" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="row">
           <div class="input-field col s12">

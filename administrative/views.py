@@ -128,23 +128,45 @@ def production_report(request):
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
-        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
-        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
-        paid_reports = ProductionReport.objects.filter(paid=True)
-        #review_reports = review_reports.filter()
-        return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+        if is_promoter(request.user):
+            review_reports_unfiltered = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
+            pending_reports_unfiltered = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
+            paid_reports_unfiltered = ProductionReport.objects.filter(paid=True)
+            base = BaseUser.objects.get(user=request.user)
+            promoter = Promoter.objects.get(base_user=base)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+
+            review_reports = []
+            pending_reports = []
+            paid_reports = []
+            for beneficiary in beneficiaries:
+                review_reports.extend(review_reports_unfiltered.filter(beneficiary=beneficiary))
+                pending_reports.extend(pending_reports_unfiltered.filter(beneficiary=beneficiary))
+                paid_reports.extend(paid_reports_unfiltered.filter(beneficiary=beneficiary))
+
+            return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+        else:
+            review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
+            pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
+            paid_reports = ProductionReport.objects.filter(paid=True)
+            return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 
 @login_required
 def administrative_production_report(request, pk):
     if request.method == 'GET':
+
         try:
             production_report = ProductionReport.objects.get(pk=pk)
         except ProductionReport.DoesNotExist:
             raise Http404("No existe ese Reporte de Producción.")
 
         production_report_form = ProductionReportForm()
-        return render(request, 'administrative/administrative_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
+
+        if is_promoter(request.user):
+            return render(request, 'administrative/promoter_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
+        else:
+            return render(request, 'administrative/administrative_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
     elif request.method == 'POST':
         try:
             production_report = ProductionReport.objects.get(pk=pk)
@@ -155,20 +177,41 @@ def administrative_production_report(request, pk):
         print(data)
 
         if 'get_for_leaf_qty' in data:
-            production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+            if data['get_for_leaf_qty'] != '':
+                production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+
         if 'get_for_seed_qty' in data:
-            production_report.get_for_seed_qty = data['get_for_seed_qty']
+            if data['get_for_seed_qty'] != '':
+                production_report.get_for_seed_qty = data['get_for_seed_qty']
         if 'paid' in data:
             production_report.paid = data['paid']
 
+        if 'want_for_leaf' in data:
+            production_report.want_for_leaf = data['want_for_leaf']
+        if 'want_for_seed' in data:
+            production_report.want_for_seed = data['want_for_seed']
+
+        if 'exch_leaf' in data:
+            production_report.exch_leaf = data['exch_leaf']
+        if 'exch_seed' in data:
+            production_report.exch_seed = data['exch_seed']
+
         production_report.save()
         return HttpResponseRedirect('/administrative/production_report_list/')
+
+@login_required
+def beneficiaries_list(request):
+    return HttpResponseRedirect('/administrative/beneficiaries/0')
 
 @login_required
 def beneficiaries(request, pk):
     if request.method == 'GET':
         if pk == 0:
             beneficiaries = Beneficiary.objects.all()
+            if is_promoter(request.user):
+                base = BaseUser.objects.get(user=request.user)
+                promoter = Promoter.objects.get(base_user=base)
+                beneficiaries = Beneficiary.objects.filter(promoter=promoter)
             return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries})
         else:
             try:
