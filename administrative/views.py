@@ -729,10 +729,44 @@ def training_session(request):
                 messages.warning(request,'Hubo errores en la forma, intente de nuevo')
         form = TrainingForm()
         curdate = timezone.now()
-        return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate})
+        training_session_list = TrainingSession.objects.order_by('date')
+        return render(request, 'administrative/training_sessions.html', {'form':form, 'curdate': curdate, 'training_session_list':training_session_list})
     else:
         return HttpResponseRedirect('/administrative/')
 
+def edit_training_session(request, pk):
+    """
+    Description: Edits a training session and updates information
+    Parameters: request, pk of the account being edited
+    return: render or HttpResponseRedirect
+    """
+    u = request.user
+    # Validate user type
+    if not is_promoter(u):
+        form = UpdateTrainingSession()
+        if request.method == 'POST':
+            form = UpdateTrainingSession(request.POST)
+            if form.is_valid():
+                #Training Session object
+                session = TrainingSession.objects.get(pk=pk   )
+                session.topic=form.cleaned_data['topic']
+                session.trainer=base_user
+                date = form.cleaned_data['date']
+                date_obj = datetime.strptime(date, "%d-%m-%Y")
+                session.date= date_obj
+                session.start_time=form.cleaned_data['start_time']
+                session.end_time=form.cleaned_data['end_time']
+                session.comments=form.cleaned_data['comments']
+                session.save()
+                return HttpResponseRedirect('/administrative/training_sessions/')
+            else:
+                return HttpResponseRedirect('/administrative/edit_training_session/'+request.POST['pk']+'/')
+        else:
+            session = get_object_or_404(TrainingSession, pk=pk)
+            assistants = session.assistants.all()
+            context = {'form': form, 'session': session, 'assistants':assistants}
+            return render(request, 'administrative/edit_training_session.html', context)
+    return HttpResponseRedirect('/administrative/training_sessions/')
 
 @login_required
 def community_report(request):

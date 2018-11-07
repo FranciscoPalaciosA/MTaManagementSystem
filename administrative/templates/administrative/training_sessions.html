@@ -65,7 +65,53 @@
 
 {% block content %}
     <main>
-      
+      <div class="container">
+        <div class="card">
+          <div class="card-content">
+            <div class="row">
+              <div class="col s12">
+                <table id="beneficiaries" class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Tema</th>
+                      <th>Fecha</th>
+                      <th>Hora de Inicio</th>
+                      <th>Hora de Fin</th>
+                      <th>Entrenador</th>
+                      <th>Comentarios</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for training_session in training_session_list %}
+                    <tr>
+                      <td>
+                        {{training_session.topic}}
+                      </td>
+                      <td>
+                        {{training_session.date}}
+                      </td>
+                      <td>
+                        {{training_session.start_time}}
+                      </td>
+                      <td>
+                        {{training_session.end_time}}
+                      </td>
+                      <td>
+                        {{training_session.trainer}}
+                      </td>
+                      <td>
+                        {{training_session.comments}}
+                      </td>
+
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
           <i class="large material-icons">add</i>
