@@ -4,4 +4,10 @@
 
 .tabs .tab a, .tabs .tab a.active {
   color: #faaca8;
+  background.color: blue;
+}
+
+
+.lol .select-dropdown+ul{
+  border-bottom: 2px solid #f44336;
 }

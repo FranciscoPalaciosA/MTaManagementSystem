@@ -74,13 +74,15 @@
               {% csrf_token %}
               <div class="row">
                 <h4 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h4>
+              </div>
+              <div class="row">
                 <div class="input-field col s12 m4">
                   <input required id="{{form.previous_password.id_for_label}}" name="{{form.previous_password.html_name}}" type="password" class="validate">
                   <label for="{{form.previous_password.id_for_label}}">Contraseña Anterior</label>
                 </div>
                 <div class="input-field col s12 m4">
                   <input id="{{form.password.id_for_label}}" name="{{form.password.html_name}}" type="password" class="validate" >
-                  <label for="{{form.password.id_for_label}}">Contraseña</label>
+                  <label for="{{form.password.id_for_label}}">Nueva Contraseña</label>
                 </div>
                 <div class="input-field col s12 m4">
                   <input id="passwordConfirm" name="" type="password" class="validate">
@@ -117,11 +119,14 @@
                 </div>
               </div>
               <div class="row">
-                <div class="input-field col s12">
-                  <select required id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
-                    <option value="{{promoter.communities}}">{{choice}}</option>                
+                <div class="input-field col s12 lol">
+                  <select class ="notSelected" required id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
                     {% for choice in form.communities.field.queryset %}
-                    <option value="{{choice.id}}">{{choice}}</option>
+                      {% if  choice.id in communities %}
+                        <option value="{{choice.id}}" selected >{{choice}}</option>
+                      {% else %}
+                        <option value="{{choice.id}}">{{choice}}</option>
+                      {% endif %}
                     {% endfor %}
                   </select>
                   <label for="{{form.communities.id_for_label}}">Comunidades</label>

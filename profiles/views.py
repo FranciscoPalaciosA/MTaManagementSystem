@@ -151,6 +151,7 @@ def edit_promoter(request, pk):
                 return HttpResponseRedirect('/profiles/')
             else:
                 form = PromoterFormEdit()
+
                 context = {'form': form, 'promoter': promoter}
                 messages.warning(request, 'La contraseña anterior es incorrecta')
                 return render(request, 'profiles/edit_promoter.html', context)
@@ -163,7 +164,10 @@ def edit_promoter(request, pk):
     elif request.method == 'GET':
         form = PromoterFormEdit()
         promoter = Promoter.objects.get(pk=pk)
-        context = {'form': form, 'promoter': promoter}
+        list = Community.objects.values_list('id', flat=True).filter(deleted_at__isnull=True, promoter__id=pk)
+        communities = dict(zip(list[::1], list[::1]))
+
+        context = {'form': form, 'promoter': promoter, 'communities':communities}
         return render(request, 'profiles/edit_promoter.html', context)
     else:
         print("NOT POST OR GET")
