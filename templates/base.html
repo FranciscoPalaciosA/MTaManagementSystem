@@ -45,6 +45,9 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
 
+            {% elif request.user|has_group:"Capacitador" %}
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
+
             {% elif request.user|has_group:"Asistente Administrativo" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
