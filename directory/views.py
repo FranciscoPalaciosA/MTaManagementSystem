@@ -65,6 +65,19 @@ def add_contact(request):
         return render(request, 'directory/new_contact.html', context)
 
 @login_required
+def delete_contact(request, pk):
+    if request.method == 'GET':
+        try:
+            contact = Contact.objects.get(pk=pk)
+        except Contact.DoesNotExist:
+            raise Http404("No existe ese contacto.")
+
+        contact.deleted_at = timezone.now()
+        contact.save()
+
+        return HttpResponseRedirect('/directory/')
+
+@login_required
 def add_institution(request):
     if request.method == 'POST':
         form = InstitutionForm(request.POST)
