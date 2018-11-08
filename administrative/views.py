@@ -5,7 +5,7 @@ Modified by: Bernardo, Hugo, Alex, Francisco
 Modify date: 19/10/2018
 """
 from django import template
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
@@ -19,6 +19,7 @@ from .models import *
 from .forms import *
 from datetime import datetime, time
 
+#Helper functions
 def is_promoter(user):
     #Description: Check if a user is a promoter
     #Parameter: user
@@ -31,30 +32,50 @@ def is_promoter(user):
     return True
 
 def is_director(user):
+    #Description: Check if a user is a director
+    #Parameter: user
+    #Return: True if user is director
     if user:
         return user.groups.filter(name='Director').count() == 1
     return False
 
 def is_trainer(user):
+    #Description: Check if a user is a trainer
+    #Parameter: user
+    #Return: True if user is trainer
     if user:
         return user.groups.filter(name='Capacitador').count() == 1
     return False
 
 def is_administrative_assistant(user):
+    #Description: Check if a user is an administrative assistant
+    #Parameter: user
+    #Return: True if user is an administrative assistant
     if user:
         return user.groups.filter(name='Asistente Administrativo').count() == 1
     return False
 
 def is_administrative_coordinator(user):
+    #Description: Check if a user is an administrative coordinator
+    #Parameter: user
+    #Return: True if user is an administrative coordinator
     if user:
         return user.groups.filter(name='Coordinador Administrativo').count() == 1
     return False
 
 def is_field_technician(user):
+    #Description: Check if a user is a field technician
+    #Parameter: user
+    #Return: True if user is a field technician
     if user:
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
+def is_counter(user):
+    if user:
+        return user.groups.filter(name='Contador').count() == 1
+    return False
+  
 # Create your views here.
 @login_required
 def index(request):
@@ -67,6 +88,10 @@ def index(request):
 
 @login_required
 def production_report(request):
+    """ Description: Renders the view to register a new productionn report on the system, when posted stores the data
+        Parameters: request
+        return: For POST request: redirect, For GET request: render
+    """
     if request.method == 'POST':
         form = ProductionReportForm(request.POST)
         if form.is_valid():
@@ -91,7 +116,6 @@ def production_report(request):
                 beneficiary = Beneficiary.objects.get(id=1)
             else:
                 beneficiary = form.cleaned_data['beneficiary'][0]
-
 
             newProductionReport = ProductionReport(
 
@@ -124,6 +148,8 @@ def production_report(request):
             return render(request, 'administrative/Production_Report.html', context)
         else:
             return HttpResponseRedirect('/administrative/production_report_list/')
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 @login_required
 def production_report_list(request):
@@ -600,45 +626,107 @@ def resolve_alert(request, pk):
     return HttpResponseRedirect('/administrative/')
 
 @login_required
+def saving_accounts(request):
+    """
+    Description: List saving accounts
+    Parameters: request
+    Return: Render
+    """
+    u = request.user
+    # Validate user type
+    if is_field_technician(u) or is_administrative_assistant(u) or is_administrative_coordinator(u):
+        if request.method == 'GET':
+            account_list = SavingAccount.objects.filter(deleted_at__isnull=True).order_by('municipality')
+            context = {'account_list':account_list}
+            return render(request, 'administrative/saving_accounts.html', context)
+
+    return HttpResponseRedirect('/administrative/')
+
+def edit_savings(request, pk=0):
+    """
+    Description: Edits a savings account and the corresponding SavingsLog Object
+    Parameters: request, pk of the account being edited
+    return: render or HttpResponseRedirect
+    """
+    u = request.user
+    # Validate user type
+    if is_field_technician(u) or is_administrative_assistant(u) or is_administrative_coordinator(u):
+        form = UpdateSavingsForm()
+        if request.method == 'POST':
+            form = UpdateSavingsForm(request.POST)
+            if form.is_valid():
+                account_id = form.cleaned_data['pk']
+                if request.POST['transaction_type'] == 'deposit':
+                    amount = form.cleaned_data['amount']
+                else:
+                    amount =  0 - form.cleaned_data['amount']
+                #Savings Account object
+                account = SavingAccount.objects.get(pk=account_id)
+                account.total_saved_amount = account.total_saved_amount + amount
+                account.name = form.cleaned_data['name']
+                account.community = form.cleaned_data['community']
+                account.municipality = form.cleaned_data['municipality']
+                account.location = form.cleaned_data['location']
+                account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+                account.president_beneficiary = form.cleaned_data['president_beneficiary']
+                account.treasurer_beneficiary = form.cleaned_data['treasurer_beneficiary']
+                account.partner_beneficiary = form.cleaned_data['partner_beneficiary']
+                account.updated_at = timezone.now()
+                account.save()
+                #SavingsLog object
+                month = datetime.now().month
+                year = datetime.now().year
+                log = SavingsLog.objects.get_or_create(saving_account=account, month=month, year=year)
+                log.amount = account.total_saved_amount
+                log.save()
+                return HttpResponseRedirect('/administrative/saving_accounts/')
+            else:
+                return HttpResponseRedirect('/administrative/edit_savings/'+request.POST['pk']+'/')
+        else:
+            account = get_object_or_404(SavingAccount, pk=pk)
+            current_beneficiaries = account.list_of_beneficiaries.all()
+            context = {'form': form, 'account': account, 'current_beneficiaries':current_beneficiaries}
+            return render(request, 'administrative/edit_savings.html', context)
+    return HttpResponseRedirect('/administrative/saving_accounts/')
+
+@login_required
 def add_saving_account(request):
     """
     Description: Creates a new saving account and saves to DB
     Parameters: request
     Return: Redirect
     """
-    if request.method == 'POST':
-        form = SavingAccountForm(request.POST)
-        if form.is_valid():
-            print("-----------------------------")
-            print("form is valid")
-            print("-----------------------------")
-            saving_account = SavingAccount(
-                                    name=form.cleaned_data['name'],
-                                    community=form.cleaned_data['community'],
-                                    municipality=form.cleaned_data['municipality'],
-                                    location=form.cleaned_data['location'],
-                                    total_saved_amount=form.cleaned_data['total_saved_amount'],
-                                    president_beneficiary=form.cleaned_data['president_beneficiary'],
-                                    treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
-                                    partner_beneficiary=form.cleaned_data['partner_beneficiary']
-                                )
-            saving_account.save()
-            saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
-            saving_account.save()
-            return HttpResponseRedirect('/administrative/')
-        else:
+    if (is_administrative_assistant(request.user) | is_administrative_coordinator(request.user) | is_field_technician(request.user)):
+        if request.method == 'POST':
+            form = SavingAccountForm(request.POST)
+            if form.is_valid():
+                print("-----------------------------")
+                print("form is valid")
+                print("-----------------------------")
+                saving_account = SavingAccount(
+                                        name=form.cleaned_data['name'],
+                                        community=form.cleaned_data['community'][0],
+                                        total_saved_amount=form.cleaned_data['total_saved_amount'],
+                                        president_beneficiary=form.cleaned_data['president_beneficiary'],
+                                        treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
+                                        partner_beneficiary=form.cleaned_data['partner_beneficiary']
+                                    )
+                saving_account.save()
+                saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
+                saving_account.save()
+                return HttpResponseRedirect('/administrative/')
+            else:
 
-            print("-----------------------------")
-            print("form is not valid")
-            print(form.errors)
-            print("-----------------------------")
-    elif request.method == 'GET':
-        if is_promoter(request.user):
-            return HttpResponseRedirect('/administrative/')
-        else:
+                print("-----------------------------")
+                print("form is not valid")
+                print(form.errors)
+                print("-----------------------------")
+        elif request.method == 'GET':
             form = SavingAccountForm()
             context = {'form': form}
             return render(request, 'administrative/new_saving_account.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/')
 
 
 def training_session(request):

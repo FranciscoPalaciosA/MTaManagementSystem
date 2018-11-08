@@ -60,12 +60,17 @@
             {% elif request.user|has_group:"Coordinador Administrativo" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_sessions' %}">Sesiones de entrenamiento</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Sesiones de entrenamiento</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+            {% endif %}
+            {% if request.user|has_group:"Técnico de Campo" %}
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:new_saving_account' %}">Registrar Caja de Ahorro</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galeria</a></li>
             {% endif %}
             {% block nav_tabs %}
             {% endblock nav_tabs %}
