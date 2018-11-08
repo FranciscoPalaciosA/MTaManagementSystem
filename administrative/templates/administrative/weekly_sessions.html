@@ -4,137 +4,150 @@
 
 {% block nav_title %}Sesiones semanales{% endblock %}
 {% block nav_tabs %}
-
-<style type="text/scss">
-  .hide {
-   position: absolute !important;
-   top: -9999px !important;
-   left: -9999px !important;
-  }
-</style>
-
-<!-- Should be doing this based on the current logged user -->
-<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
-      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
-      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
-      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
-      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
-      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
-      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
-      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
-      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
-      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
-      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
-      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
-      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
 {% endblock nav_tabs %}
 
 {% block content %}
     <main>
+      <br><br>
+      <div class="container">
+        <div class="row">
+          <div class="col s12 m12">
+            <div class="card z-depth-3">
+              <div class="card-content">
+
+                <h5>Sesiones pasadas</h5>
+                <table class="striped" id="sessions">
+                  <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Tema</th>
+                        <th>Fecha</th>
+                        <th>Asistentes</th>
+                        <th></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for session in weekly_sessions %}
+                      <tr>
+                        <td>{{ session.type }}</td>
+                        <td>{{ session.topic }}</td>
+                        <td>{{ session.date|date:"d / m / Y" }}</td>
+                        <td>{{ session.assistant_count }}</td>
+                        <td>
+                          <a class="modal-trigger " onclick="ajaxCall({{session.id}})">
+                            <i class="material-icons">pageview</i>
+                          </a>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td>No hay sesiones pasadas.</td>
+                      </tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pay-modal" class="modal">
+          <div class="modal-content">
+            <h4>Sesión</h4>
+            <br>
+            <div class="row">
+              <div class="col s4"><b>Tipo: </b><span id="type-text">loremipsum</span></div>
+              <div class="col s4"><b>Tema: </b><span id="topic-text">loremipsum</span></div>
+            </div>
+            <div class="row">
+              <div class="col s4"><b>Fecha: </b><span id="date-text">loremipsum</span></div>
+              <div class="col s4"><b>Hora inicio: </b><span id="start-text">loremipsum</span></div>
+              <div class="col s4"><b>Hora fin: </b><span id="end-text">loremipsum</span></div>
+            </div><hr>
+            <div class="row">
+              <div class="col s12"><b>Asistentes:</b></div>
+              <div class="col s12"><span id="assistants-list"></span></div>
+            </div><hr>
+            <div class="row">
+              <div class="col s12"><b>Evidencias:</b></div>
+              {% load static %}
+              <span id="evidences"></span>
+            </div>
+            <br>
+          </div>
+        </div>
+      </div>
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
           <i class="large material-icons">add</i>
         </a>
       </div>
+    </main>
+
       <!-- Modal Structure -->
       <div id="modal1" class="modal">
         <div class="modal-content">
           <h4>Nueva Sesión</h4>
           <form action="/administrative/weekly_sessions/" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="input-field">
-              <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
-              <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate" value="Clase">
-            </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
-              <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate" value="Clase">
-            </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
-              <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker" value="07:15">
-            </div>
-            <div class="input-field">
-              <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
-              <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker" value="07:15">
-            </div>
-              <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
-              <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
+            <div class="row">
+              <div class="input-field col s12 m4">
+                <label for="{{weekly_session_form.date.id_for_label}}">Fecha</label>
+                <input required id="{{weekly_session_form.date.id_for_label}}" name="{{weekly_session_form.date.html_name}}" type="text" class="validate datepicker" max="{{curdate}}">
+              </div>
+              <div class="input-field col s12 m4">
+                <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
+                <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker">
+              </div>
+              <div class="input-field col s12 m4">
+                <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
+                <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker">
+              </div>
+              <div class="input-field col s12 m12">
+                <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
+                <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate">
+              </div>
+              <div class="input-field col s12 m12">
+                <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
+                <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate">
+              </div>
+              <div class="input-field col s12 m12">
+                <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
+                <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
 
-              {% for choice in weekly_session_form.assistants.field.queryset %}
-                {% if choice in beneficiaries %}
-                <div class="input-field"><br>
-                  <label name=assistant_check>
-                    <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}">
-                    <span>{{choice}}</span>
-                  </label>
-                </div>
-                {% endif %}
-              {% endfor %}
+                {% for choice in weekly_session_form.assistants.field.queryset %}
+                  {% if choice in beneficiaries %}
+                  <div class="input-field"><br>
+                    <label name=assistant_check>
+                      <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}">
+                      <span>{{choice}}</span>
+                    </label>
+                  </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
             </div>
             <br><br><br>
-            <div class="file-field input-field">
-              <div class="btn">
-                <span>Evidencia</span>
-                <input type="file" id="{{weekly_session_form.evidence.id_for_label}}" name="{{weekly_session_form.evidence.html_name}}" accept="image/*" multiple>
+            <div class="row">
+              <div class="file-field input-field">
+                <div class="btn">
+                  <span>Evidencia</span>
+                  <input type="file" id="{{weekly_session_form.evidence.id_for_label}}" name="{{weekly_session_form.evidence.html_name}}" accept="image/*" multiple>
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text" placeholder="Sube una o más evidencias!">
+                </div>
               </div>
-              <div class="file-path-wrapper">
-                <input class="file-path validate" type="text" placeholder="Sube una o más evidencias!">
-              </div>
+              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                <i class="material-icons right">send</i>
+              </button>
             </div>
-            <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-              <i class="material-icons right">send</i>
-            </button>
-
             <br><br>
           </form>
         </div>
-        <!-- <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div> -->
-      </div>
-    </main>
+
 {% endblock content %}
 {% block init_scripts %}
 <script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
@@ -145,6 +158,28 @@
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
     $('.timepicker').timepicker();
+    $('.datepicker').datepicker({
+      format:'dd-mm-yyyy'
+    });
+
+    $.fn.dataTable.ext.classes.sPageButton = 'waves-effect waves-teal btn-flat'; // Change Pagination Button Class
+
+    $('#sessions').DataTable({
+      "pageLength": 10,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info":     false,
+
+      "language": {
+        "paginate": {
+          "previous": "anterior",
+          "next": "siguiente"
+        }
+      }
+
+    });
+
   });
 
   function filter_assistants() {
@@ -166,6 +201,42 @@
       }
     }
   }
+
+  function ajaxCall(id){
+    path = "/administrative/get_weekly_session/" + id;
+    $.ajax({
+      method: "GET",
+      url: path
+    }).done(function(data) {
+      var date = new Date(data['date']);
+      day = date.getDate()+1;
+      month = date.getMonth()+1;
+      year = date.getFullYear();
+
+      $("#type-text").text(data['type']);
+      $("#topic-text").text(data['topic']);
+      $("#date-text").text(day + ' / ' + month + ' / ' + year);
+      $("#start-text").text(data['start']);
+      $("#end-text").text(data['end']);
+
+      var assistants = data['assistants'].split(",");
+      var change = "";
+      for(var i=0;i<assistants.length;i++){
+        change += "<div class=\"col s4\">" + assistants[i] + "</div>";
+      }
+      $("#assistants-list").html(change);
+
+      var evidences = data['evidences'].split(",");
+      var change = "";
+      for(var i=0;i<evidences.length;i++){
+        change += "<div class=\"col s4\"><img class=\"materialboxed\" width=\"100%\" src=\"/static/weekly_session_evidence/" + evidences[i] + " \"></div>";
+      }
+      $("#evidences").html(change);
+
+      $('#pay-modal').modal('open');
+      $('.materialboxed').materialbox();
+    });
+}
 
 
 </script>

@@ -73,7 +73,7 @@
             <form action="/profiles/new_promoter/" method="post">
               {% csrf_token %}
               <div class="row">
-                <h4 class="left">Información de la cuenta</h3>
+                <h4 class="left">Información de la cuenta</h4>
                 <div class="input-field col s12">
                   <input required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate">
                   <label for="{{form.username.id_for_label}}">Usuario</label>
@@ -126,15 +126,15 @@
                   <label for="{{form.communities.id_for_label}}">Comunidades</label>
                 </div>
               </div>
-              <h4 class="left-align col s12">Información del contacto</h4>
+              <h4 class="left-align col s12">Información del recado</h4>
               <div class="row">
                 <div class="input-field col s12 m6">
                   <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate">
-                  <label for="{{form.contact_name.id_for_label}}">Nombre de contacto</label>
+                  <label for="{{form.contact_name.id_for_label}}">Nombre de recado</label>
                 </div>
                 <div class="input-field col s12 m6">
                   <input required id="{{form.contact_phone_number.id_for_label}}" name="{{form.contact_phone_number.html_name}}" type="text" class="validate">
-                  <label for="{{form.contact_phone_number.id_for_label}}">Teléfono de contacto</label>
+                  <label for="{{form.contact_phone_number.id_for_label}}">Teléfono de recado</label>
                 </div>
               </div>
               <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
@@ -159,20 +159,18 @@
   });
 
   //Validar contraseña
-  $("#{{form.password.id_for_label}}").on("focusout", function (e) {
-    if ($(this).val() != $("#passwordConfirm").val()) {
-      $("#passwordConfirm").removeClass("valid").addClass("invalid");
-    } else {
-      $("#passwordConfirm").removeClass("invalid").addClass("valid");
-    }
-  });
+  var password = document.getElementById("password")
+  , confirm_password = document.getElementById("passwordConfirm");
 
-  $("#passwordConfirm").on("keyup", function (e) {
-      if ($("#{{form.password.id_for_label}}").val() != $(this).val()) {
-          $(this).removeClass("valid").addClass("invalid");
-      } else {
-          $(this).removeClass("invalid").addClass("valid");
-      }
-  });
+function validatePassword(){
+  if(password.value != confirm_password.value) {
+    confirm_password.setCustomValidity("Passwords Don't Match");
+  } else {
+    confirm_password.setCustomValidity('');
+  }
+}
+
+password.onchange = validatePassword;
+confirm_password.onkeyup = validatePassword;
 </script>
 {% endblock js %}

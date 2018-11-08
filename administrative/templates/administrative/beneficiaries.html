@@ -3,64 +3,54 @@
 {% block title %}MTA - Beneficiarios{% endblock %}
 {% block nav_title %} Beneficiarios{% endblock %}
 {% block nav_tabs %}
-<!-- Should be doing this based on the current logged user -->
-<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
-      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
-      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
-      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
-      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
-      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
-      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
-      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
-      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
-      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
-      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
-      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
-      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
 {% endblock nav_tabs %}
 {% block content %}
 <main>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:new_beneficiary' %}">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12">
+            <table id="beneficiaries" class="striped highlight">
+              <thead>
+                <tr>
+                  <th>Beneficiario</th>
+                  <th>Promotora</th>
+                  <th>Comunidad</th>
+                  <th>Ver</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for beneficiary in beneficiaries %}
+                <tr>
+                  <td>
+                    {{beneficiary.name}}
+                  </td>
+                  <td>
+                    {{beneficiary.promoter}}
+                  </td>
+                  <td>
+                    {{beneficiary.community}}
+                  </td>
+                  <td>
+                    <a href="{% url 'administrative:beneficiary' beneficiary.id %}">
+                      <i class="material-icons">remove_red_eye</i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 {% endblock %}
 {% block init_scripts %}
@@ -70,8 +60,33 @@
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
-  $(document).ready(function(){
-    $('select').formSelect();
+  $(document).ready(function() {
+    $('#beneficiaries').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
   });
 </script>
 {% endblock js %}

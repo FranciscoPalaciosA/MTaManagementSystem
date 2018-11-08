@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Beneficiarios{% endblock %}
+{% block nav_title %} Index {% endblock %}
+{% block nav_tabs %}
+<!-- Should be doing this based on the current logged user -->
+{% endblock nav_tabs %}
+{% block content %}
+<main>
+</main>
+{% endblock %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/administrative.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+</script>
+{% endblock js %}
