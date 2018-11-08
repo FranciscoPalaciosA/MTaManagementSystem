@@ -92,62 +92,60 @@ def production_report(request):
         Parameters: request
         return: For POST request: redirect, For GET request: render
     """
-    if (is_field_technician(request.user)):
-        if request.method == 'POST':
-            form = ProductionReportForm(request.POST)
-            if form.is_valid():
-                if not form.cleaned_data['exch_seed']:
-                    exch_seed = 0
-                else:
-                    exch_seed = form.cleaned_data['exch_seed']
-
-                if not form.cleaned_data['exch_leaf']:
-                    exch_leaf = 0
-                else:
-                    exch_leaf = form.cleaned_data['exch_leaf']
-                if not form.cleaned_data['want_for_seed']:
-                    want_for_seed = ' '
-                else:
-                    want_for_seed = form.cleaned_data['want_for_seed']
-                if not form.cleaned_data['want_for_leaf']:
-                    want_for_leaf = ' '
-                else:
-                    want_for_leaf = form.cleaned_data['want_for_leaf']
-                if not form.cleaned_data['beneficiary']:
-                    beneficiary = Beneficiary.objects.get(id=1)
-                else:
-                    beneficiary = form.cleaned_data['beneficiary'][0]
-
-
-                newProductionReport = ProductionReport(
-
-                                                        beneficiary = beneficiary,
-                                                        self_seed = form.cleaned_data['self_seed'],
-                                                        self_leaf = form.cleaned_data['self_leaf'],
-                                                        self_flour = form.cleaned_data['self_seed'],
-                                                        days_per_month = form.cleaned_data['days_per_month'],
-                                                        exch_seed = exch_seed,
-                                                        want_for_seed = want_for_seed,
-                                                        exch_leaf = exch_leaf,
-                                                        want_for_leaf = want_for_leaf
-                                                        )
-                newProductionReport.save()
-                return HttpResponseRedirect('/administrative/')
-
+    if request.method == 'POST':
+        form = ProductionReportForm(request.POST)
+        if form.is_valid():
+            if not form.cleaned_data['exch_seed']:
+                exch_seed = 0
             else:
-                print("-------------------")
-                print("\n\n\n\n\n")
-                print("Form is not valid")
-                print(form.errors)
-                print("\n\n\n\n\n")
-        elif request.method == 'GET':
-            if is_promoter(request.user):
-                print("\n\n IS PROMOTER")
-                production_report_form = ProductionReportForm()
-                context = {'production_report_form': production_report_form}
-                return render(request, 'administrative/Production_Report.html', context)
+                exch_seed = form.cleaned_data['exch_seed']
+
+            if not form.cleaned_data['exch_leaf']:
+                exch_leaf = 0
             else:
-                return HttpResponseRedirect('/administrative/production_report_list/')
+                exch_leaf = form.cleaned_data['exch_leaf']
+            if not form.cleaned_data['want_for_seed']:
+                want_for_seed = ' '
+            else:
+                want_for_seed = form.cleaned_data['want_for_seed']
+            if not form.cleaned_data['want_for_leaf']:
+                want_for_leaf = ' '
+            else:
+                want_for_leaf = form.cleaned_data['want_for_leaf']
+            if not form.cleaned_data['beneficiary']:
+                beneficiary = Beneficiary.objects.get(id=1)
+            else:
+                beneficiary = form.cleaned_data['beneficiary'][0]
+
+            newProductionReport = ProductionReport(
+
+                                                    beneficiary = beneficiary,
+                                                    self_seed = form.cleaned_data['self_seed'],
+                                                    self_leaf = form.cleaned_data['self_leaf'],
+                                                    self_flour = form.cleaned_data['self_seed'],
+                                                    days_per_month = form.cleaned_data['days_per_month'],
+                                                    exch_seed = exch_seed,
+                                                    want_for_seed = want_for_seed,
+                                                    exch_leaf = exch_leaf,
+                                                    want_for_leaf = want_for_leaf
+                                                    )
+            newProductionReport.save()
+            return HttpResponseRedirect('/administrative/')
+
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
+    elif request.method == 'GET':
+        if is_promoter(request.user):
+            print("\n\n IS PROMOTER")
+            production_report_form = ProductionReportForm()
+            context = {'production_report_form': production_report_form}
+            return render(request, 'administrative/Production_Report.html', context)
+        else:
+            return HttpResponseRedirect('/administrative/production_report_list/')
     else:
         return HttpResponseRedirect('/administrative/')
 
