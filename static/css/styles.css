@@ -8,6 +8,13 @@
 }
 
 
-.lol .select-dropdown+ul{
-  border-bottom: 2px solid #f44336;
+.not-selected-community, .not-selected-community:focus{
+  border-bottom: 2px solid #f44336!important;
+}
+
+.not-selected-community::after{
+  content: "Selecciona una comunidad";
+  position: absolute;
+  bottom: -20px;
+  background: red;
 }

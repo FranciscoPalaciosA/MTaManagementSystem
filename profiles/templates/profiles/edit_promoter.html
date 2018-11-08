@@ -119,8 +119,8 @@
                 </div>
               </div>
               <div class="row">
-                <div class="input-field col s12 lol">
-                  <select class ="notSelected" required id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
+                <div class="input-field col s12" id="communitiesContainer">
+                  <select required id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
                     {% for choice in form.communities.field.queryset %}
                       {% if  choice.id in communities %}
                         <option value="{{choice.id}}" selected >{{choice}}</option>
@@ -156,6 +156,7 @@
 </main>
 {% endblock content %}
 {% block init_scripts %}
+<script src="{%static 'js/mta_js/profiles.js' %}"></script>
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
