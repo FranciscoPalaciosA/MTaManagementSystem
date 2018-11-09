@@ -28,6 +28,7 @@
                       <th>Correo</th>
                       <th>Insitución</th>
                       <th>Notas</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -46,7 +47,12 @@
                           {{contact.institution}}
                         </td>
                         <td>
-                          {{contact.comment}}
+                          {{contact.comments}}
+                        </td>
+                        <td>
+                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
+                            <i class="material-icons">create</i>
+                          </a>
                         </td>
                       </tr>
                     {% endfor %}
@@ -71,6 +77,7 @@
                       <th>Correo</th>
                       <th>Insitución</th>
                       <th>Notas</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -89,7 +96,12 @@
                           {{contact.institution}}
                         </td>
                         <td>
-                          {{contact.comment}}
+                          {{contact.comments}}
+                        </td>
+                        <td>
+                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
+                            <i class="material-icons">create</i>
+                          </a>
                         </td>
                       </tr>
                     {% endfor %}
@@ -114,6 +126,7 @@
                       <th>Correo</th>
                       <th>Insitución</th>
                       <th>Notas</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -132,7 +145,12 @@
                           {{contact.institution}}
                         </td>
                         <td>
-                          {{contact.comment}}
+                          {{contact.comments}}
+                        </td>
+                        <td>
+                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
+                            <i class="material-icons">create</i>
+                          </a>
                         </td>
                       </tr>
                     {% endfor %}
@@ -157,6 +175,7 @@
                       <th>Correo</th>
                       <th>Insitución</th>
                       <th>Notas</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -175,7 +194,12 @@
                           {{contact.institution}}
                         </td>
                         <td>
-                          {{contact.comment}}
+                          {{contact.comments}}
+                        </td>
+                        <td>
+                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
+                            <i class="material-icons">create</i>
+                          </a>
                         </td>
                       </tr>
                     {% endfor %}
@@ -200,6 +224,7 @@
                       <th>Correo</th>
                       <th>Insitución</th>
                       <th>Notas</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -218,7 +243,12 @@
                           {{contact.institution}}
                         </td>
                         <td>
-                          {{contact.comment}}
+                          {{contact.comments}}
+                        </td>
+                        <td>
+                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
+                            <i class="material-icons">create</i>
+                          </a>
                         </td>
                       </tr>
                     {% endfor %}
@@ -231,7 +261,7 @@
         {% endif %}
       </div>
       <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
+        <a class="btn-floating btn-large red modal-trigger"  href="/directory/new_contact">
           <i class="large material-icons">add</i>
         </a>
       </div>

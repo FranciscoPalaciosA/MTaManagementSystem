@@ -31,3 +31,16 @@ class BaseUserForm(forms.Form):
     phone_number = forms.CharField(max_length=50)
     address = forms.CharField(max_length=200)
     email = forms.EmailField(max_length=200)
+'''
+class EditBaseUserForm(forms.ModelForm):
+    class Meta:
+       model = BaseUser
+       fields = [
+                   'name',
+                   'last_name_paternal',
+                   'last_name_maternal',
+                   'phone_number',
+                   'address',
+                   'email'
+                ]
+'''

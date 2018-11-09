@@ -56,42 +56,22 @@ def index(request):
     return render(request, 'profiles/promoter.html', context)
 
 @login_required
-def accounts(request):
+def users(request):
     """ Description: Renders the view of the accounts
         Parameters: request
         return: render
     """
     if(is_director(request.user)):
-        users = BaseUser.objects.filter(deleted_at__isnull=True)
+        all_users = BaseUser.objects.filter(deleted_at__isnull=True)
+        all_promoters = Promoter.objects.all()
+        promoters = []
+        for promoter in all_promoters:
+            promoters.append(BaseUser.objects.get(id = promoter.base_user_id))
+
+        users = [user for user in all_users if user not in promoters]
+
         context = {'users': users}
-        return render(request, 'profiles/accounts.html', context)
-    else:
-        return HttpResponseRedirect('/profiles/')
-
-@login_required
-def edit_account(request,pk):
-    if(is_director(request.user)):
-        if request.method == 'POST':
-            form = BaseUserForm(request.POST)
-
-            if form.is_valid():
-                user =  BaseUser.objects.get(id=pk)
-
-                user.name=form.cleaned_data['name']
-                user.last_name_paternal=form.cleaned_data['last_name_paternal']
-                user.last_name_maternal=form.cleaned_data['last_name_maternal']
-                user.phone_number=form.cleaned_data['phone_number']
-                user.address=form.cleaned_data['address']
-                user.email=form.cleaned_data['email']
-
-                user.save()
-                
-                return HttpResponseRedirect('/profiles/accounts/')
-        else:
-            user = BaseUser.objects.get(id=pk)
-            form = BaseUserForm()
-            context = {'user': user, 'form': form}
-            return render(request, 'profiles/edit_account.html', context)
+        return render(request, 'profiles/users.html', context)
     else:
         return HttpResponseRedirect('/profiles/')
 
@@ -182,6 +162,51 @@ def add_user(request):
             return render(request, 'profiles/new_user.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
+
+@login_required
+def edit_user(request,pk):
+    """ Description: Edits the information of an account
+        Parameters: request, pk of the account that is edited
+        return: render
+    """
+    if(is_director(request.user)):
+        if request.method == 'POST':
+            form = BaseUserForm(data=request.POST)
+
+            if form.is_valid():
+                base_user =  BaseUser.objects.get(id=pk)
+                user_id = base_user.user_id
+
+                user = User.objects.get(id=user_id)
+
+                base_user.name=form.cleaned_data['name']
+                base_user.last_name_paternal=form.cleaned_data['last_name_paternal']
+                base_user.last_name_maternal=form.cleaned_data['last_name_maternal']
+                base_user.phone_number=form.cleaned_data['phone_number']
+                base_user.address=form.cleaned_data['address']
+                base_user.email=form.cleaned_data['email']
+
+                base_user.save()
+
+                user.groups.clear()
+                user.groups.add(form.cleaned_data['group'])
+
+                return HttpResponseRedirect('/profiles/users/')
+        else:
+            base_user = BaseUser.objects.get(id=pk)
+            user_id = base_user.user_id
+
+            user = User.objects.get(id=user_id)
+
+            form = BaseUserForm()
+
+            for g in user.groups.all():
+                group = g
+                
+            context = {'base_user': base_user, 'user': user, 'form': form, 'group': group}
+            return render(request, 'profiles/edit_user.html', context)
+    else:
+        return HttpResponseRedirect('/profiles/')
 
 @login_required
 def get_promoter_profile(request,pk):
