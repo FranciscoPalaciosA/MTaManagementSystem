@@ -1,3 +1,9 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 02/11/2018
+"""
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -17,6 +23,30 @@ def is_promoter(user):
         return False
     return True
 
+def is_director(user):
+    if user:
+        return user.groups.filter(name='Director').count() == 1
+    return False
+
+def is_trainer(user):
+    if user:
+        return user.groups.filter(name='Capacitador').count() == 1
+    return False
+
+def is_administrative_assistant(user):
+    if user:
+        return user.groups.filter(name='Asistente Administrativo').count() == 1
+    return False
+
+def is_administrative_coordinator(user):
+    if user:
+        return user.groups.filter(name='Coordinador Administrativo').count() == 1
+    return False
+
+def is_field_technician(user):
+    if user:
+        return user.groups.filter(name='Técnico de Campo').count() == 1
+    return False
 
 # Create your views here.
 @login_required
@@ -24,6 +54,26 @@ def index(request):
     alert_form = AlertForm()
     context = {'alert_form': alert_form}
     return render(request, 'profiles/promoter.html', context)
+
+@login_required
+def users(request):
+    """ Description: Renders the view of the accounts
+        Parameters: request
+        return: render
+    """
+    if(is_director(request.user)):
+        all_users = BaseUser.objects.filter(deleted_at__isnull=True)
+        all_promoters = Promoter.objects.all()
+        promoters = []
+        for promoter in all_promoters:
+            promoters.append(BaseUser.objects.get(id = promoter.base_user_id))
+
+        users = [user for user in all_users if user not in promoters]
+
+        context = {'users': users}
+        return render(request, 'profiles/users.html', context)
+    else:
+        return HttpResponseRedirect('/profiles/')
 
 @login_required
 def add_alert(request):
@@ -112,6 +162,51 @@ def add_user(request):
             return render(request, 'profiles/new_user.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
+
+@login_required
+def edit_user(request,pk):
+    """ Description: Edits the information of an account
+        Parameters: request, pk of the account that is edited
+        return: render
+    """
+    if(is_director(request.user)):
+        if request.method == 'POST':
+            form = BaseUserForm(data=request.POST)
+
+            if form.is_valid():
+                base_user =  BaseUser.objects.get(id=pk)
+                user_id = base_user.user_id
+
+                user = User.objects.get(id=user_id)
+
+                base_user.name=form.cleaned_data['name']
+                base_user.last_name_paternal=form.cleaned_data['last_name_paternal']
+                base_user.last_name_maternal=form.cleaned_data['last_name_maternal']
+                base_user.phone_number=form.cleaned_data['phone_number']
+                base_user.address=form.cleaned_data['address']
+                base_user.email=form.cleaned_data['email']
+
+                base_user.save()
+
+                user.groups.clear()
+                user.groups.add(form.cleaned_data['group'])
+
+                return HttpResponseRedirect('/profiles/users/')
+        else:
+            base_user = BaseUser.objects.get(id=pk)
+            user_id = base_user.user_id
+
+            user = User.objects.get(id=user_id)
+
+            form = BaseUserForm()
+
+            for g in user.groups.all():
+                group = g
+                
+            context = {'base_user': base_user, 'user': user, 'form': form, 'group': group}
+            return render(request, 'profiles/edit_user.html', context)
+    else:
+        return HttpResponseRedirect('/profiles/')
 
 @login_required
 def get_promoter_profile(request,pk):
