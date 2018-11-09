@@ -32,6 +32,9 @@ urlpatterns = [
     path('ajax/load_communities/', views.load_communities, name='ajax_load_communities'),
     path('reports/', views.community_report, name='community_report'),
     path('reports/municipality_savings/<str:mun>/', views.get_communities_savings, name='ajax_savings'),
-    path('edit_training_session/<int:pk>/', views.edit_training_session, name='edit_traing_session'),
+    # path('edit_training_session/', views.edit_training_session, name='edit_training_session'),
+    path('edit_training_session/<int:pk>/', views.edit_training_session, name='edit_training_session'),
+
+
 
 ]

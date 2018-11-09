@@ -748,7 +748,7 @@ def edit_training_session(request, pk):
             form = UpdateTrainingSession(request.POST)
             if form.is_valid():
                 #Training Session object
-                session = TrainingSession.objects.get(pk=pk   )
+                session = TrainingSession.objects.get(pk=pk)
                 session.topic=form.cleaned_data['topic']
                 session.trainer=base_user
                 date = form.cleaned_data['date']
@@ -763,7 +763,9 @@ def edit_training_session(request, pk):
                 return HttpResponseRedirect('/administrative/edit_training_session/'+request.POST['pk']+'/')
         else:
             session = get_object_or_404(TrainingSession, pk=pk)
-            assistants = session.assistants.all()
+            list = session.assistants.all().values_list('id', flat=True)
+            assistants = dict(zip(list[::1], list[::1]))
+            print(assistants)
             context = {'form': form, 'session': session, 'assistants':assistants}
             return render(request, 'administrative/edit_training_session.html', context)
     return HttpResponseRedirect('/administrative/training_sessions/')
