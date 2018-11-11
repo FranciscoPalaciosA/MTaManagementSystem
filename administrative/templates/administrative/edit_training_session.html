@@ -78,7 +78,7 @@
                   <div class="file-field input-field">
                     <div class="btn">
                       <span>Evidencia</span>
-                      <input type="file" id="{{form.evidence.id_for_label}}" name="{{form.evidence.html_name}}" accept="image/*" multiple>
+                      <input type="file" id="{{form.evidence.id_for_label}}" name="{{form.evidence.html_name}}" accept="image/*"  multiple>
                     </div>
                     <div class="file-path-wrapper">
                       <input class="file-path validate" type="text" placeholder="Sube una o más fotos de evidencia!">
@@ -108,11 +108,9 @@
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
-  $(document).ready(function(){
-    $('select').formSelect();
-  });
 
   $(document).ready(function(){
+    $('select').formSelect();
     $('.fixed-action-btn').floatingActionButton();
     $('.timepicker').timepicker();
     var d = new Date();
@@ -123,6 +121,7 @@
       format:'dd-mm-yyyy',
       setDefaultDate:'06-11-2018'
     });
+    document.getElementById('{{form.evidence.id_for_label}}').files = {{evidence}}
   });
 
   function filter_assistants() {

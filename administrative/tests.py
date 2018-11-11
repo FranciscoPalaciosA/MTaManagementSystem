@@ -992,7 +992,7 @@ class TestPay(TestCase):
 class NewSavingAccount(TestCase):
     def test_add_new_saving_account_assistant(self):
         """
-        Creating a new sabing account. Expecting a redirect to /administrative/
+        Creating a new saving account. Expecting a redirect to /administrative/
         """
 
         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
@@ -1964,5 +1964,3 @@ class TrainingTests(TestCase):
         session = TrainingSession.objects.all()
         self.assertEqual(len(session), 0)
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-
-        

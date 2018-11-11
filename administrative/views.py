@@ -749,6 +749,7 @@ def edit_training_session(request, pk):
             if form.is_valid():
                 #Training Session object
                 session = TrainingSession.objects.get(pk=pk)
+                training_session_evidence = TrainingSessionEvidence.objects.get(pk=pk)
                 session.topic=form.cleaned_data['topic']
                 session.trainer=base_user
                 date = form.cleaned_data['date']
@@ -758,15 +759,24 @@ def edit_training_session(request, pk):
                 session.end_time=form.cleaned_data['end_time']
                 session.comments=form.cleaned_data['comments']
                 session.save()
+                images = request.FILES.getlist('evidence')
+                for evidence in images:
+                    training_session_evidence.evidence = TrainingSessionEvidence (
+                                                                                    training_session = session,
+                                                                                    training_session_evidence = evidence
+                                                                                )
+                    training_session_evidence.save()
+
                 return HttpResponseRedirect('/administrative/training_sessions/')
             else:
                 return HttpResponseRedirect('/administrative/edit_training_session/'+request.POST['pk']+'/')
         else:
             session = get_object_or_404(TrainingSession, pk=pk)
             list = session.assistants.all().values_list('id', flat=True)
+            evidences = TrainingSessionEvidence.objects.filter(training_session=session).values('evidence')
             assistants = dict(zip(list[::1], list[::1]))
             print(assistants)
-            context = {'form': form, 'session': session, 'assistants':assistants}
+            context = {'form': form, 'session': session, 'assistants':assistants, 'evidences':evidences}
             return render(request, 'administrative/edit_training_session.html', context)
     return HttpResponseRedirect('/administrative/training_sessions/')
 
