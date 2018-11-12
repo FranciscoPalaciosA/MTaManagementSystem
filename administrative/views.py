@@ -75,7 +75,7 @@ def is_counter(user):
     if user:
         return user.groups.filter(name='Contador').count() == 1
     return False
-  
+
 # Create your views here.
 @login_required
 def index(request):
@@ -706,6 +706,8 @@ def add_saving_account(request):
                 saving_account = SavingAccount(
                                         name=form.cleaned_data['name'],
                                         community=form.cleaned_data['community'][0],
+                                        municipality=form.cleaned_data['municipality'],
+                                        location=form.cleaned_data['location'],
                                         total_saved_amount=form.cleaned_data['total_saved_amount'],
                                         president_beneficiary=form.cleaned_data['president_beneficiary'],
                                         treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
@@ -714,7 +716,7 @@ def add_saving_account(request):
                 saving_account.save()
                 saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
                 saving_account.save()
-                return HttpResponseRedirect('/administrative/')
+                return HttpResponseRedirect('/administrative/saving_accounts/')
             else:
 
                 print("-----------------------------")
