@@ -4,15 +4,14 @@ Description: Functions for handling requests to the server
 Modified by: Bernardo, Hugo, Alex, Francisco
 Modify date: 19/10/2018
 """
+
 from django import template
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Count, Sum, Func, F
-
 from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
@@ -254,7 +253,6 @@ def beneficiaries(request, pk):
             context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
             return render(request, 'administrative/beneficiary.html', context)
 
-
 def load_communities(request):
     promoter_id = request.GET.get('promoter')
     communities = Promoter.objects.get(id=promoter_id).communities.all()
@@ -312,7 +310,7 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-
+            
     elif request.method == 'GET':
         if is_promoter(request.user):
             return HttpResponseRedirect('/administrative/')
@@ -446,7 +444,6 @@ def weekly_sessions(request):
             beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
             weekly_session_form = WeeklySessionForm()
-
             #Existing sessions
             weekly_sessions = WeeklySession.objects.filter(promoter=promoter).order_by('-date')
 
@@ -729,8 +726,7 @@ def add_saving_account(request):
             return render(request, 'administrative/new_saving_account.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
-
-
+      
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions

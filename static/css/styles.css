@@ -4,6 +4,19 @@
 
 .tabs .tab a, .tabs .tab a.active {
   color: #faaca8;
+  background.color: blue;
+}
+
+
+.not-selected-community, .not-selected-community:focus{
+  border-bottom: 2px solid #f44336!important;
+}
+
+.not-selected-community::after{
+  content: "Selecciona una comunidad";
+  position: absolute;
+  bottom: -20px;
+  background: red;
 }
 
 .pt-0{
