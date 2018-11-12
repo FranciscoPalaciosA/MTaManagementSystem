@@ -18,6 +18,7 @@ from django.http import Http404
 from .models import *
 from .forms import *
 from datetime import datetime, time
+from django.utils import formats
 
 #Helper functions
 def is_promoter(user):
@@ -75,7 +76,7 @@ def is_counter(user):
     if user:
         return user.groups.filter(name='Contador').count() == 1
     return False
-  
+
 # Create your views here.
 @login_required
 def index(request):
@@ -262,7 +263,6 @@ def load_communities(request):
 
 @login_required
 def add_beneficiary(request):
-    print(request.POST)
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
         if form.is_valid():
@@ -320,6 +320,46 @@ def add_beneficiary(request):
             form = BeneficiaryForm()
             context = {'form': form}
             return render(request, 'administrative/new_beneficiary.html', context)
+
+@login_required
+def edit_beneficiary(request,pk):
+    """ Description: Edits the information of a beneficiary
+        Parameters: request, pk of the account that is edited
+        return: render
+    """
+    if not (is_promoter(request.user)):
+        if request.method == 'POST':
+            form = BeneficiaryForm(data=request.POST)
+
+            if form.is_valid():
+                beneficiary = User.objects.get(id=pk)
+
+                beneficiary.name=form.cleaned_data['name']
+                beneficiary.last_name_paternal=form.cleaned_data['last_name_paternal']
+                beneficiary.last_name_maternal=form.cleaned_data['last_name_maternal']
+                beneficiary.phone=form.cleaned_data['phone']
+                beneficiary.email=form.cleaned_data['email']
+                beneficiary.promoter=form.cleaned_data['promoter']
+                beneficiary.community=form.cleaned_data['community']
+                beneficiary.num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries']
+                beneficiary.account_number=form.cleaned_data['account_number']
+                beneficiary.bank_name=form.cleaned_data['bank_name']
+                beneficiary.contact_name=form.cleaned_data['contact_name']
+                beneficiary.contact_phone=form.cleaned_data['contact_phone']
+
+                beneficiary.save()
+
+                return HttpResponseRedirect('/administrative/beneficiaries/0/')
+        else:
+            beneficiary = Beneficiary.objects.get(id=pk)
+
+            form = BeneficiaryForm()
+
+            context = {'beneficiary': beneficiary, 'form': form}
+            return render(request, 'administrative/edit_beneficiary.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/beneficiaries/0/')
+
 
 @login_required
 def modify_beneficiary(request):
@@ -465,6 +505,71 @@ def weekly_sessions(request):
         return render(request, 'administrative/Admin_weekly_sessions.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
+
+@login_required
+def edit_weekly_session(request,pk):
+    """ Description: Edits the information of a weekly session
+        Parameters: request, pk of the session that is edited
+        return: render
+    """
+    if (is_promoter(request.user)):
+        if request.method == 'POST':
+            date = request.POST['date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'date': date_obj,
+                        'type': request.POST['type'],
+                        'topic': request.POST['topic'],
+                        'start_time':request.POST['start_time'],
+                        'end_time':request.POST['end_time'],
+                        'assistants': request.POST.getlist("assistants")
+                    }
+            form = WeeklySessionForm(data, request.FILES)
+            evidences = request.FILES.getlist('evidence')
+
+            if form.is_valid():
+                session = WeeklySession.objects.get(id=pk)
+
+                session.date=form.cleaned_data['date']
+                session.type=form.cleaned_data['type']
+                session.topic=form.cleaned_data['topic']
+                session.start_time=form.cleaned_data['start_time']
+                session.end_time=form.cleaned_data['end_time']
+
+                session.save()
+
+                list = request.POST.getlist("assistants")
+                session.assistants.clear()
+                for assistant in list:
+                    session.assistants.add(Beneficiary.objects.get(id = assistant))
+
+                for e in evidences:
+                    newEvidence = WeeklySessionEvidence(
+                                                        weekly_session = session,
+                                                        evidence = e
+                                                        )
+                    newEvidence.save()
+
+                return HttpResponseRedirect('/administrative/weekly_sessions/')
+        else:
+            session = WeeklySession.objects.get(id=pk)
+
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
+
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+
+            weekly_session_form = WeeklySessionForm()
+
+            assistants = session.assistants.all()
+
+            date = formats.date_format(session.date, "d-m-Y")
+
+            context = {'session': session, 'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'assistants': assistants, 'date': date}
+            return render(request, 'administrative/edit_weekly_session.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/weekly_sessions/')
+
 
 @login_required
 def get_weekly_session(request, pk):

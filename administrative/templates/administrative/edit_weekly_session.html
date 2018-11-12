@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Sesiones semanales{% endblock %}
+{% block nav_title %}Sesiones semanales{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+{% block content %}
+<main>
+  <br><br>
+  <div class="container">
+    <br><br>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card z-depth-3">
+          <div class="card-content">
+            <form action="/administrative/edit_weekly_session/{{session.id}}/" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <h4>Editar Sesión</h4>
+              <div class="row">
+                <div class="input-field col s12 m4">
+                  <label for="{{weekly_session_form.date.id_for_label}}">Fecha</label>
+                  <input required id="{{weekly_session_form.date.id_for_label}}" name="{{weekly_session_form.date.html_name}}" type="text" class="validate datepicker" max="{{curdate}}" value="{{date}}">
+                </div>
+                <div class="input-field col s12 m4">
+                  <label for="{{weekly_session_form.start_time.id_for_label}}">Hora de inicio</label>
+                  <input required id="{{weekly_session_form.start_time.id_for_label}}" name="{{weekly_session_form.start_time.html_name}}" type="text" class="timepicker" value="{{session.start_time}}">
+                </div>
+                <div class="input-field col s12 m4">
+                  <label for="{{weekly_session_form.end_time.id_for_label}}">Hora de fin</label>
+                  <input required id="{{weekly_session_form.end_time.id_for_label}}" name="{{weekly_session_form.end_time.html_name}}" type="text" class="timepicker" value="{{session.end_time}}">
+                </div>
+                <div class="input-field col s12 m12">
+                  <label for="{{weekly_session_form.type.id_for_label}}">Tipo</label>
+                  <input required id="{{weekly_session_form.type.id_for_label}}" name="{{weekly_session_form.type.html_name}}" type="text" class="validate" value="{{session.type}}">
+                </div>
+                <div class="input-field col s12 m12">
+                  <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
+                  <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate" value="{{session.topic}}">
+                </div>
+                <div class="input-field col s4 m4">
+                  <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
+                  <input type="search" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
+                  {% for choice in weekly_session_form.assistants.field.queryset %}
+                    {% if choice in beneficiaries %}
+                    <div class="input-field"><br>
+                      <label name=assistant_check>
+                        <input type="checkbox" id="{{weekly_session_form.assistants.id_for_label}}" name="{{weekly_session_form.assistants.html_name}}" value="{{choice.id}}" {% if choice in assistants %}checked{% endif %}>
+                        <span>{{choice}}</span>
+                      </label>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              <br><br><br>
+              <div class="row">
+                <div class="file-field input-field">
+                  <div class="btn">
+                    <span>Evidencia</span>
+                    <input type="file" id="{{weekly_session_form.evidence.id_for_label}}" name="{{weekly_session_form.evidence.html_name}}" accept="image/*" multiple>
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Sube una o más evidencias!">
+                  </div>
+                </div>
+                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                  <i class="material-icons right">send</i>
+                </button>
+              </div>
+              <br><br>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/directory.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.fixed-action-btn').floatingActionButton();
+    $('.timepicker').timepicker();
+    $('.datepicker').datepicker({
+      format:'dd-mm-yyyy'
+    });
+
+  });
+
+  $( "#assistants" ).focusout(function() {
+    $("#search").val('');
+    filter_assistants();
+  })
+
+  $('[name="{{weekly_session_form.assistants.html_name}}"]').click(function() {
+    clear();
+  });
+
+  function filter_assistants() {
+    // Declare variables
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("search");
+    filter = input.value.toUpperCase();
+    option = document.getElementsByName("assistant_check");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < option.length; i++) {
+      td = option[i].children[1];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          option[i].parentElement.style.display = "";
+        } else {
+          option[i].parentElement.style.display = "none";
+        }
+      }
+    }
+  }
+
+  function clear(){
+    $("#search").val('');
+    filter_assistants();
+  }
+
+</script>
+{% endblock js %}

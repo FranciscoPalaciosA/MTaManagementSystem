@@ -35,7 +35,7 @@
                         <td>{{ session.date|date:"d / m / Y" }}</td>
                         <td>{{ session.assistant_count }}</td>
                         <td>
-                          <a class="modal-trigger " onclick="ajaxCall({{session.id}})">
+                          <a class="modal-trigger view_session" onclick="ajaxCall({{session.id}})">
                             <i class="material-icons">pageview</i>
                           </a>
                         </td>
@@ -53,9 +53,14 @@
           </div>
         </div>
 
-        <div id="pay-modal" class="modal">
+        <div id="session-modal" class="modal">
           <div class="modal-content">
             <h4>Sesión</h4>
+            <div class="fixed-action-btn">
+              <a class="btn-floating btn-large blue modal-trigger" id="edit" href="">
+                <i class="large material-icons">edit</i>
+              </a>
+            </div>
             <br>
             <div class="row">
               <div class="col s4"><b>Tipo: </b><span id="type-text">loremipsum</span></div>
@@ -113,7 +118,7 @@
                 <label for="{{weekly_session_form.topic.id_for_label}}">Tema</label>
                 <input required id="{{weekly_session_form.topic.id_for_label}}" name="{{weekly_session_form.topic.html_name}}" type="text" class="validate">
               </div>
-              <div class="input-field col s12 m12">
+              <div class="input-field col s4 m4">
                 <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
                 <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
                 {% for choice in weekly_session_form.assistants.field.queryset %}
@@ -178,7 +183,19 @@
       }
 
     });
+    $(".view_session").mouseover(function(){
+        $('.view_session').css({'cursor': 'pointer'});
+    });
 
+  });
+
+  $( "#assistants" ).focusout(function() {
+    $("#search").val('');
+    filter_assistants();
+  })
+
+  $('[name="{{weekly_session_form.assistants.html_name}}"]').click(function() {
+    clear();
   });
 
   function filter_assistants() {
@@ -201,6 +218,11 @@
     }
   }
 
+  function clear(){
+    $("#search").val('');
+    filter_assistants();
+  }
+
   function ajaxCall(id){
     path = "/administrative/get_weekly_session/" + id;
     $.ajax({
@@ -217,6 +239,7 @@
       $("#date-text").text(day + ' / ' + month + ' / ' + year);
       $("#start-text").text(data['start']);
       $("#end-text").text(data['end']);
+      $("#edit").attr("href", "/administrative/edit_weekly_session/" + id + "/");
 
       var assistants = data['assistants'].split(",");
       var change = "";
@@ -232,7 +255,7 @@
       }
       $("#evidences").html(change);
 
-      $('#pay-modal').modal('open');
+      $('#session-modal').modal('open');
       $('.materialboxed').materialbox();
     });
 }
