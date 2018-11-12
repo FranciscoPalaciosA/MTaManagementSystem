@@ -9,7 +9,7 @@ class Program(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return str(self.name)
-      
+
 class Community(models.Model):
     name = models.CharField(max_length=50)
     municipality = models.CharField(max_length=50)
@@ -17,7 +17,7 @@ class Community(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
-    
+
     class Meta:
         verbose_name = 'Community'
         verbose_name_plural = 'Communities'
@@ -29,12 +29,15 @@ class Beneficiary(models.Model):
     name = models.CharField(max_length=50)
     last_name_paternal = models.CharField(max_length=50)
     last_name_maternal = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50)
+    email = models.CharField(max_length=200)
     num_of_family_beneficiaries = models.IntegerField(default=0)
     contact_name = models.CharField(max_length=200)
     contact_phone = models.CharField(max_length=50, default=0)
-    account_number = models.IntegerField(default=0)
+    account_number = models.CharField(max_length=50, default=0)
     bank_name = models.CharField(max_length=100)
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
     member_in = models.ManyToManyField(Program, through='BeneficiaryInProgram')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
@@ -44,7 +47,7 @@ class Beneficiary(models.Model):
         return str(self.name)
 
 class BeneficiaryInProgram(models.Model):
-    status_choices = (('Other', 'Otro'), ('Done', 'Concluída'), ('In use', 'En uso'), ('Not done', 'En obra'))
+    status_choices = (('Otro', 'Otro'), ('Concluída', 'Concluída'), ('En uso', 'En uso'), ('En obra', 'En obra'))
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     curp = models.CharField(max_length=50)
@@ -62,7 +65,6 @@ class BeneficiaryInProgram(models.Model):
     def __str__(self):
         return str(self.beneficiary.name) + " - " + str(self.program.name)
 
-
 class ProductionReport(models.Model):
     beneficiary = models.ForeignKey(Beneficiary, on_delete=models.CASCADE)
     self_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -70,8 +72,8 @@ class ProductionReport(models.Model):
     self_flour = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     days_per_month = models.IntegerField(default=0)
     exch_seed = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    want_for_seed = models.CharField(max_length=100, null=True)
     exch_leaf = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    want_for_seed = models.CharField(max_length=100, null=True)
     want_for_leaf = models.CharField(max_length=100, null=True)
     get_for_seed_qty = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     get_for_leaf_qty = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -85,22 +87,19 @@ class ProductionReport(models.Model):
 
 class WeeklySession(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    date = models.DateField()
     type = models.CharField(max_length=50)
     topic = models.CharField(max_length=50)
     assistants = models.ManyToManyField(Beneficiary, verbose_name="list of assistants")
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
-    deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return str(self.type) + "-" +str(self.topic)
 
-
 class SavingAccount(models.Model):
     name = models.CharField(max_length=50)
-    community = models.CharField(max_length=50)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
     municipality = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
     list_of_beneficiaries =models.ManyToManyField(Beneficiary, verbose_name="list of beneficiaries")
@@ -111,10 +110,22 @@ class SavingAccount(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)
-    
+
+    def __str__(self):
+        return str(self.name) + "-" +str(self.community)
+
+class SavingsLog(models.Model):
+    saving_account = models.ForeignKey(SavingAccount, on_delete=models.CASCADE)
+    month = models.IntegerField()
+    year = models.IntegerField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    def __str__(self):
+        return str(self.saving_account) + " : " + str(self.month) + "/" + str(self.year)
+
 class WeeklySessionEvidence(models.Model):
     weekly_session = models.ForeignKey(WeeklySession, on_delete=models.CASCADE)
-    evidence = models.ImageField(upload_to = 'administrative/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
+    evidence = models.ImageField(upload_to = 'administrative/static/weekly_session_evidence/', default = 'administrative/weekly_session_evidence/no-img.jpg')
 
     def __str__(self):
         return str(self.weekly_session) + " Ev: " + str(self.evidence)
@@ -133,3 +144,30 @@ class Payment(models.Model):
     def __str__(self):
         return str(self.description)
 
+class TrainingSession(models.Model):
+    topic_choices = (
+                        ('Health', 'Salud'),
+                        ('Cook', 'Cocina Con Amaranto'),
+                        ('MV', 'Mística y Valores'),
+                        ('Work', 'Competencias Laborales'),
+                        ('Motivation', 'Motivación y Desarrollo Humano'),
+                        ('Entrepeneur', 'Emprendedurismo'),
+                        ('Other', 'Otro')
+                    )
+    trainer = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+    assistants = models.ManyToManyField(Beneficiary, verbose_name='list of beneficiaries')
+    date = models.DateField()
+    start_time = models.CharField(max_length=10)
+    end_time = models.CharField(max_length=10)
+    topic = models.CharField(max_length=250, choices=topic_choices, default='Otro')
+    comments = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return self.topic + " - " + str(self.date)
+
+class TrainingSessionEvidence(models.Model):
+    training_session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE)
+    evidence = models.ImageField(upload_to = 'administrative/training_session_evidence/', default = 'administrative/training_session_evidence/no-img.jpg')
+
+    def __str__(self):
+        return str(self.training_session) + " Ev: " + str(self.evidence)

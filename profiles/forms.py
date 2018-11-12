@@ -32,6 +32,7 @@ class BaseUserForm(forms.Form):
     address = forms.CharField(max_length=200)
     email = forms.EmailField(max_length=200)
 
+
 class PromoterFormEdit(forms.Form):
     previous_password = forms.CharField(max_length=150)
     password = forms.CharField(max_length=150, required=False)
@@ -44,3 +45,18 @@ class PromoterFormEdit(forms.Form):
     communities = forms.ModelMultipleChoiceField(queryset = Community.objects.all())
     contact_name = forms.CharField(max_length=50)
     contact_phone_number = forms.CharField(max_length=50)
+
+'''
+class EditBaseUserForm(forms.ModelForm):
+    class Meta:
+       model = BaseUser
+       fields = [
+                   'name',
+                   'last_name_paternal',
+                   'last_name_maternal',
+                   'phone_number',
+                   'address',
+                   'email'
+                ]
+'''
+

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Perfiles{% endblock %}
+
+{% block nav_title %}Perfiles{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+
+{% block content %}
+<main>
+  <br><br>
+  <div class="container">
+    <br><br>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card z-depth-3">
+          <div class="card-content">
+            <form action="/profiles/edit_user/{{base_user.id}}/" method="post">
+              {% csrf_token %}
+              <h4 class="">Información de la cuenta</h4>
+              <div class="row">
+                <div class="input-field col s12 m6">
+                  <input disabled type="text" class="validate" value="{{user.username}}">
+                  <label for="{{form.username.id_for_label}}">Usuario</label>
+                </div>
+                <div class="input-field col s12 m6">
+                  <select id="{{form.group.id_for_label}}" name="{{form.group.html_name}}">
+                    {% for choice in form.group.field.queryset %}
+                    <option value="{{choice.id}}" {% if group == choice %}selected{% endif %}>{{choice}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <!--<div class="input-field col s12 m6">
+                  <input required id="password" name="{{form.password.html_name}}" type="password" class="validate">
+                  <label for="password">Contraseña</label>
+                </div>
+                <div class="input-field col s12 m6">
+                  <input id="passwordConfirm" name="" type="password" class="validate">
+                  <label id="lblPasswordConfirm" for="passwordConfirm" data-error="Password not match" data-success="Password Match">Confirmar contraseña</label>
+                </div>-->
+              </div>
+              <h4 class="left-align col s12">Información del usuario</h4>
+              <div class="row">
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate" value="{{base_user.name}}">
+                  <label for="{{form.name.id_for_label}}">Nombre</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate" value="{{base_user.last_name_paternal}}">
+                  <label for="{{form.last_name_paternal.id_for_label}}">Apellido Paterno</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate" value="{{base_user.last_name_maternal}}">
+                  <label for="{{form.last_name_maternal.id_for_label}}">Apellido Materno</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.phone_number.id_for_label}}" name="{{form.phone_number.html_name}}" type="text" class="validate" value="{{base_user.phone_number}}">
+                  <label for="{{form.phone_number.id_for_label}}">Teléfono</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.address.id_for_label}}" name="{{form.address.html_name}}" type="text" class="validate" value="{{base_user.address}}">
+                  <label for="{{form.address.id_for_label}}">Direccion</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" type="text" class="validate" value="{{base_user.email}}">
+                  <label for="{{form.email.id_for_label}}">Correo</label>
+                </div>
+              </div>
+              <!--<input name="{{form.user.html_name}}" type="hidden" value="{{user.user}}">-->
+              <input name="{{form.username.html_name}}" type="hidden" class="validate" value="{{user.username}}">
+              <input name="{{form.password.html_name}}" type="hidden" class="validate" value="{{user.password}}">
+              <input name="{{form.created_at.html_name}}" type="hidden" value="{{base_user.created_at}}">
+              <input name="{{form.created_at.html_name}}" type="hidden" value="{{base_user.updated_at}}">
+              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
+                <i class="material-icons">send</i>
+              </button>
+              <br><br>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}
+{% block init_scripts %}
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    //Inicializar componentes
+  });
+
+  //Validar contraseña
+  var password = document.getElementById("password")
+  , confirm_password = document.getElementById("passwordConfirm");
+
+function validatePassword(){
+  if(password.value != confirm_password.value) {
+    confirm_password.setCustomValidity("Passwords Don't Match");
+  } else {
+    confirm_password.setCustomValidity('');
+  }
+}
+
+password.onchange = validatePassword;
+confirm_password.onkeyup = validatePassword;
+</script>
+{% endblock js %}

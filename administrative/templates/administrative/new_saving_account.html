@@ -68,16 +68,8 @@
       <div class="col s12 m12">
         <div class="card z-depth-3">
           <div class="card-content">
-            <form action="/directory/new_contact/" method="post">
+            <form action="/administrative/new_saving_account/" method="post">
               {% csrf_token %}
-              <div class="row">
-                <div class="col s6">
-
-                </div>
-                <div class="col s6">
-
-                </div>
-              </div>
               <h5>Información de la cuenta de ahorro</h5>
               <br>
               <div class="row">
@@ -87,72 +79,89 @@
                     <label for="{{form.name.id_for_label}}">Nombre de la cuenta:</label>
                   </div>
                 </div>
-                <div class="col s4">
+                <div class="col s8">
                   <div class="input-field">
-                    <input required id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" type="text" class="validate">
-                    <label for="{{form.community.id_for_label}}">Nombre de la comunidad:</label>
+                    <select id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" required>
+                      {% for choice in form.community.field.queryset %}
+                      <option value="{{choice.id}}">{{choice}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="{{form.community_name.id_for_label}}">Comunidad</label>
                   </div>
                 </div>
+              </div>
+              <div class="row">
                 <div class="col s4">
                   <div class="input-field">
-                    <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate">
+                    <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate" value="{{account.municipality}}">
                     <label for="{{form.municipality.id_for_label}}">Municipio:</label>
                   </div>
                 </div>
-              </div>
-              <div class="row">
                 <div class="col s6">
                   <div class="input-field">
-                    <input required id="{{form.location.id_for_label}}" name="{{form.location.html_name}}" type="number" class="validate">
+                    <input required id="{{form.location.id_for_label}}" name="{{form.location.html_name}}" type="text" class="validate" value="{{account.location}}">
                     <label for="{{form.location.id_for_label}}">Ubicación:</label>
                   </div>
                 </div>
-                <br>
-                <label for="{{forms.list_of_beneficiaries.id_for_label}}" class="active">Lista de Beneficiarios:</label>
-                <input type="text" id="search" onkeyup="filter_beneficiaries()" placeholder="Buscar...">
-
-                {% for choice in weekly_session_form.assistants.field.queryset %}
-                <div class="input-field"><br>
-                  <label name=benficiary_check>
-                    <input type="checkbox" id="{{form.list_of_beneficiaries.id_for_label}}" name="{{form.list_of_beneficiaries.html_name}}" value="{{choice.id}}">
-                    <span>{{choice}}</span>
-                  </label>
-                </div>
-                {% endfor %}
-
-                <div class="col s6">
-                  <label for="{{form.president_beneficiary.id_for_label}}">Tipo de contacto:</label>
-                  <select id="{{form.president_beneficiary.id_for_label}}" name="{{form.president_beneficiary.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
-                    {% for id, val in form.contact_type.field.choices %}
-                    {{choice.value}}
-                    <option value="{{id}}">{{val}}</option>
-                    {% endfor %}
-                  </select>
-                  <label for="{{form.contact_type.id_for_label}}">Tipo de contacto:</label>
-                  <select id="{{form.contact_type.id_for_label}}" name="{{form.contact_type.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
-                    {% for id, val in form.contact_type.field.choices %}
-                    {{choice.value}}
-                    <option value="{{id}}">{{val}}</option>
-                    {% endfor %}
-                  </select>
+              </div>
               <div class="row">
                 <div class="col s6">
                   <div class="input-field">
-                    <input id="{{form.total_saved_ammount.id_for_label}}" name="{{form.total_saved_ammount.html_name}}" type="number" class="validate">
-                    <label for="{{form.total_saved_ammount.id_for_label}}">Monto ahorrado en total:</label>
+                    <input id="{{form.total_saved_amount.id_for_label}}" name="{{form.total_saved_amount.html_name}}" type="number" class="validate">
+                    <label for="{{form.total_saved_amount.id_for_label}}">Monto ahorrado en total:</label>
                   </div>
                 </div>
+                <div class="input-field col s6">
+                  <select required id="{{form.list_of_beneficiaries.id_for_label}}" name="{{form.list_of_beneficiaries.html_name}}" multiple  class="validate">
+                    {% for choice in form.list_of_beneficiaries.field.queryset %}
+                    <option value="{{choice.id}}">{{choice}}</option>
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.list_of_beneficiaries.id_for_label}}">Beneficiarios en la cuenta de ahorros: </label>
+                </div>
               </div>
-        <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-          <i class="material-icons right">send</i>
-        </button>
-        <br><br>
-            </form>
-          </div>
+              <div class="row">
+                <div class="input-field col s4">
+                  <select required id="{{form.president_beneficiary.id_for_label}}" name="{{form.president_beneficiary.html_name}}" class="validate">
+                    <option value="" disabled selected> Seleccione un beneficiario </option>
+                    {% for choice in form.president_beneficiary.field.queryset %}
+                    <option value="{{choice.id}}">{{choice}}</option>
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.president_beneficiary.id_for_label}}">Beneficiario presidente: </label>
+                </div>
+                <div class="input-field col s4">
+                  <select required id="{{form.treasurer_beneficiary.id_for_label}}" name="{{form.treasurer_beneficiary.html_name}}">
+                    <option value="" disabled selected> Seleccione un beneficiario </option>
+                    {% for choice in form.treasurer_beneficiary.field.queryset %}
+                    <option value="{{choice.id}}">{{choice}}</option>
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.treasurer_beneficiary.id_for_label}}">Beneficiario tesorero: </label>
+                </div>
+                <div class="input-field col s4">
+                  <select required id="{{form.partner_beneficiary.id_for_label}}" name="{{form.partner_beneficiary.html_name}}" class="validate">
+                    <option value="" disabled selected> Seleccione un beneficiario </option>
+                    {% for choice in form.partner_beneficiary.field.queryset %}
+                    <option value="{{choice.id}}">{{choice}}</option>
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.partner_beneficiary.id_for_label}}">Beneficiario Socio: </label>
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                  <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                    <i class="material-icons right">send</i>
+                  </button>
+                  <br><br>
+              </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+</div>
 </main>
 {% endblock %}
 {% block init_scripts %}
@@ -161,38 +170,5 @@
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
-  // Initialize Floating Action Button
-  $(document).ready(function(){
-    $('select').formSelect();
-  });
-
-  if("#{{form.contact_type.id_for_label}}".on('change',function(){
-    var selected_choice = $("form.contact_type.id_for_label}}");
-    if(selected_choice == "Volunteer"){
-      $("{{form.contact_type.id_for_label}}").attr("required", "true");
-    }
-    else{
-      $("{{form.contact_type.id_for_label}}").attr("required", "false");
-    }
-  });
-  function filter_beneficiaries() {
-    // Declare variables
-    var input, filter, table, tr, td, i;
-    input = document.getElementById("search");
-    filter = input.value.toUpperCase();
-    option = document.getElementsByName("beneficiary_check");
-
-    // Loop through all table rows, and hide those who don't match the search query
-    for (i = 0; i < option.length; i++) {
-      td = option[i].children[1];
-      if (td) {
-        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-          option[i].parentElement.style.display = "";
-        } else {
-          option[i].parentElement.style.display = "none";
-        }
-      }
-    }
-  }
 </script>
 {% endblock js %}

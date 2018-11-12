@@ -1,4 +1,5 @@
 {% load static %}
+{% load administrative_extras %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,7 +9,6 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="description" content="">
     <title>{% block title %}{% endblock title %}</title>
-    <link href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css" rel="stylesheet">
     <link href="{% static 'css/jqvmap.css' %}" rel="stylesheet">
     <link href="{% static 'css/flag-icon-css/css/flag-icon.min.css' %}" rel="stylesheet">
     <!-- Fullcalendar-->
@@ -16,6 +16,7 @@
     <!-- Materialize-->
     <link href="{% static 'css/admin-materialize.min.cs' %}s" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link href="{% static 'css/dataTables.css' %}" rel="stylesheet">
     <!-- Material Icons-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   {% block addhead %}{% endblock addhead %}
@@ -24,16 +25,55 @@
     <header>
       <div class="navbar-fixed">
         <nav class="navbar white">
-          <div class="nav-wrapper"><a href="#!" class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
-
+          <div class="nav-wrapper">
+            <a class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
+            <div style="float:right;">
+              <a href="{% url 'profiles:logout' %}">
+                <i class="material-icons" style="color:black; font-size:36px;">logout</i>
+              </a>
+            </div>
           </div>
         </nav>
       </div>
       <ul id="sidenav-left" class="sidenav sidenav-fixed">
-        <li><a href="dashboard.html" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
+        <li><a href="{% url 'administrative:index' %}" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
-            {% block nav_tabs %}{% endblock nav_tabs %}
+            {% if request.user|has_group:"Director" %}
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+
+            {% elif request.user|has_group:"Capacitador" %}
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
+
+            {% elif request.user|has_group:"Asistente Administrativo" %}
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+
+            {% elif request.user|has_group:"Coordinador Administrativo" %}
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Sesiones de entrenamiento</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+            {% endif %}
+            {% if request.user|has_group:"Técnico de Campo" %}
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:new_saving_account' %}">Registrar Caja de Ahorro</a></li>
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galeria</a></li>
+            {% endif %}
+            {% block nav_tabs %}
+            {% endblock nav_tabs %}
           </ul>
         </li>
       </ul>
@@ -49,8 +89,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
 
 <!-- External libraries -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+
 
 <!-- jqvmap -->
     <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.min.js' %}"></script>

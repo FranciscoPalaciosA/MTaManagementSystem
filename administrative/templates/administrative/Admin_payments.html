@@ -4,61 +4,6 @@
 
 {% block nav_title %}Pagos{% endblock %}
 {% block nav_tabs %}
-<!-- Should be doing this based on the current logged user -->
-<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
-      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
-      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
-      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
-      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
-      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
-      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
-      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
-      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
-      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
-      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
-      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
-      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
 {% endblock nav_tabs %}
 
 {% block content %}
@@ -95,7 +40,7 @@
                       {{payment.description}}
                     </td>
                     <td>
-                      {{payment.quantity}}
+                      $ {{payment.quantity}}
                     </td>
                     {% if payment.due_date > curdate %}
                     <td>
@@ -143,7 +88,7 @@
                       {{payment.description}}
                     </td>
                     <td>
-                      {{payment.quantity}}
+                      $ {{payment.quantity}}
                     </td>
                     <td>
                       {{payment.comment}}
@@ -164,6 +109,11 @@
       </div>
     </div>
   </div>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger"  href="#new_payment">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
 </main>
 <div id="pay-modal" class="modal">
   <div class="modal-content">
@@ -183,11 +133,48 @@
         <input id="{{form.comment.id_for_label}}" name="{{form.comment.html_name}}" type="text" class="validate" required>
         <label for="{{form.comment.id_for_label}}">No. Folio, Comentarios, etc.</label>
       </div>
-      <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+      <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Pagar
         <i class="material-icons right">send</i>
       </button><br>
     </form>
     <br>
+  </div>
+</div>
+<div id="new_payment" class="modal">
+  <div class="modal-content">
+    <h4>Nuevo pago</h4>
+    <form action="/administrative/add_payment/" method="POST">
+      {% csrf_token %}
+      <div class="row">
+        <div class="input-field col s4 m4">
+          <label for="{{new_payment.promoter.id_for_label}}" class="active">Promotora</label>
+          <select id="{{new_payment.promoter.id_for_label}}" name="{{new_payment.promoter.html_name}}" required>
+            <option value="" disabled selected>Selecciona uno</option>
+            {% for choice in new_payment.promoter.field.queryset %}
+              <option value="{{choice.id}}">{{choice}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="input-field col s4 m4">
+          <label class="active" for="{{new_payment.quantity.id_for_label}}">Cantidad</label>
+          <input required id="{{new_payment.quantity.id_for_label}}" name="{{new_payment.quantity.html_name}}" type="number" class="validate">
+        </div>
+        <div class="input-field col s4 m4">
+          <label for="{{new_payment.due_date.id_for_label}}" class="active">Pagar antes de</label>
+          <input required id="{{new_payment.due_date.id_for_label}}" name="{{new_payment.due_date.html_name}}" type="text" class="validate datepicker" max="{{curdate}}">
+        </div>
+        <div class="input-field col s12 m12">
+          <label for="{{new_payment.description.id_for_label}}" class="active">Descripcion</label>
+          <input required id="{{new_payment.description.id_for_label}}" name="{{new_payment.description.html_name}}" type="text" class="validate">
+        </div>
+
+        <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Guardar
+          <i class="material-icons right">send</i>
+        </button>
+      </div>
+
+      <br><br>
+    </form>
   </div>
 </div>
 {% endblock content %}
@@ -197,10 +184,14 @@
 <script type="text/javascript">
   $(document).ready(function(){
     //Inicializar componentes
+    $('.datepicker').datepicker({
+      format:'dd-mm-yyyy'
+    });
     $('.tabs').tabs(
       swipeable=true
     );
   });
+
   function ajaxCall(id){
     path = "/administrative/get_payment/" + id;
     $.ajax({
