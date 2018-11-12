@@ -109,7 +109,8 @@ class PaymentForm(forms.ModelForm):
 class SavingAccountForm(forms.Form):
     name = forms.CharField(max_length=50)
     community = forms.ModelMultipleChoiceField(queryset=Community.objects)
-    #location = forms.CharField(max_length=50)
+    municipality = forms.CharField(max_length=50)
+    location = forms.CharField(max_length=50)
     list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())
     total_saved_amount = forms.IntegerField()
     president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
