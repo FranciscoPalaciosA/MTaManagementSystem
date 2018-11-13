@@ -116,6 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGES = [
      ('en', _('English')),
      ('es', _('Spanish')),
+     ('fr', _('French'))
 ]
 
 LANGUAGE_CODE = 'es'
