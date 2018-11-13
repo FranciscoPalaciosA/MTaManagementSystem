@@ -7,271 +7,407 @@
 {% endblock nav_tabs %}
 
 {% block content %}
-    <main class="">
-      <div class="row">
-        <div class="row valign-wrapper">
-          <div class="col s8">
-            <h2>Contactos</h2>
-          </div>
-        </div>
-        {% if contact_list.admin %}
-        <div class="col s12">
-          <div id="admin" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Administrativos</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Insitución</th>
-                      <th>Notas</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for contact in contact_list.admin %}
-                      <tr>
-                        <td>
-                          {{contact}}
-                        </td>
-                        <td>
-                          {{contact.phone_number}}
-                        </td>
-                        <td>
-                          {{contact.email}}
-                        </td>
-                        <td>
-                          {{contact.institution}}
-                        </td>
-                        <td>
-                          {{contact.comments}}
-                        </td>
-                        <td>
-                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
-                            <i class="material-icons">create</i>
-                          </a>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-        {% if contact_list.volunteer %}
-        <div class="col s12">
-          <div id="volunteer" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Voluntarios</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Insitución</th>
-                      <th>Notas</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for contact in contact_list.volunteer %}
-                      <tr>
-                        <td>
-                          {{contact}}
-                        </td>
-                        <td>
-                          {{contact.phone_number}}
-                        </td>
-                        <td>
-                          {{contact.email}}
-                        </td>
-                        <td>
-                          {{contact.institution}}
-                        </td>
-                        <td>
-                          {{contact.comments}}
-                        </td>
-                        <td>
-                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
-                            <i class="material-icons">create</i>
-                          </a>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-        {% if contact_list.ext_cons %}
-        <div class="col s12">
-          <div id="ext_cons" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Consultores Externos</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Insitución</th>
-                      <th>Notas</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for contact in contact_list.ext_cons %}
-                      <tr>
-                        <td>
-                          {{contact}}
-                        </td>
-                        <td>
-                          {{contact.phone_number}}
-                        </td>
-                        <td>
-                          {{contact.email}}
-                        </td>
-                        <td>
-                          {{contact.institution}}
-                        </td>
-                        <td>
-                          {{contact.comments}}
-                        </td>
-                        <td>
-                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
-                            <i class="material-icons">create</i>
-                          </a>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-        {% if contact_list.simp %}
-        <div class="col s12">
-          <div id="simp" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Simpatizantes</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Insitución</th>
-                      <th>Notas</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for contact in contact_list.simp %}
-                      <tr>
-                        <td>
-                          {{contact}}
-                        </td>
-                        <td>
-                          {{contact.phone_number}}
-                        </td>
-                        <td>
-                          {{contact.email}}
-                        </td>
-                        <td>
-                          {{contact.institution}}
-                        </td>
-                        <td>
-                          {{contact.comments}}
-                        </td>
-                        <td>
-                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
-                            <i class="material-icons">create</i>
-                          </a>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-        {% if contact_list.other %}
-        <div class="col s12">
-          <div id="other" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Otros</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Insitución</th>
-                      <th>Notas</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for contact in contact_list.other %}
-                      <tr>
-                        <td>
-                          {{contact}}
-                        </td>
-                        <td>
-                          {{contact.phone_number}}
-                        </td>
-                        <td>
-                          {{contact.email}}
-                        </td>
-                        <td>
-                          {{contact.institution}}
-                        </td>
-                        <td>
-                          {{contact.comments}}
-                        </td>
-                        <td>
-                          <a class="modal-trigger " href="/directory/edit_contact/{{ contact.id }}">
-                            <i class="material-icons">create</i>
-                          </a>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
+<main class="">
+  <div class="container">
+    <div class="row valign-wrapper">
+      <div class="col s8">
+        <h2>Contactos</h2>
       </div>
-      <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red modal-trigger"  href="/directory/new_contact">
-          <i class="large material-icons">add</i>
-        </a>
+    </div>
+    <div class="card">
+      <div class="card-content">
+        <div class="">
+          <ul class="tabs ">
+            <li class="tab col"><a class="active" href="#administratives">Administrativos</a></li>
+            <li class="tab col"><a href="#volunteers">Voluntarios</a></li>
+            <li class="tab col"><a href="#consultors">Consultores</a></li>
+            <li class="tab col"><a href="#simpatizantes">Simpatizantes</a></li>
+            <li class="tab col"><a href="#others">Otros</a></li>
+          </ul>
+        </div>
+        <div id="administratives">
+          {% if contact_list.admin %}
+          <div class="card-content pt-0">
+            <div class="row">
+              <table id="administrative_table" class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Notas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contact in contact_list.admin %}
+                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                    <td>
+                      {{contact}}
+                    </td>
+                    <td>
+                      {{contact.phone_number}}
+                    </td>
+                    <td>
+                      {{contact.email}}
+                    </td>
+                    <td>
+                      {{contact.comments}}
+                    </td>
+                    <td>
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
+                          <i class="material-icons" style="color:pink;">delete</i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div id="volunteers">
+          {% if contact_list.volunteer %}
+          <div class="card-content pt-0">
+            <div class="row">
+              <table id="volunteer_table" class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Insitución</th>
+                    <th>Notas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contact in contact_list.volunteer %}
+                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                    <td>
+                      {{contact}}
+                    </td>
+                    <td>
+                      {{contact.phone_number}}
+                    </td>
+                    <td>
+                      {{contact.email}}
+                    </td>
+                    <td>
+                      {{contact.institution}}
+                    </td>
+                    <td>
+                      {{contact.comments}}
+                    </td>
+                    <td>
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
+                          <i class="material-icons" style="color:pink;">delete</i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div id="consultors">
+          {% if contact_list.ext_cons %}
+          <div class="card-content pt-0">
+            <div class="row">
+              <table id="consultors_table" class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Insitución</th>
+                    <th>Notas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contact in contact_list.ext_cons %}
+                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                    <td>
+                      {{contact}}
+                    </td>
+                    <td>
+                      {{contact.phone_number}}
+                    </td>
+                    <td>
+                      {{contact.email}}
+                    </td>
+                    <td>
+                      {{contact.institution}}
+                    </td>
+                    <td>
+                      {{contact.comments}}
+                    </td>
+                    <td>
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
+                          <i class="material-icons" style="color:pink;">delete</i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div id="simpatizantes">
+          {% if contact_list.simp %}
+          <div class="card-content pt-0">
+            <div class="row">
+              <h5>Simpatizantes</h5>
+              <table id="simpatizantes_table" class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Insitución</th>
+                    <th>Notas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contact in contact_list.simp %}
+                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                    <td>
+                      {{contact}}
+                    </td>
+                    <td>
+                      {{contact.phone_number}}
+                    </td>
+                    <td>
+                      {{contact.email}}
+                    </td>
+                    <td>
+                      {{contact.institution}}
+                    </td>
+                    <td>
+                      {{contact.comments}}
+                    </td>
+                    <td>
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
+                          <i class="material-icons" style="color:pink;">delete</i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div id="others">
+          {% if contact_list.other %}
+          <div class="card-content pt-0">
+            <div class="row">
+              <table id="others_table" class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Insitución</th>
+                    <th>Notas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contact in contact_list.other %}
+                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                    <td>
+                      {{contact}}
+                    </td>
+                    <td>
+                      {{contact.phone_number}}
+                    </td>
+                    <td>
+                      {{contact.email}}
+                    </td>
+                    <td>
+                      {{contact.institution}}
+                    </td>
+                    <td>
+                      {{contact.comments}}
+                    </td>
+                    <td>
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
+                          <i class="material-icons" style="color:pink;">delete</i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
       </div>
-    </main>
+    </div>
+  </div>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger" href="{% url 'directory:new_contact' %}">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
+</main>
 {% endblock content %}
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
-  $(document).ready(function(){
+  $(document).ready(function() {
     $('.fixed-action-btn').floatingActionButton();
+
+    $('#volunteer_table').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
+    $('#administrative_table').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
+    $('#simpatizantes_table').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
+    $('#consultors_table').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
+    $('#others_table').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
   });
 </script>
 {% endblock js %}

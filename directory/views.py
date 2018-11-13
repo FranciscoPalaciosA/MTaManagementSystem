@@ -106,6 +106,15 @@ def add_contact(request):
         return render(request, 'directory/new_contact.html', context)
 
 @login_required
+def delete_contact(request, pk):
+    if request.method == 'GET':
+        try:
+            contact = Contact.objects.get(pk=pk)
+        except Contact.DoesNotExist:
+            raise Http404("No existe ese contacto.")
+
+        contact.deleted_at = timezone.now()
+        contact.save()
 def edit_contact(request,pk):
     """ Description: Edits the information of a contact
         Parameters: request, pk of the contact that is edited
