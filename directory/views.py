@@ -1,9 +1,50 @@
+"""
+Created by: Django
+Description: Functions for handling requests to the server
+Modified by: Bernardo, Hugo, Alex, Francisco
+Modify date: 07/11/2018
+"""
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
 from .forms import *
 
+def is_promoter(user):
+    #Description: Check if a user is a promoter
+    #Parameter: user
+    #Return: boolean indicating wheter the user is a promoter
+    base = BaseUser.objects.get(user=user)
+    try:
+        promoter = Promoter.objects.get(base_user=base)
+    except Promoter.DoesNotExist:
+        return False
+    return True
+
+def is_director(user):
+    if user:
+        return user.groups.filter(name='Director').count() == 1
+    return False
+
+def is_trainer(user):
+    if user:
+        return user.groups.filter(name='Capacitador').count() == 1
+    return False
+
+def is_administrative_assistant(user):
+    if user:
+        return user.groups.filter(name='Asistente Administrativo').count() == 1
+    return False
+
+def is_administrative_coordinator(user):
+    if user:
+        return user.groups.filter(name='Coordinador Administrativo').count() == 1
+    return False
+
+def is_field_technician(user):
+    if user:
+        return user.groups.filter(name='Técnico de Campo').count() == 1
+    return False
 
 # Create your views here.
 @login_required
@@ -74,7 +115,36 @@ def delete_contact(request, pk):
 
         contact.deleted_at = timezone.now()
         contact.save()
+def edit_contact(request,pk):
+    """ Description: Edits the information of a contact
+        Parameters: request, pk of the contact that is edited
+        return: render
+    """
+    if not (is_promoter(request.user)):
+        if request.method == 'POST':
+            form = ContactForm(data=request.POST)
 
+            if form.is_valid():
+                contact =  Contact.objects.get(id=pk)
+
+                contact.first_name = form.cleaned_data['first_name']
+                contact.last_name_paternal = form.cleaned_data['last_name_paternal']
+                contact.last_name_maternal = form.cleaned_data['last_name_maternal']
+                contact.phone_number = form.cleaned_data['phone_number']
+                contact.email = form.cleaned_data['email']
+                contact.contact_type = form.cleaned_data['contact_type']
+                contact.institution = form.cleaned_data['institution']
+                contact.comments = form.cleaned_data['comments']
+
+                contact.save()
+
+                return HttpResponseRedirect('/directory/')
+        else:
+            contact = Contact.objects.get(id=pk)
+            form = ContactForm()
+            context = {'contact': contact, 'form': form}
+            return render(request, 'directory/edit_contact.html', context)
+    else:
         return HttpResponseRedirect('/directory/')
 
 @login_required
