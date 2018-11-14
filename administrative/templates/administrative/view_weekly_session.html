@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sesiones semanales{% endblock %}
+
+{% block nav_title %}Sesiones semanales{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+
+{% block content %}
+    <main>
+      <br><br>
+      <div class="container">
+        
+        <div id="session-modal" class="modal">
+          <div class="modal-content">
+            <div class="row">
+              <div class="col s11 m11">
+                <h4>Sesión</h4>
+              </div>
+              <div class="col s1 m1">
+                <a class="btn-floating btn-large blue modal-trigger" id="edit" href="/administrative/edit_weekly_session/{{session.id}}">
+                  <i class="large material-icons">edit</i>
+                </a>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col s4"><b>Tipo: </b><span id="type-text">loremipsum</span></div>
+              <div class="col s4"><b>Tema: </b><span id="topic-text">loremipsum</span></div>
+            </div>
+            <div class="row">
+              <div class="col s4"><b>Fecha: </b><span id="date-text">loremipsum</span></div>
+              <div class="col s4"><b>Hora inicio: </b><span id="start-text">loremipsum</span></div>
+              <div class="col s4"><b>Hora fin: </b><span id="end-text">loremipsum</span></div>
+            </div><hr>
+            <div class="row">
+              <div class="col s12"><b>Asistentes:</b></div>
+              <div class="col s12"><span id="assistants-list"></span></div>
+            </div><hr>
+            <div class="row">
+              <div class="col s12"><b>Evidencias:</b></div>
+              {% load static %}
+              <span id="evidences"></span>
+            </div>
+            <br>
+          </div>
+        </div>
+      </div>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red modal-trigger"  href="#modal1">
+          <i class="large material-icons">add</i>
+        </a>
+      </div>
+    </main>
+
+{% endblock content %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+      $('.fixed-action-btn').floatingActionButton();
+
+  });
+
+</script>
+{% endblock js %}

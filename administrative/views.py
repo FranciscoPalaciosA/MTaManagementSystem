@@ -527,6 +527,9 @@ def edit_weekly_session(request,pk):
             form = WeeklySessionForm(data, request.FILES)
             evidences = request.FILES.getlist('evidence')
 
+            existing_evidences_keep = request.POST.getlist('image_keep')
+            existing_evidences_total = request.POST.getlist('image_total')
+
             if form.is_valid():
                 session = WeeklySession.objects.get(id=pk)
 
@@ -542,6 +545,26 @@ def edit_weekly_session(request,pk):
                 session.assistants.clear()
                 for assistant in list:
                     session.assistants.add(Beneficiary.objects.get(id = assistant))
+
+                all_evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+
+                for e in existing_evidences_keep:
+                    e = int(e)
+
+                for e in existing_evidences_total:
+                    e = int(e)
+
+                existing_evidences_total = set(existing_evidences_total) - set(existing_evidences_keep)
+
+                all_evidences_list = []
+                for e in all_evidences:
+                    all_evidences_list.append(e.id)
+
+                for e in all_evidences_list:
+                    for evi in existing_evidences_total:
+                        if (int(e) == int(evi)):
+                            deleted_evidence = WeeklySessionEvidence.objects.filter(id = evi)
+                            deleted_evidence.delete()
 
                 for e in evidences:
                     newEvidence = WeeklySessionEvidence(
@@ -565,7 +588,9 @@ def edit_weekly_session(request,pk):
 
             date = formats.date_format(session.date, "d-m-Y")
 
-            context = {'session': session, 'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'assistants': assistants, 'date': date}
+            evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+
+            context = {'session': session, 'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'assistants': assistants, 'date': date, 'evidences': evidences}
             return render(request, 'administrative/edit_weekly_session.html', context)
     else:
         return HttpResponseRedirect('/administrative/weekly_sessions/')

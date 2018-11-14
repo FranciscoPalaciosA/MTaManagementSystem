@@ -63,10 +63,24 @@
                     <input class="file-path validate" type="text" placeholder="Sube una o más evidencias!">
                   </div>
                 </div>
-                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-                  <i class="material-icons right">send</i>
-                </button>
               </div>
+              <div class="row">
+                {% load static %}
+                {% for evidence in evidences %}
+                {% with name=evidence.image_url %}
+                  <div class="card col s12 m4 l4" id="image_div{{evidence.id}}">
+                    <input type="hidden" name="image_keep" value="{{evidence.id}}">
+                    <!--<a class="btn-floating btn-small waves-effect waves-light red right"><i class="material-icons">add</i></a>-->
+                    <img class="" height="200px" width="100%" src="/{{ name }}">
+                    <a class="waves-effect waves-teal btn-flat right" onclick="delete_image({{evidence.id}})">Eliminar</a>
+                  </div>
+                  <input type="hidden" name="image_total" value="{{evidence.id}}">
+                  {% endwith %}
+                {% endfor %}
+              </div>
+              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                <i class="material-icons right">send</i>
+              </button>
               <br><br>
             </form>
           </div>
@@ -123,6 +137,11 @@
   function clear(){
     $("#search").val('');
     filter_assistants();
+  }
+
+  function delete_image(id){
+    $("#image_div" + id).remove();
+    $("#image_div" + id) = null;
   }
 
 </script>

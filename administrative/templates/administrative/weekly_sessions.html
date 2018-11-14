@@ -55,11 +55,15 @@
 
         <div id="session-modal" class="modal">
           <div class="modal-content">
-            <h4>Sesión</h4>
-            <div class="fixed-action-btn">
-              <a class="btn-floating btn-large blue modal-trigger" id="edit" href="">
-                <i class="large material-icons">edit</i>
-              </a>
+            <div class="row">
+              <div class="col s11 m11">
+                <h4>Sesión</h4>
+              </div>
+              <div class="col s1 m1">
+                <a class="btn-floating btn-large blue modal-trigger" id="edit" href="">
+                  <i class="large material-icons">edit</i>
+                </a>
+              </div>
             </div>
             <br>
             <div class="row">
@@ -250,9 +254,15 @@
 
       var evidences = data['evidences'].split(",");
       var change = "";
-      for(var i=0;i<evidences.length;i++){
-        change += "<div class=\"col s4\"><img class=\"materialboxed\" width=\"100%\" src=\"/static/weekly_session_evidence/" + evidences[i] + " \"></div>";
+
+      if (evidences.length == 1){
+          change="No se han subido evidencias";
+      }else{
+        for(var i=0;i<evidences.length;i++){
+          change += "<div class=\"col s12 m4 l4\"><img class=\"materialboxed card\" height=\"200px\" width=\"100%\" src=\"/static/weekly_session_evidence/" + evidences[i] + " \"></div>";
+        }
       }
+
       $("#evidences").html(change);
 
       $('#session-modal').modal('open');
