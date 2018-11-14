@@ -1,10 +1,11 @@
 from django.db import models
 from django.utils import timezone
+from django.dispatch import receiver
+import os
+
 from profiles.models import *
 
 # Create your models here.
-
-
 class Program(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
@@ -129,6 +130,19 @@ class WeeklySessionEvidence(models.Model):
 
     def __str__(self):
         return str(self.weekly_session) + " Ev: " + str(self.evidence)
+
+    def image_url(self):
+        return str(self.evidence).split('administrative/')[-1]
+
+@receiver(models.signals.post_delete, sender=WeeklySessionEvidence)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `WeeklySessionEvidence` object is deleted.
+    """
+    if instance.evidence:
+        if os.path.isfile(instance.evidence.path):
+            os.remove(instance.evidence.path)
 
 class Payment(models.Model):
     promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
