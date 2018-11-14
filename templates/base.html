@@ -44,7 +44,7 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
-
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:index' %}">Cuentas</a></li>
             {% elif request.user|has_group:"Capacitador" %}
             <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
 

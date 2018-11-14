@@ -50,14 +50,49 @@ def is_field_technician(user):
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
-
-
 # Create your views here.
 @login_required
 def index(request):
-    alert_form = AlertForm()
-    context = {'alert_form': alert_form}
-    return render(request, 'profiles/promoter.html', context)
+    if is_director(request.user):
+        users = User.objects.all()
+        accounts = []
+        baseUsers = BaseUser.objects.filter(deleted_at__isnull=True)
+
+        for baseUser in baseUsers:
+            if is_promoter(baseUser.user):
+                role = 'Promotora'
+            else:
+                role = baseUser.user.groups.all()[0]
+            accounts.append({'account': baseUser,
+                             'id': baseUser.id,
+                             'name': baseUser.name,
+                             'last_name_paternal': baseUser.last_name_paternal,
+                             'last_name_maternal': baseUser.last_name_maternal,
+                             'role': role
+                            })
+        print(accounts)
+        return render(request, 'profiles/index.html', {'accounts': accounts})
+    else:
+        return HttpResponseRedirect('/administrative/')
+
+@login_required
+def delete_account(request, pk):
+    if(is_director(request.user)):
+        if request.method == 'GET':
+            try:
+                baseUser = BaseUser.objects.get(pk=pk)
+            except BaseUser.DoesNotExist:
+                raise Http404("No existe ese contacto.")
+
+            baseUser.deleted_at = timezone.now()
+            baseUser.user.is_active = False
+            baseUser.user.save()
+            baseUser.save()
+            return HttpResponseRedirect('/profiles/')
+        else:
+            return HttpResponseRedirect('/profiles/')
+    else:
+        return HttpResponseRedirect('/profiles/')
 
 @login_required
 def users(request):
@@ -206,7 +241,7 @@ def edit_user(request,pk):
 
             for g in user.groups.all():
                 group = g
-                
+
             context = {'base_user': base_user, 'user': user, 'form': form, 'group': group}
             return render(request, 'profiles/edit_user.html', context)
     else:
@@ -225,7 +260,7 @@ def get_promoter_profile(request,pk):
 def logoutUser(request):
     logout(request)
     return HttpResponseRedirect('/administrative/')
-  
+
 @login_required
 def edit_promoter(request, pk):
     if request.method == 'POST':

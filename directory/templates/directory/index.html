@@ -55,11 +55,19 @@
                       {{contact.comments}}
                     </td>
                     <td>
+                      {% if director %}
                       <div style="width:24px; height:24px;">
                         <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
                           <i class="material-icons" style="color:pink;">delete</i>
                         </a>
                       </div>
+                      {% else %}
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}">
+                        </a>
+                      </div>
+                      {% endif %}
+
                     </td>
                   </tr>
                   {% endfor %}
