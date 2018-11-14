@@ -57,13 +57,14 @@ def index(request):
         'simp': Contact.objects.filter(deleted_at__isnull=True, contact_type='Simp'),
         'other': Contact.objects.filter(deleted_at__isnull=True, contact_type='Other'),
     }
-    print("-----------------------------------------------")
-    print(contact_list)
-    print("-----------------------------------------------")
+
+    isDirector = is_director(request.user)
     context = {
         'type_list': Contact.type_choices,
-        'contact_list': contact_list
+        'contact_list': contact_list,
+        'director': isDirector
     }
+
     return render(request, 'directory/index.html', context)
 
 @login_required
@@ -107,14 +108,21 @@ def add_contact(request):
 
 @login_required
 def delete_contact(request, pk):
-    if request.method == 'GET':
-        try:
-            contact = Contact.objects.get(pk=pk)
-        except Contact.DoesNotExist:
-            raise Http404("No existe ese contacto.")
+    if(is_director(request.user)):
+        if request.method == 'GET':
+            try:
+                contact = Contact.objects.get(pk=pk)
+            except Contact.DoesNotExist:
+                raise Http404("No existe ese contacto.")
 
-        contact.deleted_at = timezone.now()
-        contact.save()
+            contact.deleted_at = timezone.now()
+            contact.save()
+        else:
+            return HttpResponseRedirect('/directory/')
+    else:
+        return HttpResponseRedirect('/directory/')
+
+
 def edit_contact(request,pk):
     """ Description: Edits the information of a contact
         Parameters: request, pk of the contact that is edited
