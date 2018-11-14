@@ -5,8 +5,7 @@ app_name = 'administrative'
 urlpatterns = [
     path('', views.index, name='index'),
     path('communities/', views.communities, name='communities'),
-    # Beneficiaries
-    path('beneficiaries/', views.beneficiaries, name='beneficiaries_list'),
+    path('beneficiaries/', views.beneficiaries_list, name='beneficiaries_list'),
     path('beneficiaries/<int:pk>', views.beneficiaries, name='beneficiary'),
     path('new_beneficiary/', views.add_beneficiary, name='new_beneficiary'),
     path('modify_beneficiary/', views.modify_beneficiary, name='modify_beneficiary'),
@@ -22,6 +21,7 @@ urlpatterns = [
     path('add_payment/', views.add_payment, name='add_payment'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
+    path('my_communities/', views.my_communities, name='my_communities'),
     # Savings
     path('saving_accounts/', views.saving_accounts, name='saving_accounts'),
     path('new_saving_account/', views.add_saving_account, name='new_saving_account'),

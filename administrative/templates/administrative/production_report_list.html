@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load administrative_extras %}
 {% block title %}MTA - Inicio{% endblock %}
 
 {% block nav_title %}Inicio{% endblock %}
@@ -8,6 +9,13 @@
 
 {% block content %}
 <main>
+  {% if request.user|is_promoter %}
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:production_report' %}">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
+  {% endif %}
   <div class="container">
     <div class="card">
       <div class="card-content">
@@ -20,7 +28,7 @@
             </ul>
           </div>
           <div id="review" class="col s12">
-            <table class="striped highlight">
+            <table id="review_reports" class="striped highlight">
               <thead>
                 <tr>
                     <th>Beneficiario</th>
@@ -64,6 +72,7 @@
                     <th>Beneficiario</th>
                     <th>Cambia</th>
                     <th>Por</th>
+                    <th>Ver</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,6 +124,7 @@
                   <th>Beneficiario</th>
                   <th>Cambió</th>
                   <th>Por</th>
+                  <th>Ver</th>
                 </tr>
               </thead>
               <tbody>
@@ -159,6 +169,32 @@
     $('.tabs').tabs(
       swipeable=true
     );
+    $('#review_reports').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
   });
 
 </script>

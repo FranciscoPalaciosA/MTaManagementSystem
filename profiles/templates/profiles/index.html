@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Inicio{% endblock %}
+
+{% block nav_title %}Cuentas{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+
+{% block content %}
+    <main>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red modal-trigger" href="{% url 'profiles:new_user' %}">
+          <i class="large material-icons">add</i>
+        </a>
+      </div>
+      <div class="container">
+        <div class="card">
+          <div class="card-content">
+            <div class="row">
+              <div class="col s12">
+                <table id="accounts" class="striped highlight">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Puesto</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for account in accounts %}
+                    <tr onmouseover="document.getElementById('button{{account.id}}').hidden = false" onmouseout="document.getElementById('button{{account.id}}').hidden = true">
+                      <td>
+                        {{account.name}} {{account.last_name_paternal}} {{account.last_name_maternal}}
+                      </td>
+                      <td>
+                        {{account.role}}
+                      </td>
+                      <td>
+                        <div style="width:24px; height:24px;">
+                          <a hidden id="button{{account.id}}" href="{% url 'profiles:delete_account' account.id %}">
+                            <i class="material-icons" style="color:pink;">delete</i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+{% endblock content %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('.fixed-action-btn').floatingActionButton();
+    $('#accounts').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
+  });
+
+</script>
+{% endblock js %}

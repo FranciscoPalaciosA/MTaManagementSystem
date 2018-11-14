@@ -91,6 +91,20 @@
                 </div>
               </div>
               <div class="row">
+                <div class="col s4">
+                  <div class="input-field">
+                    <input required id="{{form.municipality.id_for_label}}" name="{{form.municipality.html_name}}" type="text" class="validate" value="{{account.municipality}}">
+                    <label for="{{form.municipality.id_for_label}}">Municipio:</label>
+                  </div>
+                </div>
+                <div class="col s6">
+                  <div class="input-field">
+                    <input required id="{{form.location.id_for_label}}" name="{{form.location.html_name}}" type="text" class="validate" value="{{account.location}}">
+                    <label for="{{form.location.id_for_label}}">Ubicación:</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
                 <div class="col s6">
                   <div class="input-field">
                     <input id="{{form.total_saved_amount.id_for_label}}" name="{{form.total_saved_amount.html_name}}" type="number" class="validate">

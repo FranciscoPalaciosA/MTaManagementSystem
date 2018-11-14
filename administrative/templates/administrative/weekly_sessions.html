@@ -116,7 +116,6 @@
               <div class="input-field col s12 m12">
                 <label for="{{weekly_session_form.assistants.id_for_label}}" class="active">Asistentes</label>
                 <input type="text" id="search" onkeyup="filter_assistants()" placeholder="Buscar...">
-
                 {% for choice in weekly_session_form.assistants.field.queryset %}
                   {% if choice in beneficiaries %}
                   <div class="input-field"><br>
