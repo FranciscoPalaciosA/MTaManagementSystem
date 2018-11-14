@@ -18,7 +18,8 @@
     <div class="modal-content">
       <h4>Nueva Comunidad</h4>
       <form action="/administrative/communities/" method="POST">
-        {% csrf_token %}<div class="row">
+        {% csrf_token %}
+        <div class="row">
           <div class="input-field col s12 m12">
             <label for="{{community_form.name.id_for_label}}">Nombre</label>
             <input required id="{{community_form.name.id_for_label}}" name="{{community_form.name.html_name}}" type="text" class="validate">
@@ -31,11 +32,9 @@
             <label for="{{community_form.state.id_for_label}}">Estado</label>
             <input required id="{{community_form.state.id_for_label}}" name="{{community_form.state.html_name}}" type="text" class="validate">
           </div>
-
           <button class="btn waves-effect waves-light right" type="submit" value="Submit" name="action">Enviar
             <i class="material-icons right">send</i>
           </button>
-
           <br><br>
       </form>
     </div>

@@ -310,7 +310,7 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-            
+
     elif request.method == 'GET':
         if is_promoter(request.user):
             return HttpResponseRedirect('/administrative/')
@@ -428,6 +428,26 @@ def communities(request):
             community_form = CommunityForm()
             context = {'community_form': community_form}
             return render(request, 'administrative/communities.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/')
+
+@login_required
+def my_communities(request):
+    if is_promoter(request.user):
+        if request.method == 'GET':
+            base = BaseUser.objects.get(user=request.user)
+            promoter = Promoter.objects.get(base_user=base)
+            comms = promoter.communities.all()
+            communities = []
+            for community in comms:
+                communities.append({
+                    'data': community,
+                    'beneficiaries': Beneficiary.objects.filter(community=community)
+                })
+            print(communities)
+            return render(request, 'administrative/promoter_communities.html', {'communities': communities})
+        else:
+            return HttpResponseRedirect('/administrative/')
     else:
         return HttpResponseRedirect('/administrative/')
 
@@ -856,7 +876,7 @@ def add_saving_account(request):
             return render(request, 'administrative/new_saving_account.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
-      
+
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions

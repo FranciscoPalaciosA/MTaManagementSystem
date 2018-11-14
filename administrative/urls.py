@@ -23,6 +23,7 @@ urlpatterns = [
     path('add_payment/', views.add_payment, name='add_payment'),
     path('alerts/', views.alert_list, name='alerts'),
     path('resolve_alert/<int:pk>/', views.resolve_alert, name='resolve_alert'),
+    path('my_communities/', views.my_communities, name='my_communities'),
     # Savings
     path('saving_accounts/', views.saving_accounts, name='saving_accounts'),
     path('new_saving_account/', views.add_saving_account, name='new_saving_account'),
