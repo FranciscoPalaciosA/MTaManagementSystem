@@ -73,6 +73,11 @@
             <form action="/profiles/edit_promoter/{{promoter.id}}/" method="post">
               {% csrf_token %}
               <div class="row">
+                <div align="right">
+                  <a href="{% url 'profiles:edit_promoter' promoter.id %}">
+                    <i class="material-icons">edit</i>
+                  </a>
+                </div>
                 <h3 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h3>
                 <div class="input-field col s12">
                   <input disabled  required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate" value="{{promoter.base_user.user.username}}">
@@ -128,9 +133,6 @@
                   <label for="{{form.contact_phone_number.id_for_label}}">Teléfono del recado</label>
                 </div>
               </div>
-              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
-                <i class="material-icons">send</i>
-              </button>
               <br><br>
             </form>
           </div>

@@ -206,7 +206,7 @@ def edit_user(request,pk):
 
             for g in user.groups.all():
                 group = g
-                
+
             context = {'base_user': base_user, 'user': user, 'form': form, 'group': group}
             return render(request, 'profiles/edit_user.html', context)
     else:
@@ -214,78 +214,91 @@ def edit_user(request,pk):
 
 @login_required
 def get_promoter_profile(request,pk):
-    if request.method == 'GET':
-        promoter = Promoter.objects.get(pk=pk)
-        communities =  Community.objects.filter(deleted_at__isnull=True, promoter__id=pk)
-        print(communities)
-        context = {'promoter': promoter, 'communities': communities}
-        return render(request, 'profiles/promoter_profile.html', context)
+    if is_promoter(request.user):
+        if request.method == 'GET':
+            promoter = Promoter.objects.get(pk=pk)
+            communities =  Community.objects.filter(deleted_at__isnull=True, promoter__id=pk)
+            print(communities)
+            context = {'promoter': promoter, 'communities': communities}
+            return render(request, 'profiles/promoter_profile.html', context)
+    else:
+        return HttpResponseRedirect('/profiles/')
 
 @login_required
 def logoutUser(request):
     logout(request)
     return HttpResponseRedirect('/administrative/')
-  
+
 @login_required
 def edit_promoter(request, pk):
-    if request.method == 'POST':
-        form = PromoterFormEdit(request.POST)
-        if form.is_valid():
-            promoter = get_object_or_404(Promoter, pk=pk)
-            #Send the new clean data to the Tables
-            #print(form.cleaned_data['communities'])
-            if promoter.base_user.user.check_password(form.cleaned_data['previous_password']):
-                base_user = get_object_or_404(BaseUser, pk=promoter.base_user_id)
-                user = get_object_or_404(User, pk=base_user.user_id)
+    """ Description: Edits the information of an account of a promoter
+        Parameters: request, pk of the account that is edited
+        return: render
+    """
+    if is_promoter(request.user):
+        if request.method == 'POST':
+            form = PromoterFormEdit(request.POST)
+            if form.is_valid():
+                promoter = get_object_or_404(Promoter, pk=pk)
+                #Send the new clean data to the Tables
+                #print(form.cleaned_data['communities'])
+                if promoter.base_user.user.check_password(form.cleaned_data['previous_password']):
+                    base_user = get_object_or_404(BaseUser, pk=promoter.base_user_id)
+                    user = get_object_or_404(User, pk=base_user.user_id)
 
-                if form.cleaned_data['password'] != "" and form.cleaned_data['password'] != None:
-                    user.password = form.cleaned_data['password']
-                #Data from base_user
-                if form.cleaned_data['name'] != "" and form.cleaned_data['name'] != None:
-                    base_user.name=form.cleaned_data['name']
-                if form.cleaned_data['last_name_maternal'] != "" and form.cleaned_data['last_name_paternal'] != None:
-                    base_user.last_name_maternal=form.cleaned_data['last_name_maternal']
-                if form.cleaned_data['last_name_paternal'] != "" and form.cleaned_data['last_name_paternal'] != None:
-                    base_user.last_name_paternal=form.cleaned_data['last_name_paternal']
-                if form.cleaned_data['phone_number'] != "" and form.cleaned_data['phone_number'] != None:
-                    base_user.phone_number=form.cleaned_data['phone_number']
-                if form.cleaned_data['address'] != "" and form.cleaned_data['address'] != None:
-                    base_user.address=form.cleaned_data['address']
-                if form.cleaned_data['email'] != "" and form.cleaned_data['email'] != None:
-                    base_user.email=form.cleaned_data['email']
-                    #Data from promoter
-                if form.cleaned_data['contact_name'] != "" and form.cleaned_data['contact_name'] != None:
-                    promoter.contact_name=form.cleaned_data['contact_name']
-                if form.cleaned_data['contact_phone_number'] != "" and form.cleaned_data['contact_phone_number'] != None:
-                     promoter.contact_phone_number=form.cleaned_data['contact_phone_number']
-                promoter.communities.set(form.cleaned_data['communities'])
+                    if form.cleaned_data['password'] != "" and form.cleaned_data['password'] != None:
+                        user.password = form.cleaned_data['password']
+                    #Data from base_user
+                    if form.cleaned_data['name'] != "" and form.cleaned_data['name'] != None:
+                        base_user.name=form.cleaned_data['name']
+                    if form.cleaned_data['last_name_maternal'] != "" and form.cleaned_data['last_name_paternal'] != None:
+                        base_user.last_name_maternal=form.cleaned_data['last_name_maternal']
+                    if form.cleaned_data['last_name_paternal'] != "" and form.cleaned_data['last_name_paternal'] != None:
+                        base_user.last_name_paternal=form.cleaned_data['last_name_paternal']
+                    if form.cleaned_data['phone_number'] != "" and form.cleaned_data['phone_number'] != None:
+                        base_user.phone_number=form.cleaned_data['phone_number']
+                    if form.cleaned_data['address'] != "" and form.cleaned_data['address'] != None:
+                        base_user.address=form.cleaned_data['address']
+                    if form.cleaned_data['email'] != "" and form.cleaned_data['email'] != None:
+                        base_user.email=form.cleaned_data['email']
+                        #Data from promoter
+                    if form.cleaned_data['contact_name'] != "" and form.cleaned_data['contact_name'] != None:
+                        promoter.contact_name=form.cleaned_data['contact_name']
+                    if form.cleaned_data['contact_phone_number'] != "" and form.cleaned_data['contact_phone_number'] != None:
+                         promoter.contact_phone_number=form.cleaned_data['contact_phone_number']
+                    promoter.communities.set(form.cleaned_data['communities'])
 
-                user.save()
-                base_user.save()
-                promoter.save()
+                    user.save()
+                    base_user.save()
+                    promoter.save()
 
 
-                messages.success(request, 'Datos guardados exitosamente')
-                return HttpResponseRedirect('/profiles/')
+                    messages.success(request, 'Datos guardados exitosamente')
+                    return HttpResponseRedirect('/profiles/')
+                else:
+                    form = PromoterFormEdit()
+                    context = {'form': form, 'promoter': promoter}
+                    messages.warning(request, 'La contraseña anterior es incorrecta')
+                    return render(request, 'profiles/edit_promoter.html', context)
             else:
+                print("Invalid form")
+                messages.warning(request, 'No ha llenado todos los espacios de la forma')
+                for error in form.errors:
+                    print(error)
                 form = PromoterFormEdit()
-
-                context = {'form': form, 'promoter': promoter}
-                messages.warning(request, 'La contraseña anterior es incorrecta')
+                promoter = Promoter.objects.get(pk=pk)
+                list = Community.objects.values_list('id', flat=True).filter(deleted_at__isnull=True, promoter__id=pk)
+                communities = dict(zip(list[::1], list[::1]))
+                context = {'form': form, 'promoter': promoter, 'communities':communities}
                 return render(request, 'profiles/edit_promoter.html', context)
-        else:
-            print("Invalid form")
-            messages.warning(request, 'No ha llenado todos los espacios de la forma')
-            for error in form.errors:
-                print(error)
+        elif request.method == 'GET':
+            form = PromoterFormEdit()
+            promoter = Promoter.objects.get(pk=pk)
+            list = Community.objects.values_list('id', flat=True).filter(deleted_at__isnull=True, promoter__id=pk)
+            communities = dict(zip(list[::1], list[::1]))
+            context = {'form': form, 'promoter': promoter, 'communities':communities}
             return render(request, 'profiles/edit_promoter.html', context)
-    elif request.method == 'GET':
-        form = PromoterFormEdit()
-        promoter = Promoter.objects.get(pk=pk)
-        list = Community.objects.values_list('id', flat=True).filter(deleted_at__isnull=True, promoter__id=pk)
-        communities = dict(zip(list[::1], list[::1]))
-
-        context = {'form': form, 'promoter': promoter, 'communities':communities}
-        return render(request, 'profiles/edit_promoter.html', context)
+        else:
+            print("NOT POST OR GET")
     else:
-        print("NOT POST OR GET")
+        return HttpResponseRedirect('/logout/')
