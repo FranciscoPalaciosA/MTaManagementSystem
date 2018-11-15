@@ -26,6 +26,7 @@
       <div class="navbar-fixed">
         <nav class="navbar white">
           <div class="nav-wrapper">
+            <a href="#" data-target="sidenav-left" class="sidenav-trigger"><i class="material-icons" style="color:pink">menu</i></a>
             <a class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
             <div style="float:right;">
               <a href="{% url 'profiles:logout' %}">
