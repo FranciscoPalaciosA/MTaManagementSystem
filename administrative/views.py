@@ -108,7 +108,6 @@ def production_report(request):
             else:
                 beneficiary = form.cleaned_data['beneficiary'][0]
 
-
             newProductionReport = ProductionReport(
 
                                                     beneficiary = beneficiary,
