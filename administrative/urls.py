@@ -10,6 +10,7 @@ urlpatterns = [
     path('new_beneficiary/', views.add_beneficiary, name='new_beneficiary'),
     path('edit_beneficiary/<int:pk>/', views.edit_beneficiary, name='edit_beneficiary'),
     path('modify_beneficiary/', views.modify_beneficiary, name='modify_beneficiary'),
+    path('remove_from_program/<int:p_id>/', views.remove_from_program, name='remove_from_program'),
     path('production_report/', views.production_report, name='production_report'),
     path('production_report_list/', views.production_report_list, name='production_report_list'),
     path('administrative_production_report/<int:pk>', views.administrative_production_report, name='administrative_production_report'),

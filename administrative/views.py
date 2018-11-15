@@ -232,13 +232,15 @@ def beneficiaries_list(request):
 @login_required
 def beneficiaries(request, pk):
     if request.method == 'GET':
+        not_promoter = not is_promoter(request.user)
+
         if pk == 0:
             beneficiaries = Beneficiary.objects.all()
             if is_promoter(request.user):
                 base = BaseUser.objects.get(user=request.user)
                 promoter = Promoter.objects.get(base_user=base)
                 beneficiaries = Beneficiary.objects.filter(promoter=promoter)
-            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries})
+            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries, 'not_promoter': not_promoter})
         else:
             try:
                 beneficiary = Beneficiary.objects.get(pk=pk)
@@ -251,7 +253,8 @@ def beneficiaries(request, pk):
                 allowed_programs = allowed_programs.exclude(id=prog.program.id)
 
             form = BeneficiaryInProgramForm()
-            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
+
+            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs, 'not_promoter': not_promoter}
             return render(request, 'administrative/beneficiary.html', context)
 
 def load_communities(request):
@@ -322,42 +325,51 @@ def add_beneficiary(request):
 @login_required
 def edit_beneficiary(request,pk):
     """ Description: Edits the information of a beneficiary
-        Parameters: request, pk of the account that is edited
+        Parameters: request, pk of the beneficiary that is edited
         return: render
     """
     if not (is_promoter(request.user)):
         if request.method == 'POST':
-            form = BeneficiaryForm(data=request.POST)
+            form = EditBeneficiaryForm(data=request.POST)
 
             if form.is_valid():
-                beneficiary = User.objects.get(id=pk)
+                beneficiary = Beneficiary.objects.get(id=pk)
 
                 beneficiary.name=form.cleaned_data['name']
                 beneficiary.last_name_paternal=form.cleaned_data['last_name_paternal']
                 beneficiary.last_name_maternal=form.cleaned_data['last_name_maternal']
                 beneficiary.phone=form.cleaned_data['phone']
                 beneficiary.email=form.cleaned_data['email']
-                beneficiary.promoter=form.cleaned_data['promoter']
-                beneficiary.community=form.cleaned_data['community']
                 beneficiary.num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries']
                 beneficiary.account_number=form.cleaned_data['account_number']
                 beneficiary.bank_name=form.cleaned_data['bank_name']
                 beneficiary.contact_name=form.cleaned_data['contact_name']
                 beneficiary.contact_phone=form.cleaned_data['contact_phone']
+                beneficiary.promoter=form.cleaned_data['promoter'][0]
+                beneficiary.community=form.cleaned_data['community'][0]
+                beneficiary.updated_at=timezone.now()
 
                 beneficiary.save()
 
-                return HttpResponseRedirect('/administrative/beneficiaries/0/')
+                return HttpResponseRedirect('/administrative/beneficiaries/')
         else:
             beneficiary = Beneficiary.objects.get(id=pk)
 
-            form = BeneficiaryForm()
+            form = EditBeneficiaryForm()
 
             context = {'beneficiary': beneficiary, 'form': form}
             return render(request, 'administrative/edit_beneficiary.html', context)
     else:
-        return HttpResponseRedirect('/administrative/beneficiaries/0/')
+        return HttpResponseRedirect('/administrative/beneficiaries/')
 
+def remove_from_program(request, p_id):
+    if request.method == 'GET':
+        b_in_p = BeneficiaryInProgram.objects.get(id=p_id)
+        print(b_in_p)
+
+        b_in_p.delete()
+
+        return HttpResponseRedirect('/administrative/beneficiaries/')
 
 @login_required
 def modify_beneficiary(request):

@@ -230,7 +230,7 @@ def edit_user(request,pk):
                 user.groups.clear()
                 user.groups.add(form.cleaned_data['group'])
 
-                return HttpResponseRedirect('/profiles/users/')
+                return HttpResponseRedirect('/profiles/')
         else:
             base_user = BaseUser.objects.get(id=pk)
             user_id = base_user.user_id

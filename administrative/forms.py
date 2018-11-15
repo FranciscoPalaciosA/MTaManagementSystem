@@ -43,6 +43,20 @@ class BeneficiaryInProgramForm(forms.Form):
     initial_weight = forms.DecimalField(required=False)
     savings_account_role = forms.CharField(required=False)
 
+class EditBeneficiaryForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    last_name_paternal = forms.CharField(max_length=50)
+    last_name_maternal = forms.CharField(max_length=50)
+    phone = forms.CharField(max_length=50)
+    email = forms.CharField(max_length=200)
+    num_of_family_beneficiaries = forms.IntegerField(required=True)
+    contact_name = forms.CharField(max_length=200)
+    contact_phone = forms.IntegerField()
+    account_number = forms.CharField(max_length=50)
+    bank_name = forms.CharField(max_length=100)
+    promoter = forms.ModelMultipleChoiceField(queryset=Promoter.objects)
+    community = forms.ModelMultipleChoiceField(queryset=Community.objects)
+
 class CommunityForm(forms.ModelForm):
     class Meta:
         model = Community
