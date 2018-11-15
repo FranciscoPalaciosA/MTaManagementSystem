@@ -232,13 +232,15 @@ def beneficiaries_list(request):
 @login_required
 def beneficiaries(request, pk):
     if request.method == 'GET':
+        not_promoter = not is_promoter(request.user)
+
         if pk == 0:
             beneficiaries = Beneficiary.objects.all()
             if is_promoter(request.user):
                 base = BaseUser.objects.get(user=request.user)
                 promoter = Promoter.objects.get(base_user=base)
                 beneficiaries = Beneficiary.objects.filter(promoter=promoter)
-            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries})
+            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries, 'not_promoter': not_promoter})
         else:
             try:
                 beneficiary = Beneficiary.objects.get(pk=pk)
@@ -251,7 +253,8 @@ def beneficiaries(request, pk):
                 allowed_programs = allowed_programs.exclude(id=prog.program.id)
 
             form = BeneficiaryInProgramForm()
-            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
+
+            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs, 'not_promoter': not_promoter}
             return render(request, 'administrative/beneficiary.html', context)
 
 def load_communities(request):

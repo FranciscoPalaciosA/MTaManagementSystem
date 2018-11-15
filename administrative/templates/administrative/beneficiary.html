@@ -6,11 +6,13 @@
 {% endblock nav_tabs %}
 {% block content %}
 <main>
+  {% if not_promoter %}
   <div class="fixed-action-btn">
     <a class="btn-floating btn-large blue modal-trigger" href="/administrative/edit_beneficiary/{{beneficiary.id}}/">
       <i class="large material-icons">edit</i>
     </a>
   </div>
+  {% endif %}
   <br><br>
   <div class="container">
     <br><br>
@@ -140,19 +142,25 @@
                           </div>
                         </div>
                         {% endif %}
+                        {% if not_promoter %}
                         <div hidden id="button{{prog.id}}">
                           <a class="btn-flat left"  onclick="remove_program({{prog.id}}, {{beneficiary.id}})">Eliminar</a>
                         </div>
+                        {% endif %}
                       </div>
                     </div>
                   </div>
+                  {% empty %}
+                  <p>No está registrado en ningún programa</p>
                   {% endfor %}
                 </div>
               </div>
             </div>
+            {% if not_promoter %}
             <div class="row center">
               <a class="waves-effect waves-light btn-small" onclick="add_program()"><i class="large material-icons left" style="font-size: 28px">add</i>Programa</a>
             </div>
+            {% endif %}
             <br>
             <div id="add_program" class="row" hidden>
               <form action="/administrative/modify_beneficiary/" method="POST">
