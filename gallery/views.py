@@ -49,7 +49,9 @@ def is_field_technician(user):
 def index(request):
     form = PhotoForm()
     videoForm = VideoForm()
-    context = {'form': form, 'videoForm': videoForm}
+    photos = Photo.objects.all()
+    videos = Video.objects.all()
+    context = {'form': form, 'videoForm': videoForm, 'photos': photos}
     return render(request, 'gallery/index.html', context)
 
 @login_required
