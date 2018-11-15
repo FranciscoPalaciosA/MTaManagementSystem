@@ -6,6 +6,11 @@
 {% endblock nav_tabs %}
 {% block content %}
 <main>
+  <div class="percentage_bar_div">
+    <div class="w3-pale-red w3-round-large">
+      <div id="percentage_bar" class="w3-container w3-round-large w3-center color-pink" style="width:0%">0%</div>
+    </div>
+  </div>
   <br><br>
   <div class="container">
     <br><br>
@@ -13,7 +18,7 @@
       <div class="col s12 m12">
         <div class="card z-depth-3">
           <div class="card-content">
-            <form id="beneficiaryForm" action="/administrative/new_beneficiary/" method="post">
+            <form id="beneficiaryForm" action="/administrative/new_beneficiary/" name="beneficiaryForm" method="post">
               {% csrf_token %}
               <h5>Información del Beneficiario</h5>
               <br>
@@ -204,18 +209,16 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('select').formSelect();
+
+    toFillFullForm();
+
   });
   $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
 
   $("#{{form.member_in.id_for_label}}").on('change', function(){
     var req = document.getElementsByClassName('change_req');
-
-    for(i=0; i < req.length; i++){
-      req[i].required = false;
-      console.log(req[i].required);
-    }
-
     var program = $( "#{{form.member_in.id_for_label}} option:selected" ).text();
+
     switch (program) {
       case "Productores":
         $("#{{form.curp.id_for_label}}").prop('required',true);
@@ -245,10 +248,6 @@
         $("#{{form.age.id_for_label}}").prop('required',true);
         $("#{{form.initial_weight.id_for_label}}").prop('required',true);
         break;
-    }
-
-    for(i=0; i < req.length; i++){
-      console.log(req[i].required);
     }
   });
 

@@ -19,6 +19,7 @@
     <link href="{% static 'css/dataTables.css' %}" rel="stylesheet">
     <!-- Material Icons-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   {% block addhead %}{% endblock addhead %}
   </head>
   <body class="has-fixed-sidenav">
@@ -56,6 +57,7 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
 
             {% elif request.user|has_group:"Coordinador Administrativo" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
@@ -66,6 +68,8 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
+
             {% endif %}
             {% if request.user|has_group:"Técnico de Campo" %}
             <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>

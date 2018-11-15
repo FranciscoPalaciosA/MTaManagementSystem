@@ -29,3 +29,14 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+.percentage_bar_div{
+  position:fixed;
+  width: 75%;
+  z-index: 99;
+  margin: 12px;
+}
+
+.color-pink{
+  background-color: pink;
+}
