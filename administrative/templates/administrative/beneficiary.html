@@ -78,7 +78,7 @@
                   {% for prog in programs %}
                   <div class="col s12">
                     <div class="card">
-                      <div class="card-content">
+                      <div class="card-content" onmouseover="document.getElementById('button{{prog.id}}').hidden = false" onmouseout="document.getElementById('button{{prog.id}}').hidden = true">
                         <span class="card-title">{{prog.program.name}}</span>
                         {% if prog.program.name == 'Productores' %}
                         <div class="row">
@@ -140,6 +140,9 @@
                           </div>
                         </div>
                         {% endif %}
+                        <div hidden id="button{{prog.id}}">
+                          <a class="btn-flat left"  onclick="remove_program({{prog.id}}, {{beneficiary.id}})">Eliminar</a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -294,5 +297,19 @@
       console.log(req[i].required);
     }
   });
+
+  function remove_program(p_id, b_id){
+    path = "/administrative/remove_from_program/" + p_id;
+    $.ajax({
+      method: "GET",
+      url: path,
+      beforeSend:function(){
+         return confirm("¿Estas seguro que deseas eliminar este programa?");
+      }
+    }).done(function() {
+      location.reload();
+    });
+  }
+
 </script>
 {% endblock js %}

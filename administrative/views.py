@@ -310,7 +310,7 @@ def add_beneficiary(request):
             print("Form is not valid")
             print(form.errors)
             print("\n\n\n\n\n")
-            
+
     elif request.method == 'GET':
         if is_promoter(request.user):
             return HttpResponseRedirect('/administrative/')
@@ -322,42 +322,51 @@ def add_beneficiary(request):
 @login_required
 def edit_beneficiary(request,pk):
     """ Description: Edits the information of a beneficiary
-        Parameters: request, pk of the account that is edited
+        Parameters: request, pk of the beneficiary that is edited
         return: render
     """
     if not (is_promoter(request.user)):
         if request.method == 'POST':
-            form = BeneficiaryForm(data=request.POST)
+            form = EditBeneficiaryForm(data=request.POST)
 
             if form.is_valid():
-                beneficiary = User.objects.get(id=pk)
+                beneficiary = Beneficiary.objects.get(id=pk)
 
                 beneficiary.name=form.cleaned_data['name']
                 beneficiary.last_name_paternal=form.cleaned_data['last_name_paternal']
                 beneficiary.last_name_maternal=form.cleaned_data['last_name_maternal']
                 beneficiary.phone=form.cleaned_data['phone']
                 beneficiary.email=form.cleaned_data['email']
-                beneficiary.promoter=form.cleaned_data['promoter']
-                beneficiary.community=form.cleaned_data['community']
                 beneficiary.num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries']
                 beneficiary.account_number=form.cleaned_data['account_number']
                 beneficiary.bank_name=form.cleaned_data['bank_name']
                 beneficiary.contact_name=form.cleaned_data['contact_name']
                 beneficiary.contact_phone=form.cleaned_data['contact_phone']
+                beneficiary.promoter=form.cleaned_data['promoter'][0]
+                beneficiary.community=form.cleaned_data['community'][0]
+                beneficiary.updated_at=timezone.now()
 
                 beneficiary.save()
 
-                return HttpResponseRedirect('/administrative/beneficiaries/0/')
+                return HttpResponseRedirect('/administrative/beneficiaries/')
         else:
             beneficiary = Beneficiary.objects.get(id=pk)
 
-            form = BeneficiaryForm()
+            form = EditBeneficiaryForm()
 
             context = {'beneficiary': beneficiary, 'form': form}
             return render(request, 'administrative/edit_beneficiary.html', context)
     else:
-        return HttpResponseRedirect('/administrative/beneficiaries/0/')
+        return HttpResponseRedirect('/administrative/beneficiaries/')
 
+def remove_from_program(request, p_id):
+    if request.method == 'GET':
+        b_in_p = BeneficiaryInProgram.objects.get(id=p_id)
+        print(b_in_p)
+
+        b_in_p.delete()
+
+        return HttpResponseRedirect('/administrative/beneficiaries/')
 
 @login_required
 def modify_beneficiary(request):
@@ -856,7 +865,7 @@ def add_saving_account(request):
             return render(request, 'administrative/new_saving_account.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
-      
+
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions

@@ -24,11 +24,12 @@
                       <th>Nombre</th>
                       <th>Puesto</th>
                       <th></th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for account in accounts %}
-                    <tr onmouseover="document.getElementById('button{{account.id}}').hidden = false" onmouseout="document.getElementById('button{{account.id}}').hidden = true">
+                    <tr onmouseover="document.getElementById('button{{account.id}}').hidden = false; document.getElementById('buttonEdit{{account.id}}').hidden = false" onmouseout="document.getElementById('button{{account.id}}').hidden = true; document.getElementById('buttonEdit{{account.id}}').hidden = true">
                       <td>
                         {{account.name}} {{account.last_name_paternal}} {{account.last_name_maternal}}
                       </td>
@@ -39,6 +40,13 @@
                         <div style="width:24px; height:24px;">
                           <a hidden id="button{{account.id}}" href="{% url 'profiles:delete_account' account.id %}">
                             <i class="material-icons" style="color:pink;">delete</i>
+                          </a>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="width:24px; height:24px;">
+                          <a hidden id="buttonEdit{{account.id}}" href="{% url 'profiles:edit_user' account.id %}">
+                            <i class="material-icons" style="color:#7987ac;">create</i>
                           </a>
                         </div>
                       </td>
