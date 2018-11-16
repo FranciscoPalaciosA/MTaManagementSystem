@@ -6,288 +6,77 @@
 {% block content %}
 <main>
   <div class="container">
-  <div class="row">
-    <div class="col s12">
-      <div class="card">
-        <div class="card-content">
-          <div class="row">
-            <div class="col s12">
-              <h5 class="center-align">Municipios</h5>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col s12">
-              <table id="beneficiaries" class="striped highlight">
-                <thead>
-                  <tr>
-                    <th>Municipio</th>
-                    <th>Promotoras</th>
-                    <th>Comunidades</th>
-                    <th>Beneficiarios</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for municipality in dataset %}
-                  <tr>
-                    <td>
-                      {{municipality.municipality}}
-                    </td>
-                    <td>
-                      {{municipality.promoters}}
-                    </td>
-                    <td>
-                      {{municipality.communities}}
-                    </td>
-                    <td>
-                      {{municipality.beneficiaries}}
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="row">
+      <div class="col s12 m6" id="chart_div"></div>
+      <div class="col s12 m6" id="chart_div_2"></div>
     </div>
-  </div>
 
-    <div class="row">
-      <div class="col s12 m6">
-        <div class="card">
-          <div class="card-content">
-            <h5>Promotoras</h5>
-            <canvas class="card-chart" id="promoters-chart" width="400" height="400"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="col s12 m6">
-        <div class="card">
-          <div class="card-content">
-            <h5>Ahorros</h5>
-            <canvas class="card-chart" id="savings-chart" width="400" height="400"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s12 m6">
-        <div class="card">
-          <div class="card-content">
-            <h5>Beneficiarios por Municipio</h5>
-            <canvas class="card-chart" id="beneficiary-municipality-chart" width="400" height="400"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="col s12 m6">
-        <div class="card">
-          <div class="card-content">
-            <h5>Beneficiarios por Programa</h5>
-            <canvas class="card-chart" id="beneficiary-program-chart" width="400" height="400"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </main>
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-    $('#communities').DataTable({
-      "language": {
-        "decimal": "",
-        "emptyTable": "No hay datos disponibles",
-        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
-        "infoEmpty": "Mostrando 0 a 0 de 0",
-        "infoFiltered": "",
-        "infoPostFix": "",
-        "thousands": ",",
-        "lengthMenu": "",
-        "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
-        "search": "Buscar:",
-        "zeroRecords": "No se encontraron registros",
-        "paginate": {
-          "first": "Primero",
-          "last": "Último",
-          "next": "Siguiente",
-          "previous": "Anterior"
-        },
-        "aria": {
-          "sortAscending": ": activate to sort column ascending",
-          "sortDescending": ": activate to sort column descending"
-        }
-      }
-    });
-    var ctx = document.getElementById("promoters-chart").getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{names|safe}},
-            datasets: [{
-                label: 'Promotoras',
-                data: {{promoters}},
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }]
-            }
-        }
-    });
-    ajaxSavings();
-    ajaxBeneficiariesMun();
-    beneficiariesProgram();
-  });
-  var dynamicColors = function() {
-      var r = Math.floor(Math.random() * 255);
-      var g = Math.floor(Math.random() * 255);
-      var b = Math.floor(Math.random() * 255);
-      return "rgb(" + r + "," + g + "," + b + ")";
-   };
 
-  function ajaxSavings(){
-    path = "/administrative/reports/municipality_savings/";
-    $.ajax({
-      method: "GET",
-      url: path
-    }).done(function(data) {
-      datasets = [];
-      for(i = 0; i < data.labels.length; i++){
-        datasetX = {
-          label: data.labels[i],
-          data: data.amounts[i],
-          borderColor: dynamicColors()
-        }
-        datasets.push(datasetX);
-      }
-      var savings = document.getElementById("savings-chart").getContext('2d');
-      var myLineChart = new Chart(savings, {
-          type: 'line',
-          data: {
-              labels: ['Enero', 'Febrero', 'Marzo', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-              datasets: datasets
-          },
-          options: {
-              scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }]
-              }
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+        path = "/administrative/reports/municipality_beneficiaries/";
+        $.ajax({
+          method: "GET",
+          url: path
+        }).done(function(res) {
+          // Create the data table.
+          var data = new google.visualization.DataTable();
+          rows = [];
+          for (i = 0; i < res.labels.length; i++){
+            rows.push([res.labels[i], res.beneficiaries[i]]);
           }
-      });
-    });
-  };
+          data.addColumn('string', 'Municipio');
+          data.addColumn('number', 'Beneficiarios');
+          data.addRows(rows);
 
-  function ajaxBeneficiariesMun(){
-    var ctx = document.getElementById("beneficiary-municipality-chart").getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: {{names|safe}},
-            datasets: [{
-                label: 'Beneficiarios',
-                data: {{beneficiaries}},
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }]
-            }
-        }
-    });
-  }
+          // Set chart options
+          var options = {'title':'Beneficiarios por municipio',
+                         'width':400,
+                         'height':300};
 
-  function beneficiariesProgram(){
-    path = "/administrative/reports/program_beneficiaries/";
-    $.ajax({
-      method: "GET",
-      url: path
-    }).done(function(data) {
-      var ctx = document.getElementById("beneficiary-program-chart").getContext('2d');
-      var myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-              labels: data.labels,
-              datasets: [{
-                  label: 'Beneficiarios',
-                  data: data.beneficiaries,
-                  backgroundColor: [
-                      'rgba(255, 99, 132, 0.2)',
-                      'rgba(54, 162, 235, 0.2)',
-                      'rgba(255, 206, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)',
-                      'rgba(153, 102, 255, 0.2)',
-                      'rgba(255, 159, 64, 0.2)'
-                  ],
-                  borderColor: [
-                      'rgba(255,99,132,1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }]
-              }
+          // Instantiate and draw our chart, passing in some options.
+          var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        });
+        path = "/administrative/reports/program_beneficiaries/";
+        $.ajax({
+          method: "GET",
+          url: path
+        }).done(function(res) {
+          // Create the data table.
+          var data = new google.visualization.DataTable();
+          rows = [];
+          for (i = 0; i < res.labels.length; i++){
+            rows.push([res.labels[i], res.beneficiaries[i]]);
           }
-      });
-    });
-  }
-</script>
+          data.addColumn('string', 'Program');
+          data.addColumn('number', 'Beneficiarios');
+          data.addRows(rows);
+
+          // Set chart options
+          var options = {'title':'Beneficiarios por programa',
+                         'width':400,
+                         'height':300};
+
+          // Instantiate and draw our chart, passing in some options.
+          var chart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+          chart.draw(data, options);
+        });
+      }
+    </script>
 {% endblock %}

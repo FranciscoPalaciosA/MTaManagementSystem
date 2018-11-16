@@ -1022,15 +1022,15 @@ def get_program_beneficiaries(request):
     if is_director(request.user):
         data = []
         names = []
-        qset = BeneficiaryInProgram.objects.values('program').annotate(beneficiaries=Count('beneficiary'))
-        print(qset)
+        qset = BeneficiaryInProgram.objects.values('program__name').annotate(beneficiaries=Count('beneficiary'))
         for p in qset:
             data.append(p['beneficiaries'])
-            names.append(p['program'])
+            names.append(p['program__name'])
         json_data = {
                         'labels': names,
                         'beneficiaries': data
                     }
     else:
         json_data = {}
+    print(json_data)
     return JsonResponse(json_data)
