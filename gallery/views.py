@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.utils import timezone
 
 from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 from profiles.models import HelpAlert
 from django.http import Http404
@@ -75,7 +76,8 @@ def index(request):
         form = PhotoForm()
         videoForm = VideoForm()
         photos = Photo.objects.all()
-        videos = Video.objects.all()objVideos = []
+        videos = Video.objects.all()
+        objVideos = []
         for video in videos:
             id = video_id(video.link)
             objVideos.append({
