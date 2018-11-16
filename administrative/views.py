@@ -257,6 +257,7 @@ def beneficiaries(request, pk):
             context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs, 'not_promoter': not_promoter}
             return render(request, 'administrative/beneficiary.html', context)
 
+@login_required
 def load_communities(request):
     promoter_id = request.GET.get('promoter')
     communities = Promoter.objects.get(id=promoter_id).communities.all()
@@ -362,6 +363,7 @@ def edit_beneficiary(request,pk):
     else:
         return HttpResponseRedirect('/administrative/beneficiaries/')
 
+@login_required
 def remove_from_program(request, p_id):
     if request.method == 'GET':
         b_in_p = BeneficiaryInProgram.objects.get(id=p_id)
@@ -624,7 +626,6 @@ def edit_weekly_session(request,pk):
     else:
         return HttpResponseRedirect('/administrative/weekly_sessions/')
 
-
 @login_required
 def get_weekly_session(request, pk):
     if request.method == 'GET':
@@ -801,6 +802,7 @@ def saving_accounts(request):
 
     return HttpResponseRedirect('/administrative/')
 
+@login_required
 def edit_savings(request, pk=0):
     """
     Description: Edits a savings account and the corresponding SavingsLog Object
@@ -889,6 +891,7 @@ def add_saving_account(request):
     else:
         return HttpResponseRedirect('/administrative/')
 
+@login_required
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions
@@ -937,7 +940,6 @@ def training_session(request):
     else:
         return HttpResponseRedirect('/administrative/')
 
-
 @login_required
 def community_report(request):
     if is_director(request.user):
@@ -956,18 +958,6 @@ def community_report(request):
             promoters.append(mun['promoters'])
             beneficiaries.append(mun['beneficiaries'])
 
-        # Savings
-        # communities = Community.objects.values('name')
-        # savings_data = []
-        # curyear = timezone.now().year
-        # for com in communities:
-        #     qset = SavingsLog.objects.filter(saving_account__community=com['name'], year=curyear).values('saving_account__municipality', 'year', 'month', 'amount')
-        #     s = []
-        #     for e in qset:
-        #         s.append(float(e['amount']))
-        #     savings_data.append(s)
-        # print(savings_data)
-
         # Promoters per municipality
         context = {'dataset': data, 'names':names, 'promoters':promoters, 'beneficiaries':beneficiaries}
         return render(request, 'administrative/reports.html', context)
@@ -975,27 +965,72 @@ def community_report(request):
         return HttpResponseRedirect('/administrative/')
 
 @login_required
-def get_communities_savings(request, mun):
-    savings_data = []
-    municipalities = []
-    curyear = timezone.now().year
-    qset = Community.objects.values('municipality').annotate(d=Count('id'))
-    for e in qset:
-        municipalities.append(e['municipality'])
-    for m in municipalities:
-        qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
-        s = []
-        i = 1
+def get_communities_savings(request):
+    if is_director(request.user):
+        savings_data = []
+        municipalities = []
+        curyear = timezone.now().year
+        qset = Community.objects.values('municipality').annotate(d=Count('id'))
         for e in qset:
-            while i < e['month']:
-                s.append(0)
-                i+=1
-            i = 100
-            s.append(float(e['amount']))
-        savings_data.append(s)
-    print(savings_data)
-    j = {
-        'amounts':savings_data,
-        'labels': municipalities
-    }
+            municipalities.append(e['municipality'])
+        for m in municipalities:
+            qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
+            s = []
+            i = 1
+            for e in qset:
+                while i < e['month']:
+                    s.append(0)
+                    i+=1
+                i = 100
+                s.append(float(e['amount']))
+            savings_data.append(s)
+        j = {
+            'amounts':savings_data,
+            'labels': municipalities
+        }
+    else:
+        j = {}
     return JsonResponse(j)
+
+@login_required
+def get_communities_beneficiaries(request):
+    if is_director(request.user):
+        data = []
+        municipalities = Community.objects.values('municipality').annotate(
+                                                                            communities=Count('municipality'),
+                                                                            promoters=Count('promoter'),
+                                                                            beneficiaries=Count('beneficiary')
+                                                                        )
+        names = []
+        promoters = []
+        beneficiaries = []
+        for mun in municipalities:
+            data.append(mun)
+            names.append(mun['municipality'])
+            promoters.append(mun['promoters'])
+            beneficiaries.append(mun['beneficiaries'])
+        json_data = {
+                        'labels': names,
+                        'beneficiaries': beneficiaries
+                    }
+    else:
+        json_data = {}
+    return JsonResponse(json_data)
+
+@login_required
+def get_program_beneficiaries(request):
+    if is_director(request.user):
+        data = []
+        names = []
+        qset = BeneficiaryInProgram.objects.values('program').annotate(beneficiaries=Count('beneficiary'))
+        print(qset)
+        for p in qset:
+            data.append(p['beneficiaries'])
+            names.append(p['program'])
+        json_data = {
+                        'labels': names,
+                        'beneficiaries': data
+                    }
+    else:
+        json_data = {}
+    return JsonResponse(json_data)

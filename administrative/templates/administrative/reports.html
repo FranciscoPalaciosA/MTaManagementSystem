@@ -70,6 +70,24 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <h5>Beneficiarios por Municipio</h5>
+            <canvas class="card-chart" id="beneficiary-municipality-chart" width="400" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <h5>Beneficiarios por Programa</h5>
+            <canvas class="card-chart" id="beneficiary-program-chart" width="400" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 {% endblock %}
@@ -140,7 +158,9 @@
             }
         }
     });
-    ajaxSavings('{{names|first}}');
+    ajaxSavings();
+    ajaxBeneficiariesMun();
+    beneficiariesProgram();
   });
   var dynamicColors = function() {
       var r = Math.floor(Math.random() * 255);
@@ -149,13 +169,12 @@
       return "rgb(" + r + "," + g + "," + b + ")";
    };
 
-  function ajaxSavings(id){
-    path = "/administrative/reports/municipality_savings/" + id;
+  function ajaxSavings(){
+    path = "/administrative/reports/municipality_savings/";
     $.ajax({
       method: "GET",
       url: path
     }).done(function(data) {
-      console.log(data.amounts);
       datasets = [];
       for(i = 0; i < data.labels.length; i++){
         datasetX = {
@@ -171,6 +190,92 @@
           data: {
               labels: ['Enero', 'Febrero', 'Marzo', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
               datasets: datasets
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero:true
+                      }
+                  }]
+              }
+          }
+      });
+    });
+  };
+
+  function ajaxBeneficiariesMun(){
+    var ctx = document.getElementById("beneficiary-municipality-chart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: {{names|safe}},
+            datasets: [{
+                label: 'Beneficiarios',
+                data: {{beneficiaries}},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
+            }
+        }
+    });
+  }
+
+  function beneficiariesProgram(){
+    path = "/administrative/reports/program_beneficiaries/";
+    $.ajax({
+      method: "GET",
+      url: path
+    }).done(function(data) {
+      var ctx = document.getElementById("beneficiary-program-chart").getContext('2d');
+      var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: data.labels,
+              datasets: [{
+                  label: 'Beneficiarios',
+                  data: data.beneficiaries,
+                  backgroundColor: [
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(255, 206, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(153, 102, 255, 0.2)',
+                      'rgba(255, 159, 64, 0.2)'
+                  ],
+                  borderColor: [
+                      'rgba(255,99,132,1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(153, 102, 255, 1)',
+                      'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+              }]
           },
           options: {
               scales: {
