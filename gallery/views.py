@@ -12,6 +12,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 
+from urllib.parse import urlparse
+
 from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
@@ -44,6 +46,28 @@ def is_field_technician(user):
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
+def video_id(value):
+    """
+    Examples:
+    - http://youtu.be/SA2iWivDJiE
+    - http://www.youtube.com/watch?v=_oPAwA_Udwc&feature=feedu
+    - http://www.youtube.com/embed/SA2iWivDJiE
+    - http://www.youtube.com/v/SA2iWivDJiE?version=3&amp;hl=en_US
+    """
+    query = urlparse(value)
+    if query.hostname == 'youtu.be':
+        return query.path[1:]
+    if query.hostname in ('www.youtube.com', 'youtube.com'):
+        if query.path == '/watch':
+            p = parse_qs(query.query)
+            return p['v'][0]
+        if query.path[:7] == '/embed/':
+            return query.path.split('/')[2]
+        if query.path[:3] == '/v/':
+            return query.path.split('/')[2]
+    # fail?
+    return None
+
 # Create your views here.
 @login_required
 def index(request):
@@ -51,7 +75,16 @@ def index(request):
     videoForm = VideoForm()
     photos = Photo.objects.all()
     videos = Video.objects.all()
-    context = {'form': form, 'videoForm': videoForm, 'photos': photos}
+    objVideos = []
+    for video in videos:
+        id = video_id(video.link)
+        objVideos.append({
+                            'title': video.title,
+                            'link': video.link,
+                            'id': id
+                        })
+
+    context = {'form': form, 'videoForm': videoForm, 'photos': photos, 'videos': objVideos}
     return render(request, 'gallery/index.html', context)
 
 @login_required
