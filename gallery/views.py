@@ -47,20 +47,24 @@ def is_field_technician(user):
 # Create your views here.
 @login_required
 def index(request):
-    form = PhotoForm()
-    videoForm = VideoForm()
-    photos = Photo.objects.all()
-    videos = Video.objects.all()
-    context = {'form': form, 'videoForm': videoForm, 'photos': photos}
-    return render(request, 'gallery/index.html', context)
+    if not is_promoter(request.user):
+        form = PhotoForm()
+        videoForm = VideoForm()
+        photos = Photo.objects.all()
+        #media/gallery/images/revanbebe_Q0bkHlp.jpg
+        for photo in photos:
+            print("url: media/" + photo.image.url)
+        videos = Video.objects.all()
+        context = {'form': form, 'videoForm': videoForm, 'photos': photos}
+        return render(request, 'gallery/index.html', context)
+    return HttpResponseRedirect('/administrative/')
 
 @login_required
 def new_photo(request):
-    if not is_promoter(request.user):
+    if (is_administrative_assistant(request.user) | is_administrative_coordinator(request.user) | is_field_technician(request.user)):
         if request.method == 'POST':
             form = PhotoForm(request.POST, request.FILES)
             if form.is_valid():
-                print("form is valid")
                 # print(images)
                 photo = Photo(
                                 title=form.cleaned_data['title'],
@@ -68,7 +72,6 @@ def new_photo(request):
                                 image=form.cleaned_data['image']
                             )
                 photo.save()
-                print("SUCCESS!!")
             return HttpResponseRedirect('/gallery/')
     else:
         return HttpResponseRedirect('/gallery/')

@@ -26,8 +26,16 @@
             <li class="tab col s6"><a href="#videos">Videos</a></li>
           </ul>
         </div>
-        <div id="photos" class="col s12">
-
+        <div id="photos" class="col s12 mt-1">
+          <div class="row mt-1">
+            {% for photo in photos %}
+            <div class="col s12 m4 mt-1">
+              <div class="img-container">
+                <img src="{{photo.image.url}}" alt="{{photo.title}}" style="max-width: 95%;">
+              </div>
+            </div>
+            {% endfor %}
+          </div>
         </div>
         <div id="videos" class="col s12">
 

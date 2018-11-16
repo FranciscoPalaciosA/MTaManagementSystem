@@ -23,6 +23,14 @@
   padding-top: 1px !important;
 }
 
+.mt-1{
+  margin-top: 5px !important;
+}
+
+.img-container{
+  padding-top: 5px;
+}
+
 .promoter-nav{
   width: 90%;
   display: block;
