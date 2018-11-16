@@ -997,108 +997,6 @@ class TestPay(TestCase):
         self.assertEqual(p.comment, '')
         """
 
-# class NewSavingAccount(TestCase):
-#     def test_add_new_saving_account_assistant(self):
-#         """
-#         Creating a new sabing account. Expecting a redirect to /administrative/
-#         """
-#
-#         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
-#         base_user = BaseUser.objects.create(user=user, name="name",
-#                                             last_name_paternal="last_name_paternal",
-#                                             last_name_maternal="last_name_maternal",
-#                                             phone_number="phone_number",
-#                                             email="email@email.com",
-#                                             address="address")
-#         base_user.save()
-#         user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-#         base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
-#                                                         last_name_paternal="last_name_paternal",
-#                                                         last_name_maternal="last_name_maternal",
-#                                                         phone_number="phone_number",
-#                                                         email="email@email.com",
-#                                                         address="address")
-#         base_user_promoter.save()
-#         promoter = Promoter.objects.create(base_user=base_user_promoter,
-#                                             contact_name = "Contacto",
-#                                             contact_phone_number = "1234512312"
-#                                             )
-#         promoter.save()
-#
-#
-#         self.client.login(username="test", password="testpassword")
-#         beneficiary = Beneficiary.objects.create(name="Rodolfo",
-#                                                  last_name_paternal="Rodriguez",
-#                                                  last_name_maternal="Rocha",
-#                                                  num_of_family_beneficiaries=16,
-#                                                  contact_name="Juan",
-#                                                  contact_phone="4325671",
-#                                                  account_number=123456,
-#                                                  bank_name="Banamets",
-#                                                  promoter = promoter)
-#         beneficiary.save()
-#         create_user_for_group('Assistant')
-#         self.client.login(username="Assistant", password="testpassword")
-#         response = self.client.post('/administrative/new_saving_account/', {
-#                                                                                 "name": "testAccount",
-#                                                                                 "community": "testCommunity",
-#                                                                                 "municipality": "testMunicipality",
-#                                                                                 "location": "testLocation",
-#                                                                                 "list_of_beneficiaries":[beneficiary.id],
-#                                                                                 "total_saved_amount": 222222,
-#                                                                                 "president_beneficiary": [beneficiary.id],
-#                                                                                 "treasurer_beneficiary": [beneficiary.id],
-#                                                                                 "partner_beneficiary": [beneficiary.id]
-#                                                                              })
-#         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-#         base_user = BaseUser.objects.create(user=user, name="name",
-#                                             last_name_paternal="last_name_paternal",
-#                                             last_name_maternal="last_name_maternal",
-#                                             phone_number="phone_number",
-#                                             email="email@email.com",
-#                                             address="address")
-#         base_user.save()
-#         user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
-#         base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
-#                                                         last_name_paternal="last_name_paternal",
-#                                                         last_name_maternal="last_name_maternal",
-#                                                         phone_number="phone_number",
-#                                                         email="email@email.com",
-#                                                         address="address")
-#         base_user_promoter.save()
-#         promoter = Promoter.objects.create(base_user=base_user_promoter,
-#                                             contact_name = "Contacto",
-#                                             contact_phone_number = "1234512312"
-#                                             )
-#         promoter.save()
-#
-#
-#         self.client.login(username="test", password="testpassword")
-#         beneficiary = Beneficiary.objects.create(name="Rodolfo",
-#                                                  last_name_paternal="Rodriguez",
-#                                                  last_name_maternal="Rocha",
-#                                                  num_of_family_beneficiaries=16,
-#                                                  contact_name="Juan",
-#                                                  contact_phone="4325671",
-#                                                  account_number=123456,
-#                                                  bank_name="Banamets",
-#                                                  promoter = promoter)
-#         beneficiary.save()
-#         create_user_for_group('Coordinator')
-#         self.client.login(username="Coordinator", password="testpassword")
-#         response = self.client.post('/administrative/new_saving_account/', {
-#                                                                                 "name": "testAccount",
-#                                                                                 "community": "testCommunity",
-#                                                                                 "municipality": "testMunicipality",
-#                                                                                 "location": "testLocation",
-#                                                                                 "list_of_beneficiaries":[beneficiary.id],
-#                                                                                 "total_saved_amount": 222222,
-#                                                                                 "president_beneficiary": [beneficiary.id],
-#                                                                                 "treasurer_beneficiary": [beneficiary.id],
-#                                                                                 "partner_beneficiary": [beneficiary.id]
-#                                                                              })
-#         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
-
 class CommunityTests(TestCase):
     def test_view_uses_correct_template_for_administrative_assistant(self):
         """
@@ -2007,33 +1905,6 @@ class NewSavingAccount(TestCase):
                                                                              })
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-
-
-    # def test_add_new_saving_account_with_multiple_beneficiaries(self):
-    #     """
-    #     Creating a new sabing account. Expecting a redirect to /administrative/
-    #     """
-    #
-    #     group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
-    #     user.groups.add(group)
-    #
-    #     self.client.login(username="test_1", password="testpassword")
-    #
-    #     user_p = User.objects.create_user('test_p', 'test_p@testuser.com', 'testpassword')
-    #     base_user_p = BaseUser.objects.create(user=user_p, name="name",
-    #                                         last_name_paternal="last_name_paternal",
-    #                                         last_name_maternal="last_name_maternal",
-    #                                         phone_number="phone_number",
-    #                                         email="email@email.com",
-    #                                         address="address")
-    #     base_user_p.save()
-    #     promoter = Promoter.objects.create(base_user=base_user_p,
-    #                                         contact_name = "Contacto",
-    #                                         contact_phone_number = "1234512312"
-    #                                         )
-    #     promoter.save()
-
-
 class TrainingTests(TestCase):
     def test_new_training(self):
         user = create_user()
@@ -2079,4 +1950,61 @@ class TrainingTests(TestCase):
         response = self.client.post('/administrative/training_sessions/', data)
         session = TrainingSession.objects.all()
         self.assertEqual(len(session), 0)
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+class ChartsTests(TestCase):
+    def test_check_charts_as_director(self):
+        """
+        Director can access the Charts
+        """
+        create_all_groups()
+        create_database()
+        create_user_for_group("Director")
+        self.client.login(username="Director", password='testpassword')
+        response = self.client.get('/administrative/reports/')
+        self.assertContains(response, 'Beneficiarios por Municipio')
+        self.assertEqual(response.status_code, 200)
+
+    def test_check_charts_as_fieldtech(self):
+        """
+        FieldTech cant access the Charts
+        """
+        create_all_groups()
+        create_database()
+        create_user_for_group("Técnico de Campo")
+        self.client.login(username="Técnico de Campo", password='testpassword')
+        response = self.client.get('/administrative/reports/')
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_check_charts_as_administrative_assistant(self):
+        """
+        Administrative Assistant cant access the Charts
+        """
+        create_all_groups()
+        create_database()
+        create_user_for_group("Asistente Administrativo")
+        self.client.login(username="Asistente Administrativo", password='testpassword')
+        response = self.client.get('/administrative/reports/')
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_check_charts_as_administrative_coordinator(self):
+        """
+        Administrative Coordinator cant access the Charts
+        """
+        create_all_groups()
+        create_database()
+        create_user_for_group("Coordinador Administrativo")
+        self.client.login(username="Coordinador Administrativo", password='testpassword')
+        response = self.client.get('/administrative/reports/')
+        self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+    def test_check_charts_as_administrative_trainer(self):
+        """
+        Trainer cant access the Charts
+        """
+        create_all_groups()
+        create_database()
+        create_user_for_group("Capacitador")
+        self.client.login(username="Capacitador", password='testpassword')
+        response = self.client.get('/administrative/reports/')
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)

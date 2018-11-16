@@ -966,62 +966,71 @@ def community_report(request):
 
 @login_required
 def get_communities_savings(request):
-    savings_data = []
-    municipalities = []
-    curyear = timezone.now().year
-    qset = Community.objects.values('municipality').annotate(d=Count('id'))
-    for e in qset:
-        municipalities.append(e['municipality'])
-    for m in municipalities:
-        qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
-        s = []
-        i = 1
+    if is_director(request.user):
+        savings_data = []
+        municipalities = []
+        curyear = timezone.now().year
+        qset = Community.objects.values('municipality').annotate(d=Count('id'))
         for e in qset:
-            while i < e['month']:
-                s.append(0)
-                i+=1
-            i = 100
-            s.append(float(e['amount']))
-        savings_data.append(s)
-    j = {
-        'amounts':savings_data,
-        'labels': municipalities
-    }
+            municipalities.append(e['municipality'])
+        for m in municipalities:
+            qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
+            s = []
+            i = 1
+            for e in qset:
+                while i < e['month']:
+                    s.append(0)
+                    i+=1
+                i = 100
+                s.append(float(e['amount']))
+            savings_data.append(s)
+        j = {
+            'amounts':savings_data,
+            'labels': municipalities
+        }
+    else:
+        j = {}
     return JsonResponse(j)
 
 @login_required
 def get_communities_beneficiaries(request):
-    data = []
-    municipalities = Community.objects.values('municipality').annotate(
-                                                                        communities=Count('municipality'),
-                                                                        promoters=Count('promoter'),
-                                                                        beneficiaries=Count('beneficiary')
-                                                                    )
-    names = []
-    promoters = []
-    beneficiaries = []
-    for mun in municipalities:
-        data.append(mun)
-        names.append(mun['municipality'])
-        promoters.append(mun['promoters'])
-        beneficiaries.append(mun['beneficiaries'])
-    json_data = {
-                    'labels': names,
-                    'beneficiaries': beneficiaries
-                }
+    if is_director(request.user):
+        data = []
+        municipalities = Community.objects.values('municipality').annotate(
+                                                                            communities=Count('municipality'),
+                                                                            promoters=Count('promoter'),
+                                                                            beneficiaries=Count('beneficiary')
+                                                                        )
+        names = []
+        promoters = []
+        beneficiaries = []
+        for mun in municipalities:
+            data.append(mun)
+            names.append(mun['municipality'])
+            promoters.append(mun['promoters'])
+            beneficiaries.append(mun['beneficiaries'])
+        json_data = {
+                        'labels': names,
+                        'beneficiaries': beneficiaries
+                    }
+    else:
+        json_data = {}
     return JsonResponse(json_data)
 
 @login_required
 def get_program_beneficiaries(request):
-    data = []
-    names = []
-    qset = BeneficiaryInProgram.objects.values('program').annotate(beneficiaries=Count('beneficiary'))
-    print(qset)
-    for p in qset:
-        data.append(p['beneficiaries'])
-        names.append(p['program'])
-    json_data = {
-                    'labels': names,
-                    'beneficiaries': data
-                }
+    if is_director(request.user):
+        data = []
+        names = []
+        qset = BeneficiaryInProgram.objects.values('program').annotate(beneficiaries=Count('beneficiary'))
+        print(qset)
+        for p in qset:
+            data.append(p['beneficiaries'])
+            names.append(p['program'])
+        json_data = {
+                        'labels': names,
+                        'beneficiaries': data
+                    }
+    else:
+        json_data = {}
     return JsonResponse(json_data)
