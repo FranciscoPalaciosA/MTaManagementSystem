@@ -26,8 +26,17 @@
             <li class="tab col s6"><a href="#videos">Videos</a></li>
           </ul>
         </div>
-        <div id="photos" class="col s12">
-
+        <div id="photos" class="col s12 mt-1">
+          <div class="row mt-1">
+            {% for photo in photos %}
+            <div class="col s12 m4 mt-1">
+              <div class="img-container" style="max-width:95%;">
+                <img class="materialboxed" src="{{photo.image.url}}" alt="{{photo.title}}" style="max-width: 100%; min-width:100%;">
+                <p class="center-align">{{photo.description}}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
         </div>
         <div id="videos" class="col s12">
           <div class="row">
@@ -139,6 +148,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
+    $('.materialboxed').materialbox();
   });
 
   function createImageThumbnail(link){
