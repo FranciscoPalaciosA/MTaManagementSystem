@@ -34,6 +34,7 @@ urlpatterns = [
     path('training_sessions/', views.training_session, name='training_session'),
     path('ajax/load_communities/', views.load_communities, name='ajax_load_communities'),
     path('reports/', views.community_report, name='community_report'),
+    path('edit_training_session/<int:pk>/', views.edit_training_session, name='edit_training_session'),
     path('reports/municipality_savings/', views.get_communities_savings, name='ajax_savings'),
     path('reports/municipality_beneficiaries/', views.get_communities_beneficiaries, name='ajax_ben_mun'),
     path('reports/program_beneficiaries/', views.get_program_beneficiaries, name='ajax_ben_prog'),

@@ -996,7 +996,7 @@ class TestPay(TestCase):
         #Payment did not update
         self.assertEqual(p.comment, '')
         """
-
+        
 class CommunityTests(TestCase):
     def test_view_uses_correct_template_for_administrative_assistant(self):
         """
@@ -1952,6 +1952,7 @@ class TrainingTests(TestCase):
         self.assertEqual(len(session), 0)
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
+
 class ChartsTests(TestCase):
     def test_check_charts_as_director(self):
         """
@@ -2008,3 +2009,4 @@ class ChartsTests(TestCase):
         self.client.login(username="Capacitador", password='testpassword')
         response = self.client.get('/administrative/reports/')
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
