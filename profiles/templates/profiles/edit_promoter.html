@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Editar Promotora{% endblock %}
+
+{% block nav_title %}Editar Promotora{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+
+{% block content %}
+<main>
+  <br><br>
+  <div class="container">
+    <br><br>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card z-depth-3">
+          <div class="card-content">
+            <form action="/profiles/edit_promoter/{{promoter.id}}/" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <h4 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h4>
+              </div>
+              <div class="row">
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.previous_password.id_for_label}}" name="{{form.previous_password.html_name}}" type="password" class="validate">
+                  <label for="{{form.previous_password.id_for_label}}">Contraseña Anterior</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input id="{{form.password.id_for_label}}" name="{{form.password.html_name}}" type="password" class="validate" >
+                  <label for="{{form.password.id_for_label}}">Nueva Contraseña</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input id="passwordConfirm" name="" type="password" class="validate">
+                  <label for="passwordConfirm">Confirmar contraseña</label>
+                </div>
+              </div>
+              <h4 class="left-align col s12">Información de la promotora</h4>
+              <div class="row">
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate slide2-input" value="{{promoter.base_user.name}}">
+                  <label for="{{form.name.id_for_label}}">Nombre</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate slide2-input" value="{{promoter.base_user.last_name_paternal}}">
+                  <label for="{{form.last_name_paternal.id_for_label}}">Apellido Paterno</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate slide2-input" value="{{promoter.base_user.last_name_maternal}}">
+                  <label for="{{form.last_name_maternal.id_for_label}}">Apellido Materno</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.phone_number.id_for_label}}" name="{{form.phone_number.html_name}}" type="text" class="validate slide2-input" value="{{promoter.base_user.phone_number}}">
+                  <label for="{{form.phone_number.id_for_label}}">Teléfono</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.address.id_for_label}}" name="{{form.address.html_name}}" type="text" class="validate slide2-input" value="{{promoter.base_user.address}}">
+                  <label for="{{form.address.id_for_label}}">Direccion</label>
+                </div>
+                <div class="input-field col s12 m4">
+                  <input required id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" type="text" class="validate slide2-input" value="{{promoter.base_user.email}}">
+                  <label for="{{form.email.id_for_label}}">Correo</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12" id="communitiesContainer">
+                  <select required id="{{form.communities.id_for_label}}" name="{{form.communities.html_name}}" value="{{promoter.communities}}" multiple>
+                    {% for choice in form.communities.field.queryset %}
+                      {% if  choice.id in communities %}
+                        <option value="{{choice.id}}" selected >{{choice}}</option>
+                      {% else %}
+                        <option value="{{choice.id}}">{{choice}}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                  <label for="{{form.communities.id_for_label}}">Comunidades</label>
+                </div>
+              </div>
+              <h4 class="left-align col s12">Información del Recado</h4>
+              <div class="row">
+                <div class="input-field col s12 m6">
+                  <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate" value="{{promoter.contact_name}}">
+                  <label for="{{form.contact_name.id_for_label}}">Nombre del recado</label>
+                </div>
+                <div class="input-field col s12 m6">
+                  <input required id="{{form.contact_phone_number.id_for_label}}" name="{{form.contact_phone_number.html_name}}" type="text" class="validate" value="{{promoter.contact_phone_number}}">
+                  <label for="{{form.contact_phone_number.id_for_label}}">Teléfono del recado</label>
+                </div>
+              </div>
+              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
+                <i class="material-icons">send</i>
+              </button>
+              <br><br>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}
+{% block init_scripts %}
+<script src="{%static 'js/mta_js/profiles.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    //Inicializar componentes
+  });
+
+  //Validar contraseña
+  $("#{{form.password.id_for_label}}").on("focusout", function (e) {
+    if ($(this).val() != $("#passwordConfirm").val()) {
+      $("#passwordConfirm").removeClass("valid").addClass("invalid");
+    } else {
+      $("#passwordConfirm").removeClass("invalid").addClass("valid");
+    }
+  });
+
+  $("#passwordConfirm").on("keyup", function (e) {
+      if ($("#{{form.password.id_for_label}}").val() != $(this).val()) {
+          $(this).removeClass("valid").addClass("invalid");
+      } else {
+          $(this).removeClass("invalid").addClass("valid");
+      }
+  });
+</script>
+{% endblock js %}

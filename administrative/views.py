@@ -4,20 +4,20 @@ Description: Functions for handling requests to the server
 Modified by: Bernardo, Hugo, Alex, Francisco
 Modify date: 19/10/2018
 """
+
 from django import template
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Count, Sum, Func, F
-
 from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
 from .forms import *
 from datetime import datetime, time
+from django.utils import formats
 
 #Helper functions
 def is_promoter(user):
@@ -92,84 +92,107 @@ def production_report(request):
         Parameters: request
         return: For POST request: redirect, For GET request: render
     """
-    if (is_field_technician(request.user)):
-        if request.method == 'POST':
-            form = ProductionReportForm(request.POST)
-            if form.is_valid():
-                if not form.cleaned_data['exch_seed']:
-                    exch_seed = 0
-                else:
-                    exch_seed = form.cleaned_data['exch_seed']
-
-                if not form.cleaned_data['exch_leaf']:
-                    exch_leaf = 0
-                else:
-                    exch_leaf = form.cleaned_data['exch_leaf']
-                if not form.cleaned_data['want_for_seed']:
-                    want_for_seed = ' '
-                else:
-                    want_for_seed = form.cleaned_data['want_for_seed']
-                if not form.cleaned_data['want_for_leaf']:
-                    want_for_leaf = ' '
-                else:
-                    want_for_leaf = form.cleaned_data['want_for_leaf']
-                if not form.cleaned_data['beneficiary']:
-                    beneficiary = Beneficiary.objects.get(id=1)
-                else:
-                    beneficiary = form.cleaned_data['beneficiary'][0]
-
-
-                newProductionReport = ProductionReport(
-
-                                                        beneficiary = beneficiary,
-                                                        self_seed = form.cleaned_data['self_seed'],
-                                                        self_leaf = form.cleaned_data['self_leaf'],
-                                                        self_flour = form.cleaned_data['self_seed'],
-                                                        days_per_month = form.cleaned_data['days_per_month'],
-                                                        exch_seed = exch_seed,
-                                                        want_for_seed = want_for_seed,
-                                                        exch_leaf = exch_leaf,
-                                                        want_for_leaf = want_for_leaf
-                                                        )
-                newProductionReport.save()
-                return HttpResponseRedirect('/administrative/')
-
+    if request.method == 'POST':
+        form = ProductionReportForm(request.POST)
+        if form.is_valid():
+            if not form.cleaned_data['exch_seed']:
+                exch_seed = 0
             else:
-                print("-------------------")
-                print("\n\n\n\n\n")
-                print("Form is not valid")
-                print(form.errors)
-                print("\n\n\n\n\n")
-        elif request.method == 'GET':
-            if is_promoter(request.user):
-                print("\n\n IS PROMOTER")
-                production_report_form = ProductionReportForm()
-                context = {'production_report_form': production_report_form}
-                return render(request, 'administrative/Production_Report.html', context)
+                exch_seed = form.cleaned_data['exch_seed']
+
+            if not form.cleaned_data['exch_leaf']:
+                exch_leaf = 0
             else:
-                return HttpResponseRedirect('/administrative/production_report_list/')
+                exch_leaf = form.cleaned_data['exch_leaf']
+            if not form.cleaned_data['want_for_seed']:
+                want_for_seed = ' '
+            else:
+                want_for_seed = form.cleaned_data['want_for_seed']
+            if not form.cleaned_data['want_for_leaf']:
+                want_for_leaf = ' '
+            else:
+                want_for_leaf = form.cleaned_data['want_for_leaf']
+            if not form.cleaned_data['beneficiary']:
+                beneficiary = Beneficiary.objects.get(id=1)
+            else:
+                beneficiary = form.cleaned_data['beneficiary'][0]
+
+            newProductionReport = ProductionReport(
+
+                                                    beneficiary = beneficiary,
+                                                    self_seed = form.cleaned_data['self_seed'],
+                                                    self_leaf = form.cleaned_data['self_leaf'],
+                                                    self_flour = form.cleaned_data['self_seed'],
+                                                    days_per_month = form.cleaned_data['days_per_month'],
+                                                    exch_seed = exch_seed,
+                                                    want_for_seed = want_for_seed,
+                                                    exch_leaf = exch_leaf,
+                                                    want_for_leaf = want_for_leaf
+                                                    )
+            newProductionReport.save()
+            return HttpResponseRedirect('/administrative/')
+
+        else:
+            print("-------------------")
+            print("\n\n\n\n\n")
+            print("Form is not valid")
+            print(form.errors)
+            print("\n\n\n\n\n")
+    elif request.method == 'GET':
+        if is_promoter(request.user):
+            production_report_form = ProductionReportForm()
+            base = BaseUser.objects.get(user=request.user)
+            promoter = Promoter.objects.get(base_user=base)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            context = {'production_report_form': production_report_form, 'beneficiaries': beneficiaries}
+            return render(request, 'administrative/Production_Report.html', context)
+        else:
+            return HttpResponseRedirect('/administrative/production_report_list/')
     else:
         return HttpResponseRedirect('/administrative/')
 
 @login_required
 def production_report_list(request):
     if request.method == 'GET':
-        review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
-        pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
-        paid_reports = ProductionReport.objects.filter(paid=True)
-        return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+        if is_promoter(request.user):
+            review_reports_unfiltered = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
+            pending_reports_unfiltered = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
+            paid_reports_unfiltered = ProductionReport.objects.filter(paid=True)
+            base = BaseUser.objects.get(user=request.user)
+            promoter = Promoter.objects.get(base_user=base)
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+
+            review_reports = []
+            pending_reports = []
+            paid_reports = []
+            for beneficiary in beneficiaries:
+                review_reports.extend(review_reports_unfiltered.filter(beneficiary=beneficiary))
+                pending_reports.extend(pending_reports_unfiltered.filter(beneficiary=beneficiary))
+                paid_reports.extend(paid_reports_unfiltered.filter(beneficiary=beneficiary))
+
+            return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
+        else:
+            review_reports = ProductionReport.objects.exclude(exch_seed=0).filter(get_for_seed_qty=0).exclude(paid=True) | ProductionReport.objects.exclude(exch_leaf=0).filter(get_for_leaf_qty=0).exclude(paid=True)
+            pending_reports = ProductionReport.objects.exclude(paid=True).exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(paid=True).exclude(get_for_leaf_qty=0)#.exclude(get_for_seed_qty=0) | ProductionReport.objects.exclude(get_for_leaf_qty=0)
+            paid_reports = ProductionReport.objects.filter(paid=True)
+            return render(request, 'administrative/production_report_list.html', {'review_reports': review_reports, 'paid_reports': paid_reports, 'pending_reports': pending_reports})
 
 
 @login_required
 def administrative_production_report(request, pk):
     if request.method == 'GET':
+
         try:
             production_report = ProductionReport.objects.get(pk=pk)
         except ProductionReport.DoesNotExist:
             raise Http404("No existe ese Reporte de Producción.")
 
         production_report_form = ProductionReportForm()
-        return render(request, 'administrative/administrative_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
+
+        if is_promoter(request.user):
+            return render(request, 'administrative/promoter_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
+        else:
+            return render(request, 'administrative/administrative_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
     elif request.method == 'POST':
         try:
             production_report = ProductionReport.objects.get(pk=pk)
@@ -180,21 +203,44 @@ def administrative_production_report(request, pk):
         print(data)
 
         if 'get_for_leaf_qty' in data:
-            production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+            if data['get_for_leaf_qty'] != '':
+                production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+
         if 'get_for_seed_qty' in data:
-            production_report.get_for_seed_qty = data['get_for_seed_qty']
+            if data['get_for_seed_qty'] != '':
+                production_report.get_for_seed_qty = data['get_for_seed_qty']
         if 'paid' in data:
             production_report.paid = data['paid']
+
+        if 'want_for_leaf' in data:
+            production_report.want_for_leaf = data['want_for_leaf']
+        if 'want_for_seed' in data:
+            production_report.want_for_seed = data['want_for_seed']
+
+        if 'exch_leaf' in data:
+            production_report.exch_leaf = data['exch_leaf']
+        if 'exch_seed' in data:
+            production_report.exch_seed = data['exch_seed']
 
         production_report.save()
         return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required
+def beneficiaries_list(request):
+    return HttpResponseRedirect('/administrative/beneficiaries/0')
+
+@login_required
 def beneficiaries(request, pk):
     if request.method == 'GET':
+        not_promoter = not is_promoter(request.user)
+
         if pk == 0:
             beneficiaries = Beneficiary.objects.all()
-            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries})
+            if is_promoter(request.user):
+                base = BaseUser.objects.get(user=request.user)
+                promoter = Promoter.objects.get(base_user=base)
+                beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+            return render(request, 'administrative/beneficiaries.html', {'beneficiaries': beneficiaries, 'not_promoter': not_promoter})
         else:
             try:
                 beneficiary = Beneficiary.objects.get(pk=pk)
@@ -207,10 +253,11 @@ def beneficiaries(request, pk):
                 allowed_programs = allowed_programs.exclude(id=prog.program.id)
 
             form = BeneficiaryInProgramForm()
-            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs}
+
+            context = {'form': form, 'beneficiary': beneficiary, 'programs': programs, 'allowed_programs': allowed_programs, 'not_promoter': not_promoter}
             return render(request, 'administrative/beneficiary.html', context)
 
-
+@login_required
 def load_communities(request):
     promoter_id = request.GET.get('promoter')
     communities = Promoter.objects.get(id=promoter_id).communities.all()
@@ -218,7 +265,6 @@ def load_communities(request):
 
 @login_required
 def add_beneficiary(request):
-    print(request.POST)
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST)
         if form.is_valid():
@@ -276,6 +322,56 @@ def add_beneficiary(request):
             form = BeneficiaryForm()
             context = {'form': form}
             return render(request, 'administrative/new_beneficiary.html', context)
+
+@login_required
+def edit_beneficiary(request,pk):
+    """ Description: Edits the information of a beneficiary
+        Parameters: request, pk of the beneficiary that is edited
+        return: render
+    """
+    if not (is_promoter(request.user)):
+        if request.method == 'POST':
+            form = EditBeneficiaryForm(data=request.POST)
+
+            if form.is_valid():
+                beneficiary = Beneficiary.objects.get(id=pk)
+
+                beneficiary.name=form.cleaned_data['name']
+                beneficiary.last_name_paternal=form.cleaned_data['last_name_paternal']
+                beneficiary.last_name_maternal=form.cleaned_data['last_name_maternal']
+                beneficiary.phone=form.cleaned_data['phone']
+                beneficiary.email=form.cleaned_data['email']
+                beneficiary.num_of_family_beneficiaries=form.cleaned_data['num_of_family_beneficiaries']
+                beneficiary.account_number=form.cleaned_data['account_number']
+                beneficiary.bank_name=form.cleaned_data['bank_name']
+                beneficiary.contact_name=form.cleaned_data['contact_name']
+                beneficiary.contact_phone=form.cleaned_data['contact_phone']
+                beneficiary.promoter=form.cleaned_data['promoter'][0]
+                beneficiary.community=form.cleaned_data['community'][0]
+                beneficiary.updated_at=timezone.now()
+
+                beneficiary.save()
+
+                return HttpResponseRedirect('/administrative/beneficiaries/')
+        else:
+            beneficiary = Beneficiary.objects.get(id=pk)
+
+            form = EditBeneficiaryForm()
+
+            context = {'beneficiary': beneficiary, 'form': form}
+            return render(request, 'administrative/edit_beneficiary.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/beneficiaries/')
+
+@login_required
+def remove_from_program(request, p_id):
+    if request.method == 'GET':
+        b_in_p = BeneficiaryInProgram.objects.get(id=p_id)
+        print(b_in_p)
+
+        b_in_p.delete()
+
+        return HttpResponseRedirect('/administrative/beneficiaries/')
 
 @login_required
 def modify_beneficiary(request):
@@ -350,6 +446,26 @@ def communities(request):
         return HttpResponseRedirect('/administrative/')
 
 @login_required
+def my_communities(request):
+    if is_promoter(request.user):
+        if request.method == 'GET':
+            base = BaseUser.objects.get(user=request.user)
+            promoter = Promoter.objects.get(base_user=base)
+            comms = promoter.communities.all()
+            communities = []
+            for community in comms:
+                communities.append({
+                    'data': community,
+                    'beneficiaries': Beneficiary.objects.filter(community=community)
+                })
+            print(communities)
+            return render(request, 'administrative/promoter_communities.html', {'communities': communities})
+        else:
+            return HttpResponseRedirect('/administrative/')
+    else:
+        return HttpResponseRedirect('/administrative/')
+
+@login_required
 def weekly_sessions(request):
     """ Description: Renders the view of weekly sessions for each role
         Parameters: request
@@ -402,7 +518,6 @@ def weekly_sessions(request):
             beneficiaries = Beneficiary.objects.filter(promoter=promoter)
 
             weekly_session_form = WeeklySessionForm()
-
             #Existing sessions
             weekly_sessions = WeeklySession.objects.filter(promoter=promoter).order_by('-date')
 
@@ -421,6 +536,95 @@ def weekly_sessions(request):
         return render(request, 'administrative/Admin_weekly_sessions.html', context)
     else:
         return HttpResponseRedirect('/administrative/')
+
+@login_required
+def edit_weekly_session(request,pk):
+    """ Description: Edits the information of a weekly session
+        Parameters: request, pk of the session that is edited
+        return: render
+    """
+    if (is_promoter(request.user)):
+        if request.method == 'POST':
+            date = request.POST['date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'date': date_obj,
+                        'type': request.POST['type'],
+                        'topic': request.POST['topic'],
+                        'start_time':request.POST['start_time'],
+                        'end_time':request.POST['end_time'],
+                        'assistants': request.POST.getlist("assistants")
+                    }
+            form = WeeklySessionForm(data, request.FILES)
+            evidences = request.FILES.getlist('evidence')
+
+            existing_evidences_keep = request.POST.getlist('image_keep')
+            existing_evidences_total = request.POST.getlist('image_total')
+
+            if form.is_valid():
+                session = WeeklySession.objects.get(id=pk)
+
+                session.date=form.cleaned_data['date']
+                session.type=form.cleaned_data['type']
+                session.topic=form.cleaned_data['topic']
+                session.start_time=form.cleaned_data['start_time']
+                session.end_time=form.cleaned_data['end_time']
+
+                session.save()
+
+                list = request.POST.getlist("assistants")
+                session.assistants.clear()
+                for assistant in list:
+                    session.assistants.add(Beneficiary.objects.get(id = assistant))
+
+                all_evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+
+                for e in existing_evidences_keep:
+                    e = int(e)
+
+                for e in existing_evidences_total:
+                    e = int(e)
+
+                existing_evidences_total = set(existing_evidences_total) - set(existing_evidences_keep)
+
+                all_evidences_list = []
+                for e in all_evidences:
+                    all_evidences_list.append(e.id)
+
+                for e in all_evidences_list:
+                    for evi in existing_evidences_total:
+                        if (int(e) == int(evi)):
+                            deleted_evidence = WeeklySessionEvidence.objects.filter(id = evi)
+                            deleted_evidence.delete()
+
+                for e in evidences:
+                    newEvidence = WeeklySessionEvidence(
+                                                        weekly_session = session,
+                                                        evidence = e
+                                                        )
+                    newEvidence.save()
+
+                return HttpResponseRedirect('/administrative/weekly_sessions/')
+        else:
+            session = WeeklySession.objects.get(id=pk)
+
+            base_user = BaseUser.objects.get(user = request.user.id)
+            promoter = Promoter.objects.get(base_user = base_user.id)
+
+            beneficiaries = Beneficiary.objects.filter(promoter=promoter)
+
+            weekly_session_form = WeeklySessionForm()
+
+            assistants = session.assistants.all()
+
+            date = formats.date_format(session.date, "d-m-Y")
+
+            evidences = WeeklySessionEvidence.objects.filter(weekly_session_id = pk)
+
+            context = {'session': session, 'weekly_session_form': weekly_session_form, 'beneficiaries': beneficiaries, 'assistants': assistants, 'date': date, 'evidences': evidences}
+            return render(request, 'administrative/edit_weekly_session.html', context)
+    else:
+        return HttpResponseRedirect('/administrative/weekly_sessions/')
 
 @login_required
 def get_weekly_session(request, pk):
@@ -598,6 +802,7 @@ def saving_accounts(request):
 
     return HttpResponseRedirect('/administrative/')
 
+@login_required
 def edit_savings(request, pk=0):
     """
     Description: Edits a savings account and the corresponding SavingsLog Object
@@ -662,6 +867,8 @@ def add_saving_account(request):
                 saving_account = SavingAccount(
                                         name=form.cleaned_data['name'],
                                         community=form.cleaned_data['community'][0],
+                                        municipality=form.cleaned_data['municipality'],
+                                        location=form.cleaned_data['location'],
                                         total_saved_amount=form.cleaned_data['total_saved_amount'],
                                         president_beneficiary=form.cleaned_data['president_beneficiary'],
                                         treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
@@ -670,7 +877,7 @@ def add_saving_account(request):
                 saving_account.save()
                 saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
                 saving_account.save()
-                return HttpResponseRedirect('/administrative/')
+                return HttpResponseRedirect('/administrative/saving_accounts/')
             else:
 
                 print("-----------------------------")
@@ -684,7 +891,7 @@ def add_saving_account(request):
     else:
         return HttpResponseRedirect('/administrative/')
 
-
+@login_required
 def training_session(request):
     """
     Description: Handles the creation and rendering of training sessions
@@ -836,6 +1043,7 @@ def edit_training_session(request, pk):
     else:
         return HttpResponseRedirect('/administrative/training_sessions/')
 
+
 @login_required
 def community_report(request):
     if is_director(request.user):
@@ -854,18 +1062,6 @@ def community_report(request):
             promoters.append(mun['promoters'])
             beneficiaries.append(mun['beneficiaries'])
 
-        # Savings
-        # communities = Community.objects.values('name')
-        # savings_data = []
-        # curyear = timezone.now().year
-        # for com in communities:
-        #     qset = SavingsLog.objects.filter(saving_account__community=com['name'], year=curyear).values('saving_account__municipality', 'year', 'month', 'amount')
-        #     s = []
-        #     for e in qset:
-        #         s.append(float(e['amount']))
-        #     savings_data.append(s)
-        # print(savings_data)
-
         # Promoters per municipality
         context = {'dataset': data, 'names':names, 'promoters':promoters, 'beneficiaries':beneficiaries}
         return render(request, 'administrative/reports.html', context)
@@ -873,27 +1069,72 @@ def community_report(request):
         return HttpResponseRedirect('/administrative/')
 
 @login_required
-def get_communities_savings(request, mun):
-    savings_data = []
-    municipalities = []
-    curyear = timezone.now().year
-    qset = Community.objects.values('municipality').annotate(d=Count('id'))
-    for e in qset:
-        municipalities.append(e['municipality'])
-    for m in municipalities:
-        qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
-        s = []
-        i = 1
+def get_communities_savings(request):
+    if is_director(request.user):
+        savings_data = []
+        municipalities = []
+        curyear = timezone.now().year
+        qset = Community.objects.values('municipality').annotate(d=Count('id'))
         for e in qset:
-            while i < e['month']:
-                s.append(0)
-                i+=1
-            i = 100
-            s.append(float(e['amount']))
-        savings_data.append(s)
-    print(savings_data)
-    j = {
-        'amounts':savings_data,
-        'labels': municipalities
-    }
+            municipalities.append(e['municipality'])
+        for m in municipalities:
+            qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
+            s = []
+            i = 1
+            for e in qset:
+                while i < e['month']:
+                    s.append(0)
+                    i+=1
+                i = 100
+                s.append(float(e['amount']))
+            savings_data.append(s)
+        j = {
+            'amounts':savings_data,
+            'labels': municipalities
+        }
+    else:
+        j = {}
     return JsonResponse(j)
+
+@login_required
+def get_communities_beneficiaries(request):
+    if is_director(request.user):
+        data = []
+        municipalities = Community.objects.values('municipality').annotate(
+                                                                            communities=Count('municipality'),
+                                                                            promoters=Count('promoter'),
+                                                                            beneficiaries=Count('beneficiary')
+                                                                        )
+        names = []
+        promoters = []
+        beneficiaries = []
+        for mun in municipalities:
+            data.append(mun)
+            names.append(mun['municipality'])
+            promoters.append(mun['promoters'])
+            beneficiaries.append(mun['beneficiaries'])
+        json_data = {
+                        'labels': names,
+                        'beneficiaries': beneficiaries
+                    }
+    else:
+        json_data = {}
+    return JsonResponse(json_data)
+
+@login_required
+def get_program_beneficiaries(request):
+    if is_director(request.user):
+        data = []
+        names = []
+        qset = BeneficiaryInProgram.objects.values('program').annotate(beneficiaries=Count('beneficiary'))
+        print(qset)
+        for p in qset:
+            data.append(p['beneficiaries'])
+            names.append(p['program'])
+        json_data = {
+                        'labels': names,
+                        'beneficiaries': data
+                    }
+    else:
+        json_data = {}
+    return JsonResponse(json_data)

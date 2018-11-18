@@ -12,6 +12,9 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
+
 from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
@@ -44,21 +47,55 @@ def is_field_technician(user):
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
+def video_id(value):
+    """
+    Examples:
+    - http://youtu.be/SA2iWivDJiE
+    - http://www.youtube.com/watch?v=_oPAwA_Udwc&feature=feedu
+    - http://www.youtube.com/embed/SA2iWivDJiE
+    - http://www.youtube.com/v/SA2iWivDJiE?version=3&amp;hl=en_US
+    """
+    query = urlparse(value)
+    if query.hostname == 'youtu.be':
+        return query.path[1:]
+    if query.hostname in ('www.youtube.com', 'youtube.com'):
+        if query.path == '/watch':
+            p = parse_qs(query.query)
+            return p['v'][0]
+        if query.path[:7] == '/embed/':
+            return query.path.split('/')[2]
+        if query.path[:3] == '/v/':
+            return query.path.split('/')[2]
+    # fail?
+    return None
+
 # Create your views here.
 @login_required
 def index(request):
-    form = PhotoForm()
-    videoForm = VideoForm()
-    context = {'form': form, 'videoForm': videoForm}
-    return render(request, 'gallery/index.html', context)
+    if not is_promoter(request.user):
+        form = PhotoForm()
+        videoForm = VideoForm()
+        photos = Photo.objects.all()
+        videos = Video.objects.all()
+        objVideos = []
+        for video in videos:
+            id = video_id(video.link)
+            objVideos.append({
+                                'title': video.title,
+                                'link': video.link,
+                                'id': id
+                            })
+
+        context = {'form': form, 'videoForm': videoForm, 'photos': photos, 'videos': objVideos}
+        return render(request, 'gallery/index.html', context)
+    return HttpResponseRedirect('/administrative/')
 
 @login_required
 def new_photo(request):
-    if not is_promoter(request.user):
+    if (is_administrative_assistant(request.user) | is_administrative_coordinator(request.user) | is_field_technician(request.user)):
         if request.method == 'POST':
             form = PhotoForm(request.POST, request.FILES)
             if form.is_valid():
-                print("form is valid")
                 # print(images)
                 photo = Photo(
                                 title=form.cleaned_data['title'],
@@ -66,7 +103,6 @@ def new_photo(request):
                                 image=form.cleaned_data['image']
                             )
                 photo.save()
-                print("SUCCESS!!")
             return HttpResponseRedirect('/gallery/')
     else:
         return HttpResponseRedirect('/gallery/')

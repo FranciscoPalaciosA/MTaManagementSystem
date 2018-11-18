@@ -43,6 +43,20 @@ class BeneficiaryInProgramForm(forms.Form):
     initial_weight = forms.DecimalField(required=False)
     savings_account_role = forms.CharField(required=False)
 
+class EditBeneficiaryForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    last_name_paternal = forms.CharField(max_length=50)
+    last_name_maternal = forms.CharField(max_length=50)
+    phone = forms.CharField(max_length=50)
+    email = forms.CharField(max_length=200)
+    num_of_family_beneficiaries = forms.IntegerField(required=True)
+    contact_name = forms.CharField(max_length=200)
+    contact_phone = forms.IntegerField()
+    account_number = forms.CharField(max_length=50)
+    bank_name = forms.CharField(max_length=100)
+    promoter = forms.ModelMultipleChoiceField(queryset=Promoter.objects)
+    community = forms.ModelMultipleChoiceField(queryset=Community.objects)
+
 class CommunityForm(forms.ModelForm):
     class Meta:
         model = Community
@@ -51,7 +65,7 @@ class CommunityForm(forms.ModelForm):
                   'state']
 
 class ProductionReportForm(forms.Form):
-    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects, required=False)
+    beneficiary = forms.ModelMultipleChoiceField(queryset=Beneficiary.objects)
     self_seed = forms.DecimalField(required=False)
     self_leaf = forms.DecimalField(required=False)
     self_flour = forms.DecimalField(required=False)
@@ -109,7 +123,8 @@ class PaymentForm(forms.ModelForm):
 class SavingAccountForm(forms.Form):
     name = forms.CharField(max_length=50)
     community = forms.ModelMultipleChoiceField(queryset=Community.objects)
-    #location = forms.CharField(max_length=50)
+    municipality = forms.CharField(max_length=50)
+    location = forms.CharField(max_length=50)
     list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())
     total_saved_amount = forms.IntegerField()
     president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())

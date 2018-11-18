@@ -4,61 +4,7 @@
 
 {% block nav_title %}Perfil Promotora{% endblock %}
 {% block nav_tabs %}
-<!-- Should be doing this based on the current logged user -->
-<li class="bold waves-effect"><a class="collapsible-header">Pages<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="dashboard.html" class="waves-effect">Dashboard<i class="material-icons">web</i></a></li>
-      <li><a href="pages-fixed-chart.html" class="waves-effect">Fixed Chart<i class="material-icons">list</i></a></li>
-      <li><a href="pages-grid.html" class="waves-effect">Grid<i class="material-icons">dashboard</i></a></li>
-      <li><a href="pages-chat.html" class="waves-effect">Chat<i class="material-icons">chat</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Charts<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="line-charts.html" class="waves-effect">Line Charts<i class="material-icons">show_chart</i></a></li>
-      <li><a href="bar-charts.html" class="waves-effect">Bar Charts<i class="material-icons">equalizer</i></a></li>
-      <li><a href="area-charts.html" class="waves-effect">Area Charts<i class="material-icons">multiline_chart</i></a></li>
-      <li><a href="doughnut-charts.html" class="waves-effect">Doughnut Charts<i class="material-icons">pie_chart</i></a></li>
-      <li><a href="financial-charts.html" class="waves-effect">Financial Charts<i class="material-icons">euro_symbol</i></a></li>
-      <li><a href="interactive-charts.html" class="waves-effect">Interactive Charts<i class="material-icons">touch_app</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Tables<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="fullscreen-table.html" class="waves-effect">Fullscreen with Chart<i class="material-icons">show_chart</i></a></li>
-      <li><a href="table-custom-elements.html" class="waves-effect">Table with Custom Elements<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Calendar<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="calendar.html" class="waves-effect">Calendar<i class="material-icons">cloud</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Headers<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="header-tabbed.html" class="waves-effect">Tabbed<i class="material-icons">tab</i></a></li>
-      <li><a href="header-metrics.html" class="waves-effect">Metrics<i class="material-icons">web</i></a></li>
-      <li><a href="header-search.html" class="waves-effect">Search<i class="material-icons">search</i></a></li>
-    </ul>
-  </div>
-</li>
-<li class="bold waves-effect"><a class="collapsible-header">Account<i class="material-icons chevron">chevron_left</i></a>
-  <div class="collapsible-body">
-    <ul>
-      <li><a href="log-in.html" class="waves-effect">Log In<i class="material-icons">person</i></a></li>
-      <li><a href="settings.html" class="waves-effect">Settings<i class="material-icons">settings</i></a></li>
-    </ul>
-  </div>
-</li>
+
 {% endblock nav_tabs %}
 
 {% block content %}
@@ -73,6 +19,11 @@
             <form action="/profiles/edit_promoter/{{promoter.id}}/" method="post">
               {% csrf_token %}
               <div class="row">
+                <div align="right">
+                  <a href="{% url 'profiles:edit_promoter' promoter.id %}">
+                    <i class="material-icons">edit</i>
+                  </a>
+                </div>
                 <h3 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h3>
                 <div class="input-field col s12">
                   <input disabled  required id="{{form.username.id_for_label}}" name="{{form.username.html_name}}" type="text" class="validate" value="{{promoter.base_user.user.username}}">
@@ -128,9 +79,6 @@
                   <label for="{{form.contact_phone_number.id_for_label}}">Teléfono del recado</label>
                 </div>
               </div>
-              <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
-                <i class="material-icons">send</i>
-              </button>
               <br><br>
             </form>
           </div>

@@ -121,6 +121,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Session management
+# session age limit to 8 hours
+SESSION_COOKIE_AGE = 28800
+
+# make sure the session is terminated on browser closing
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -129,7 +136,10 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
+    '/gallery/images/'
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
-LOGIN_REDIRECT_URL = '/directory/'
+LOGIN_REDIRECT_URL = '/administrative/'

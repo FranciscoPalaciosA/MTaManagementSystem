@@ -37,7 +37,7 @@
                         <td>{{ session.date|date:"d / m / Y" }}</td>
                         <td>{{ session.assistant_count }}</td>
                         <td>
-                          <a class="modal-trigger " onclick="ajaxCall({{session.id}})">
+                          <a class="modal-trigger view_session" onclick="ajaxCall({{session.id}})">
                             <i class="material-icons">pageview</i>
                           </a>
                         </td>
@@ -117,6 +117,9 @@
         }
       }
 
+    });
+    $(".view_session").mouseover(function(){
+        $('.view_session').css({'cursor': 'pointer'});
     });
 
   });

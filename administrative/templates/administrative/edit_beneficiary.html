@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MTA - Beneficiarios{% endblock %}
+{% block nav_title %}Editar Beneficiarios{% endblock %}
+{% block nav_tabs %}
+{% endblock nav_tabs %}
+{% block content %}
+<main>
+  <br><br>
+  <div class="container">
+    <br><br>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card z-depth-3">
+          <div class="card-content">
+            <form id="beneficiaryForm" action="/administrative/edit_beneficiary/{{beneficiary.id}}/" method="post">
+              {% csrf_token %}
+              <h5>Información del Beneficiario</h5>
+              <br>
+              <div id="full_form">
+                <div class="row">
+                  <div class="input-field col s6">
+                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate" value="{{beneficiary.name}}">
+                    <label for="{{form.name.id_for_label}}">Nombre</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate" value="{{beneficiary.last_name_paternal}}">
+                    <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate" value="{{beneficiary.last_name_maternal}}">
+                    <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input required id="{{form.phone.id_for_label}}" name="{{form.phone.html_name}}" type="number" class="validate" value="{{beneficiary.phone}}">
+                    <label for="{{form.phone.id_for_label}}">Teléfono/Celular</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input required id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" type="text" class="validate" value="{{beneficiary.email}}">
+                    <label for="{{form.email.id_for_label}}">Correo Electrónico</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <select id="{{form.promoter.id_for_label}}" name="{{form.promoter.html_name}}" required>
+                      {% for choice in form.promoter.field.queryset %}
+                      <option value="{{choice.id}}" {% if beneficiary.promoter == choice %}selected{% endif %}>{{choice}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="{{form.promoter.id_for_label}}">Promotora asignada</label>
+                  </div>
+                  <div class="input-field col s8">
+                    <select id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" required>
+                      {% for choice in form.community.field.queryset %}
+                      <option value="{{choice.id}}" {% if beneficiary.community == choice %}selected{% endif %}>{{choice}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="{{form.community_name.id_for_label}}">Comunidad</label>
+                  </div>
+                  <div class="input-field col s4">
+                    <input required id="{{form.num_of_family_beneficiaries.id_for_label}}" name="{{form.num_of_family_beneficiaries.html_name}}" type="number" class="validate" value="{{beneficiary.num_of_family_beneficiaries}}">
+                    <label for="{{form.num_of_family_beneficiaries.id_for_label}}">Num. Beneficiarios</label>
+                  </div>
+                  <div class="input-field col s6">
+                  <input required id="{{form.account_number.id_for_label}}" name="{{form.account_number.html_name}}" type="text" class="validate" value="{{beneficiary.account_number}}">
+                    <label for="{{form.account_number.id_for_label}}">Número de cuenta</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input required id="{{form.bank_name.id_for_label}}" name="{{form.bank_name.html_name}}" type="text" class="validate" value="{{beneficiary.bank_name}}">
+                    <label for="{{form.bank_name.id_for_label}}">Nombre del banco</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <h5>Información del recado</h5>
+                  <div class="input-field col s6">
+                    <input required id="{{form.contact_name.id_for_label}}" name="{{form.contact_name.html_name}}" type="text" class="validate" value="{{beneficiary.contact_name}}">
+                    <label for="{{form.contact_name.id_for_label}}">Nombre del recado</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input required id="{{form.contact_phone.id_for_label}}" name="{{form.contact_phone.html_name}}" type="number" class="validate" value="{{beneficiary.contact_phone}}">
+                    <label for="{{form.contact_phone.id_for_label}}">Telefono del recado</label>
+                  </div>
+                </div>
+                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
+                  <i class="material-icons right">send</i>
+                </button>
+                <br><br>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+{% block init_scripts %}
+<script src="{%static 'js/page-scripts/dashboard.js' %}"></script>
+<script src="{%static 'js/mta_js/administrative.js' %}"></script>
+{% endblock init_scripts %}
+{% block js %}
+<script type="text/javascript">
+  // Initialize Floating Action Button
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+  $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+
+  $("#{{form.member_in.id_for_label}}").on('change', function(){
+    var req = document.getElementsByClassName('change_req');
+
+    for(i=0; i < req.length; i++){
+      req[i].required = false;
+      console.log(req[i].required);
+    }
+
+    var program = $( "#{{form.member_in.id_for_label}} option:selected" ).text();
+    switch (program) {
+      case "Productores":
+        $("#{{form.curp.id_for_label}}").prop('required',true);
+        $("#{{form.house_address.id_for_label}}").prop('required',true);
+        $("#{{form.house_references.id_for_label}}").prop('required',true);
+        $("#{{form.huerto_coordinates.id_for_label}}").prop('required',true);
+        break;
+      case "Cisternas":
+        $("#{{form.water_capacity.id_for_label}}").prop('required',true);
+        $("#{{form.cisterna_location.id_for_label}}").prop('required',true);
+        $("#{{form.cisterna_status.id_for_label}}").prop('required',true);
+        $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+        break;
+      case "Cajas de ahorro":
+        $("#{{form.savings_account_role.id_for_label}}").prop('required',true);
+        $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+       break;
+      case "Ecónomas":
+        $("#{{form.school.id_for_label}}").prop('required',true);
+        break;
+      case "Desayunos con amaranto":
+        $("#{{form.num_of_family_beneficiaries.id_for_label}}").prop('required',false);
+        $("#{{form.account_number.id_for_label}}").prop('required',false);
+        $("#{{form.bank_name.id_for_label}}").prop('required',false);
+
+        $("#{{form.school.id_for_label}}").prop('required',true);
+        $("#{{form.age.id_for_label}}").prop('required',true);
+        $("#{{form.initial_weight.id_for_label}}").prop('required',true);
+        break;
+    }
+
+    for(i=0; i < req.length; i++){
+      console.log(req[i].required);
+    }
+  });
+
+  $("#{{form.promoter.id_for_label}}").on('change', function(){
+    var url = "{% url 'administrative:ajax_load_communities' %}";
+    var csrf_token = '{{ csrf_token }}';
+    var promoter_id = $(this).val();
+    $.ajax({
+      url: url,
+      data: {
+        'csrfmiddlewaretoken': csrf_token,
+        'promoter': promoter_id
+      },
+      success: function (data) {
+        console.log("data = " + data);
+        $("#{{form.community.id_for_label}}").html(data);
+
+        $("#{{form.community.id_for_label}}").formSelect();
+        $("#{{form.community.id_for_label}}").trigger('contentChanged');
+      }
+    });
+  });
+
+</script>
+{% endblock js %}

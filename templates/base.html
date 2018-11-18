@@ -26,6 +26,7 @@
       <div class="navbar-fixed">
         <nav class="navbar white">
           <div class="nav-wrapper">
+            <a href="#" data-target="sidenav-left" class="sidenav-trigger"><i class="material-icons" style="color:pink">menu</i></a>
             <a class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
             <div style="float:right;">
               <a href="{% url 'profiles:logout' %}">
@@ -44,6 +45,11 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:index' %}">Cuentas</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
+
+            {% elif request.user|has_group:"Capacitador" %}
+            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
 
             {% elif request.user|has_group:"Asistente Administrativo" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>

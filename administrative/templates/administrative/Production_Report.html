@@ -13,6 +13,17 @@
         {% csrf_token %}
         <div class="col s12">
           <div class="row">
+            <div class="col s4">
+              <h5>Beneficiario:</h5>
+              <select required id="{{production_report_form.beneficiary.id_for_label}}" name="{{production_report_form.beneficiary.html_name}}">
+                <option value="" disabled selected> Seleccione uno </option>
+                {% for beneficiary in beneficiaries %}
+                <option value="{{beneficiary.id}}">{{beneficiary}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row">
             <h3>Autoconsumo</h3>
             <div class="col s3">
               <div class="row">
@@ -115,6 +126,8 @@
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
+  $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
+  
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
   });

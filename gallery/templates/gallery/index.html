@@ -6,23 +6,78 @@
 
 {% block content %}
 <main>
-  aadsfasdf
   <div class="fixed-action-btn">
-  <a class="btn-floating btn-large red">
-    <i class="large material-icons">add</i>
-  </a>
-  <ul>
-    <li><a class="btn-floating red modal-trigger" href="#modal-image"><i class="material-icons">add_a_photo</i></a></li>
-    <li><a class="btn-floating yellow darken-1 modal-trigger" href="#modal-video"><i class="material-icons">video_call</i></a></li>
-  </ul>
-</div>
+    <a class="btn-floating btn-large red">
+      <i class="large material-icons">add</i>
+    </a>
+    <ul>
+      <li><a class="btn-floating red modal-trigger" href="#modal-image"><i class="material-icons">add_a_photo</i></a></li>
+      <li><a class="btn-floating yellow darken-1 modal-trigger" href="#modal-video"><i class="material-icons">video_call</i></a></li>
+    </ul>
+  </div>
+
+  <div class="card z-depth-3">
+    <div class="card-content" style="padding:24px 48px;">
+
+      <div class="row">
+        <div class="col s12">
+          <ul class="tabs">
+            <li class="tab col s6"><a class="active" href="#photos">Fotos</a></li>
+            <li class="tab col s6"><a href="#videos">Videos</a></li>
+          </ul>
+        </div>
+        <div id="photos" class="col s12 mt-1">
+          <div class="row mt-1">
+            {% for photo in photos %}
+            <div class="col s12 m4 mt-1">
+              <div class="img-container" style="max-width:95%;">
+                <img class="materialboxed" src="{{photo.image.url}}" alt="{{photo.title}}" style="max-width: 100%; min-width:100%;">
+                <p class="center-align">{{photo.description}}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div id="videos" class="col s12">
+          <div class="row">
+
+          </div>
+          <div class="row">
+            {% for video in videos %}
+              <div class="col s12 m4">
+                <a class="modal-trigger" href="#video_modal" onclick="setVideoOnModal('{{video.title}}','{{video.link}}')">
+                  <div class="videoThumbnail">
+                    <img src="//img.youtube.com/vi/{{video.id}}/0.jpg" style="width:200px">
+                    <p>{{video.title}}</p>
+                  </div>
+                </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
+<!-- Modal Trigger -->
+
+
+  <!-- Modal Structure -->
+  <div id="video_modal" class="modal">
+    <div class="modal-content">
+      <h4 id="videoLink"></h4>
+      <iframe id="videoFrame" width="560" height="315" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
 
 <!-- Image modal -->
 <div id="modal-image" class="modal">
   <div class="modal-content">
     <h4>Agregar Imagen</h4>
-    <form action="/gallery/new_photo" method="POST" enctype="multipart/form-data">
+    <form action="/gallery/new_photo/" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="row">
           <div class="input-field col s12">
@@ -93,6 +148,32 @@
 <script type="text/javascript">
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
+    $('.materialboxed').materialbox();
   });
+
+  function createImageThumbnail(link){
+    //http://img.youtube.com/vi/[video-id]/[thumbnail-number].jpg
+    var videoId = getId(link);
+
+  }
+
+  function setVideoOnModal(title, link){
+    var videoId = getId(link);
+    document.getElementById("videoLink").innerHTML = title;
+    document.getElementById("videoFrame").src = 'https://www.youtube.com/embed/' + videoId;
+    //src="//www.youtube.com/embed/' + videoId
+  }
+
+  function getId(url) {
+    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = url.match(regExp);
+
+    if (match && match[2].length == 11) {
+        return match[2];
+    } else {
+        return 'error';
+    }
+  }
+
 </script>
 {% endblock js %}
