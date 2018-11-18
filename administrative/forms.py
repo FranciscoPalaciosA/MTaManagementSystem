@@ -137,7 +137,7 @@ class PayForm(forms.ModelForm):
         model = Payment
         fields = ['comment']
 
-class UpdateTrainingSession(forms.ModelForm):
+class UpdateTrainingForm(forms.ModelForm):
     evidence = forms.ImageField(required=False)
     class Meta:
         model = TrainingSession

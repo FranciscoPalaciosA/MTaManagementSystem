@@ -166,7 +166,10 @@ class TrainingSession(models.Model):
 
 class TrainingSessionEvidence(models.Model):
     training_session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE)
-    evidence = models.ImageField(upload_to = 'administrative/training_session_evidence/', default = 'administrative/training_session_evidence/no-img.jpg')
+    evidence = models.ImageField(upload_to = 'administrative/static/training_session_evidence/', default = 'administrative/training_session_evidence/no-img.jpg')
 
     def __str__(self):
         return str(self.training_session) + " Ev: " + str(self.evidence)
+
+    def image_url(self):
+        return str(self.evidence).split('administrative/')[-1]

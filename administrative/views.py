@@ -741,44 +741,100 @@ def edit_training_session(request, pk):
     return: render or HttpResponseRedirect
     """
     u = request.user
+    base_user = BaseUser.objects.get(user_id=u.id)
     # Validate user type
     if not is_promoter(u):
-        form = UpdateTrainingSession()
+        form = UpdateTrainingForm()
         if request.method == 'POST':
-            form = UpdateTrainingSession(request.POST)
+            form = UpdateTrainingForm(request.POST)
+            date = request.POST['date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'topic': request.POST['topic'],
+                        'date': date_obj,
+                        'start_time':request.POST['start_time'],
+                        'end_time':request.POST['end_time'],
+                        'comments': request.POST['comments'],
+                        'assistants': request.POST.getlist("assistants")
+                    }
+            form = UpdateTrainingForm(data, request.FILES)
+            evidences = request.FILES.getlist('evidence')
+            existing_evidences_keep = request.POST.getlist('image_keep')
+            existing_evidences_total = request.POST.getlist('image_total')
             if form.is_valid():
                 #Training Session object
                 session = TrainingSession.objects.get(pk=pk)
-                training_session_evidence = TrainingSessionEvidence.objects.get(pk=pk)
+                # training_session_evidence = get_object_or_404(TrainingSessionEvidence,training_session_id = pk)
                 session.topic=form.cleaned_data['topic']
                 session.trainer=base_user
-                date = form.cleaned_data['date']
-                date_obj = datetime.strptime(date, "%d-%m-%Y")
-                session.date= date_obj
+                session.date= form.cleaned_data['date']
                 session.start_time=form.cleaned_data['start_time']
                 session.end_time=form.cleaned_data['end_time']
                 session.comments=form.cleaned_data['comments']
+                session.assistants.set(form.cleaned_data['assistants'])
                 session.save()
-                images = request.FILES.getlist('evidence')
-                for evidence in images:
-                    training_session_evidence.evidence = TrainingSessionEvidence (
-                                                                                    training_session = session,
-                                                                                    training_session_evidence = evidence
-                                                                                )
-                    training_session_evidence.save()
+
+                imagen = form.cleaned_data['evidence']
+                print(imagen)
+
+                # images = request.FILES.getlist('evidence')
+                all_evidences =  TrainingSessionEvidence.objects.filter(training_session_id = pk)
+
+
+                for e in existing_evidences_keep:
+                    e = int(e)
+
+                for e in existing_evidences_total:
+                    e = int(e)
+
+                existing_evidences_total = set(existing_evidences_total) - set(existing_evidences_keep)
+
+                all_evidences_list = []
+                for e in all_evidences:
+                    all_evidences_list.append(e.id)
+
+                # print(all_evidences_list)
+
+                for e in all_evidences_list:
+                    for evi in existing_evidences_total:
+                        if (int(e) == int(evi)):
+                            deleted_evidence =  TrainingSessionEvidence.objects.filter(id = evi)
+                            deleted_evidence.delete()
+
+
+                for e in evidences:
+                    ev = TrainingSessionEvidence (
+                                                    training_session = session,
+                                                    evidence = e
+                                                )
+                    ev.save()
+
 
                 return HttpResponseRedirect('/administrative/training_sessions/')
+
             else:
-                return HttpResponseRedirect('/administrative/edit_training_session/'+request.POST['pk']+'/')
+                session = get_object_or_404(TrainingSession, pk=pk)
+                fecha = session.date
+                # fechaString = fecha.date(fecha.year, fecha.month, fecha.day).ctime()
+                fechaString = fecha.strftime("%d-%m-%Y")
+                list = session.assistants.all().values_list('id', flat=True)
+                evidences = TrainingSessionEvidence.objects.filter(training_session_id = pk)
+                assistants = dict(zip(list[::1], list[::1]))
+                messages.warning(request, 'No ha llenado todos los espacios de la forma')
+                context = {'form': form, 'session': session, 'assistants':assistants, 'evidences':evidences,'fechaString':fechaString}
+                return render(request, 'administrative/edit_training_session.html', context)
         else:
             session = get_object_or_404(TrainingSession, pk=pk)
+            fecha = session.date
+            # fechaString = fecha.date(fecha.year, fecha.month, fecha.day).ctime()
+            fechaString = fecha.strftime("%d-%m-%Y")
             list = session.assistants.all().values_list('id', flat=True)
-            evidences = TrainingSessionEvidence.objects.filter(training_session=session).values('evidence')
+            evidences = TrainingSessionEvidence.objects.filter(training_session_id = pk)
             assistants = dict(zip(list[::1], list[::1]))
-            print(assistants)
-            context = {'form': form, 'session': session, 'assistants':assistants, 'evidences':evidences}
+            context = {'form': form, 'session': session, 'assistants':assistants, 'evidences':evidences,'fechaString':fechaString}
             return render(request, 'administrative/edit_training_session.html', context)
-    return HttpResponseRedirect('/administrative/training_sessions/')
+    else:
+        return HttpResponseRedirect('/administrative/training_sessions/')
 
 @login_required
 def community_report(request):
