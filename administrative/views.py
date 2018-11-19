@@ -180,7 +180,6 @@ def production_report_list(request):
 @login_required
 def administrative_production_report(request, pk):
     if request.method == 'GET':
-
         try:
             production_report = ProductionReport.objects.get(pk=pk)
         except ProductionReport.DoesNotExist:
@@ -193,36 +192,37 @@ def administrative_production_report(request, pk):
         else:
             return render(request, 'administrative/administrative_production_report.html', {'prod_report': production_report, 'production_report_form': production_report_form})
     elif request.method == 'POST':
-        try:
-            production_report = ProductionReport.objects.get(pk=pk)
-        except ProductionReport.DoesNotExist:
-            raise Http404("No existe ese Reporte de Producción.")
+        if not is_promoter(request.user):
+            try:
+                production_report = ProductionReport.objects.get(pk=pk)
+            except ProductionReport.DoesNotExist:
+                raise Http404("No existe ese Reporte de Producción.")
+            data = request.POST
+            if 'get_for_leaf_qty' in data:
+                if data['get_for_leaf_qty'] != '':
+                    production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+            if 'get_for_seed_qty' in data:
+                if data['get_for_seed_qty'] != '':
+                    production_report.get_for_seed_qty = data['get_for_seed_qty']
 
-        data = request.POST
-        print(data)
+            if 'paid' in data:
+                production_report.paid = data['paid']
 
-        if 'get_for_leaf_qty' in data:
-            if data['get_for_leaf_qty'] != '':
-                production_report.get_for_leaf_qty = data['get_for_leaf_qty']
+            if 'want_for_leaf' in data:
+                production_report.want_for_leaf = data['want_for_leaf']
+            if 'want_for_seed' in data:
+                production_report.want_for_seed = data['want_for_seed']
 
-        if 'get_for_seed_qty' in data:
-            if data['get_for_seed_qty'] != '':
-                production_report.get_for_seed_qty = data['get_for_seed_qty']
-        if 'paid' in data:
-            production_report.paid = data['paid']
+            if 'exch_leaf' in data:
+                production_report.exch_leaf = data['exch_leaf']
+            if 'exch_seed' in data:
+                production_report.exch_seed = data['exch_seed']
 
-        if 'want_for_leaf' in data:
-            production_report.want_for_leaf = data['want_for_leaf']
-        if 'want_for_seed' in data:
-            production_report.want_for_seed = data['want_for_seed']
+            production_report.save()
+            return HttpResponseRedirect('/administrative/production_report_list/')
+        else:
+            return HttpResponseRedirect('/administrative/production_report_list/')
 
-        if 'exch_leaf' in data:
-            production_report.exch_leaf = data['exch_leaf']
-        if 'exch_seed' in data:
-            production_report.exch_seed = data['exch_seed']
-
-        production_report.save()
-        return HttpResponseRedirect('/administrative/production_report_list/')
 
 @login_required
 def beneficiaries_list(request):

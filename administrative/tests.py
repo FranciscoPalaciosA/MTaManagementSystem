@@ -65,7 +65,7 @@ def create_database():
     beneficiary.save()
 
 def create_user_for_group(group_name):
-    user = User.objects.create_user(group_name, 'fieldtech@testuser.com', 'testpassword')
+    user = User.objects.create_user(group_name, 'user@testuser.com', 'testpassword')
     group, created = Group.objects.get_or_create(name=group_name)
     user.groups.add(group)
     base_user = BaseUser.objects.create(user=user, name="name",
@@ -131,6 +131,368 @@ def create_beneficiary():
                                              bank_name="Banamets")
     beneficiary.save()
     return beneficiary
+
+
+class TestsFrancisco(TestCase):
+    def test_add_productReception_as_fieldTechnician(self):
+        """
+        Test to add product reception as field techinician
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Técnico de Campo'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo')
+        productionReport.save()
+        prId = productionReport.id
+        self.assertEquals(productionReport.get_for_leaf_qty, 0)
+        self.assertEquals(productionReport.get_for_seed_qty, 0)
+
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':2,
+                                                                                            'get_for_seed_qty':3.5
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 2)
+        self.assertEquals(productionReport.get_for_seed_qty, 3.5)
+
+    def test_add_productReception_as_adminAssitant(self):
+        """
+        Test to add product reception as adminisitrative assistant
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Asistente Administrativo'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo')
+        productionReport.save()
+        prId = productionReport.id
+        self.assertEquals(productionReport.get_for_leaf_qty, 0)
+        self.assertEquals(productionReport.get_for_seed_qty, 0)
+
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':10,
+                                                                                            'get_for_seed_qty':3.5
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 10)
+        self.assertEquals(productionReport.get_for_seed_qty, 3.5)
+
+    def test_add_productReception_as_adminCoord(self):
+        """
+        Test to add product reception as administrative coordinator
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Coordinador Administrativo'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo')
+        productionReport.save()
+        prId = productionReport.id
+        self.assertEquals(productionReport.get_for_leaf_qty, 0)
+        self.assertEquals(productionReport.get_for_seed_qty, 0)
+
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':10,
+                                                                                            'get_for_seed_qty':35
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 10)
+        self.assertEquals(productionReport.get_for_seed_qty, 35)
+
+    def test_add_productReception_as_Director(self):
+        """
+        Test to add product reception as Director
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Director'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo')
+        productionReport.save()
+        prId = productionReport.id
+        self.assertEquals(productionReport.get_for_leaf_qty, 0)
+        self.assertEquals(productionReport.get_for_seed_qty, 0)
+
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':10,
+                                                                                            'get_for_seed_qty':35
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 10)
+        self.assertEquals(productionReport.get_for_seed_qty, 35)
+
+    def test_modify_productReception_as_fieldTechnician(self):
+        """
+        Test to add product reception as field techinician
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Técnico de Campo'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo',
+                                                            get_for_leaf_qty= 2,
+                                                            get_for_seed_qty= 3)
+        productionReport.save()
+        self.assertEquals(productionReport.get_for_leaf_qty, 2)
+        self.assertEquals(productionReport.get_for_seed_qty, 3)
+        prId = productionReport.id
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':20,
+                                                                                            'get_for_seed_qty':30
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 20)
+        self.assertEquals(productionReport.get_for_seed_qty, 30)
+
+    def test_modify_productReception_as_AdminAssitant(self):
+        """
+        Test to add product reception as adminisitrative assistan
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Asistente Administrativo'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo',
+                                                            get_for_leaf_qty= 2,
+                                                            get_for_seed_qty= 3)
+        productionReport.save()
+        self.assertEquals(productionReport.get_for_leaf_qty, 2)
+        self.assertEquals(productionReport.get_for_seed_qty, 3)
+        prId = productionReport.id
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':20,
+                                                                                            'get_for_seed_qty':30
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 20)
+        self.assertEquals(productionReport.get_for_seed_qty, 30)
+
+    def test_modify_productReception_as_AdminCoord(self):
+        """
+        Test to add product reception as adminisitrative coordinator
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Coordinador Administrativo'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo',
+                                                            get_for_leaf_qty= 2,
+                                                            get_for_seed_qty= 3)
+        productionReport.save()
+        self.assertEquals(productionReport.get_for_leaf_qty, 2)
+        self.assertEquals(productionReport.get_for_seed_qty, 3)
+        prId = productionReport.id
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':20,
+                                                                                            'get_for_seed_qty':30
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 20)
+        self.assertEquals(productionReport.get_for_seed_qty, 30)
+
+    def test_modify_productReception_as_Director(self):
+        """
+        Test to add product reception as director
+        Expecting redirect to /administrative/production_report_list/
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        beneficiary =create_beneficiary()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Director'))
+        community = Community.objects.create(name = 'Name',
+                                            municipality = 'Municipality',
+                                            state = 'State')
+        self.client.login(username="user", password="testpassword")
+
+        productionReport = ProductionReport.objects.create(beneficiary= beneficiary,
+                                                            self_seed= 1,
+                                                            self_leaf= 3,
+                                                            self_flour= 4,
+                                                            days_per_month= 15,
+                                                            exch_leaf= 5,
+                                                            exch_seed= 7,
+                                                            want_for_leaf= 'Efectivo',
+                                                            want_for_seed= 'Efectivo',
+                                                            get_for_leaf_qty= 2,
+                                                            get_for_seed_qty= 3)
+        productionReport.save()
+        self.assertEquals(productionReport.get_for_leaf_qty, 2)
+        self.assertEquals(productionReport.get_for_seed_qty, 3)
+        prId = productionReport.id
+        response = self.client.post('/administrative/administrative_production_report/'+str(prId), {'get_for_leaf_qty':20,
+                                                                                            'get_for_seed_qty':30
+                                                                                            })
+
+        self.assertRedirects(response, '/administrative/production_report_list/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        productionReport = ProductionReport.objects.get(id=prId)
+        self.assertEquals(productionReport.get_for_leaf_qty, 20)
+        self.assertEquals(productionReport.get_for_seed_qty, 30)
+
+########################################################################################
+########################################################################################
+########################################################################################
 
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
@@ -238,7 +600,7 @@ class ProductionReportTest(TestCase):
                                                                                 'self_flour': 4,
                                                                                 'days_per_month': 15,
                                                                                 'exch_leaf': 5,
-                                                                                'exch_sead': 7,
+                                                                                'exch_seed': 7,
                                                                                 'want_for_leaf': 'Efectivo',
                                                                                 'want_for_seed': 'Efectivo'
                                                                              })
@@ -325,7 +687,6 @@ class ProductionReportTest(TestCase):
         self.client.login(username="user", password="testpassword")
         response = self.client.get('/administrative/production_report/')
         self.assertEqual(response.status_code, 302)
-
 
     def test_new_report_complete_as_Director(self):
         """
@@ -1910,7 +2271,6 @@ class NewSavingAccount(TestCase):
         Creating a new saving account as an Administrative Assistant. Expecting a redirect to /administrative/
 
         """
-
         user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
         base_user = BaseUser.objects.create(user=user, name="name",
                                             last_name_paternal="last_name_paternal",

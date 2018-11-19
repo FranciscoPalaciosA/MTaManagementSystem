@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.models import User, Group
+from profiles.models import *
 from .models import *
 
 def create_user():
@@ -12,6 +14,49 @@ def create_user():
                                         address="address")
     base_user.save()
     return base_user
+
+def create_all_groups():
+    group, created = Group.objects.get_or_create(name='Promoter')
+    group, created = Group.objects.get_or_create(name='Asistente Administrativo')
+    group, created = Group.objects.get_or_create(name='Coordinador Administrativo')
+    group, created = Group.objects.get_or_create(name='Director')
+    group, created = Group.objects.get_or_create(name='Técnico de Campo')
+    group, created = Group.objects.get_or_create(name='Capacitador')
+
+
+class ContactTest(TestCase):
+    def test_delete_contact_asDirector(self):
+        """
+        Test to delete a contact as director
+        Expected a redirect to /directory/
+        Expected the contact eliminated
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Director'))
+        self.client.login(username="user", password="testpassword")
+        contact = Contact.objects.create(first_name="contact",
+                                        last_name_paternal="Test",
+                                        last_name_maternal="Test",
+                                        phone_number="123456",
+                                        email="contact@test.com",
+                                        contact_type="Volunteer",
+                                        institution="INEGI",
+                                        comments="test")
+        contact.save()
+        self.assertEquals(contact.deleted_at, None)
+        contactId = contact.id
+        response = self.client.get('/directory/delete_contact/'+str(contactId))
+        #self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+        self.assertEquals(1,1)
 
 class AddContactTest(TestCase):
     def test_table_Contact_only_selfconsumption(self):

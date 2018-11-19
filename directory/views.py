@@ -108,13 +108,15 @@ def add_contact(request):
 
 @login_required
 def delete_contact(request, pk):
+
     if(is_director(request.user)):
+
         if request.method == 'GET':
+
             try:
                 contact = Contact.objects.get(pk=pk)
             except Contact.DoesNotExist:
                 raise Http404("No existe ese contacto.")
-
             contact.deleted_at = timezone.now()
             contact.save()
         else:
