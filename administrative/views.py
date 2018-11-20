@@ -70,7 +70,7 @@ def is_field_technician(user):
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
-def is_counter(user):
+def is_accountant(user):
     if user:
         return user.groups.filter(name='Contador').count() == 1
     return False

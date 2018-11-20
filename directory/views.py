@@ -46,6 +46,11 @@ def is_field_technician(user):
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
+def is_accountant(user):
+    if user:
+        return user.groups.filter(name='Contador').count() == 1
+    return False
+    
 # Create your views here.
 @login_required
 def index(request):
@@ -119,6 +124,7 @@ def delete_contact(request, pk):
                 raise Http404("No existe ese contacto.")
             contact.deleted_at = timezone.now()
             contact.save()
+            return HttpResponseRedirect('/directory/')
         else:
             return HttpResponseRedirect('/directory/')
     else:

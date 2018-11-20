@@ -22,10 +22,11 @@ def create_all_groups():
     group, created = Group.objects.get_or_create(name='Director')
     group, created = Group.objects.get_or_create(name='Técnico de Campo')
     group, created = Group.objects.get_or_create(name='Capacitador')
+    group, created = Group.objects.get_or_create(name='Contador')
 
 
 class ContactTest(TestCase):
-    def test_delete_contact_asDirector(self):
+    def test_delete_contact_as_director(self):
         """
         Test to delete a contact as director
         Expected a redirect to /directory/
@@ -54,9 +55,176 @@ class ContactTest(TestCase):
         self.assertEquals(contact.deleted_at, None)
         contactId = contact.id
         response = self.client.get('/directory/delete_contact/'+str(contactId))
-        #self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        deletedContact = Contact.objects.get(id=contactId)
+        self.assertNotEqual(deletedContact.deleted_at, None)
 
-        self.assertEquals(1,1)
+    def test_delete_contact_as_adminAssisant(self):
+        """
+        Test to delete a contact as adminAssistan
+        Expected a redirect to /directory/
+        Expected the contact not eliminated
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Asistente Administrativo'))
+        self.client.login(username="user", password="testpassword")
+        contact = Contact.objects.create(first_name="contact",
+                                        last_name_paternal="Test",
+                                        last_name_maternal="Test",
+                                        phone_number="123456",
+                                        email="contact@test.com",
+                                        contact_type="Volunteer",
+                                        institution="INEGI",
+                                        comments="test")
+        contact.save()
+        self.assertEquals(contact.deleted_at, None)
+        contactId = contact.id
+        response = self.client.get('/directory/delete_contact/'+str(contactId))
+        self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        deletedContact = Contact.objects.get(id=contactId)
+        self.assertEquals(deletedContact.deleted_at, None)
+
+    def test_delete_contact_as_adminCoord(self):
+        """
+        Test to delete a contact as adminisitrative coordinator
+        Expected a redirect to /directory/
+        Expected the contact not eliminated
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Coordinador Administrativo'))
+        self.client.login(username="user", password="testpassword")
+        contact = Contact.objects.create(first_name="contact",
+                                        last_name_paternal="Test",
+                                        last_name_maternal="Test",
+                                        phone_number="123456",
+                                        email="contact@test.com",
+                                        contact_type="Volunteer",
+                                        institution="INEGI",
+                                        comments="test")
+        contact.save()
+        self.assertEquals(contact.deleted_at, None)
+        contactId = contact.id
+        response = self.client.get('/directory/delete_contact/'+str(contactId))
+        self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        deletedContact = Contact.objects.get(id=contactId)
+        self.assertEquals(deletedContact.deleted_at, None)
+
+    def test_delete_contact_as_fieldTech(self):
+        """
+        Test to delete a contact as field Technician
+        Expected a redirect to /directory/
+        Expected the contact not eliminated
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Técnico de Campo'))
+        self.client.login(username="user", password="testpassword")
+        contact = Contact.objects.create(first_name="contact",
+                                        last_name_paternal="Test",
+                                        last_name_maternal="Test",
+                                        phone_number="123456",
+                                        email="contact@test.com",
+                                        contact_type="Volunteer",
+                                        institution="INEGI",
+                                        comments="test")
+        contact.save()
+        self.assertEquals(contact.deleted_at, None)
+        contactId = contact.id
+        response = self.client.get('/directory/delete_contact/'+str(contactId))
+        self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        deletedContact = Contact.objects.get(id=contactId)
+        self.assertEquals(deletedContact.deleted_at, None)
+
+    def test_delete_contact_as_accountant(self):
+        """
+        Test to delete a contact as accountant
+        Expected a redirect to /directory/
+        Expected the contact not eliminated
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Contador'))
+        self.client.login(username="user", password="testpassword")
+        contact = Contact.objects.create(first_name="contact",
+                                        last_name_paternal="Test",
+                                        last_name_maternal="Test",
+                                        phone_number="123456",
+                                        email="contact@test.com",
+                                        contact_type="Volunteer",
+                                        institution="INEGI",
+                                        comments="test")
+        contact.save()
+        self.assertEquals(contact.deleted_at, None)
+        contactId = contact.id
+        response = self.client.get('/directory/delete_contact/'+str(contactId))
+        self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        deletedContact = Contact.objects.get(id=contactId)
+        self.assertEquals(deletedContact.deleted_at, None)
+
+
+    def test_delete_contact_as_trainer(self):
+        """
+        Test to delete a contact as trainer
+        Expected a redirect to /directory/
+        Expected the contact not eliminated
+        """
+        user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
+        base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+        base_user.save()
+        create_all_groups()
+        user.groups.add(Group.objects.get(name='Capacitador'))
+        self.client.login(username="user", password="testpassword")
+        contact = Contact.objects.create(first_name="contact",
+                                        last_name_paternal="Test",
+                                        last_name_maternal="Test",
+                                        phone_number="123456",
+                                        email="contact@test.com",
+                                        contact_type="Volunteer",
+                                        institution="INEGI",
+                                        comments="test")
+        contact.save()
+        self.assertEquals(contact.deleted_at, None)
+        contactId = contact.id
+        response = self.client.get('/directory/delete_contact/'+str(contactId))
+        self.assertRedirects(response, '/directory/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        deletedContact = Contact.objects.get(id=contactId)
+        self.assertEquals(deletedContact.deleted_at, None)
+
 
 class AddContactTest(TestCase):
     def test_table_Contact_only_selfconsumption(self):
