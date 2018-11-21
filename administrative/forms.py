@@ -137,7 +137,7 @@ class UpdateSavingsForm(forms.Form):
     """
     pk = forms.IntegerField()
     name = forms.CharField(max_length=50)
-    community = forms.CharField(max_length=50)
+    community = forms.ModelChoiceField(queryset=Community.objects)
     municipality = forms.CharField(max_length=50)
     location = forms.CharField(max_length=50)
     list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())

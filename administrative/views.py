@@ -146,6 +146,11 @@ def production_report(request):
             beneficiaries = Beneficiary.objects.filter(promoter=promoter)
             context = {'production_report_form': production_report_form, 'beneficiaries': beneficiaries}
             return render(request, 'administrative/Production_Report.html', context)
+        elif is_field_technician(request.user):
+            production_report_form = ProductionReportForm()
+            beneficiaries = Beneficiary.objects.all()
+            context = {'production_report_form': production_report_form, 'beneficiaries': beneficiaries}
+            return render(request, 'administrative/Production_Report.html', context)
         else:
             return HttpResponseRedirect('/administrative/production_report_list/')
     else:
@@ -289,23 +294,45 @@ def add_beneficiary(request):
                 water_capacity = 0
             else:
                 water_capacity = form.cleaned_data['water_capacity']
-
-            beneficiary_in_program = BeneficiaryInProgram(
-                                                        beneficiary=beneficiary,
-                                                        program=form.cleaned_data['member_in'][0],
-                                                        curp=form.cleaned_data['curp'],
-                                                        house_address=form.cleaned_data['house_address'],
-                                                        house_references=form.cleaned_data['house_references'],
-                                                        huerto_coordinates=form.cleaned_data['huerto_coordinates'],
-                                                        water_capacity=water_capacity,
-                                                        savings_account_role=form.cleaned_data['savings_account_role'],
-                                                        cisterna_location = form.cleaned_data['cisterna_location'],
-                                                        cisterna_status = form.cleaned_data['cisterna_status'],
-                                                        school = form.cleaned_data['school'],
-                                                        age = form.cleaned_data['age'],
-                                                        initial_weight = form.cleaned_data['initial_weight']
-
-                                                        )
+            if str(form.cleaned_data['member_in'][0]) == 'Cajas de ahorro':
+                beneficiary_in_program = BeneficiaryInProgram(
+                                                            beneficiary=beneficiary,
+                                                            program=form.cleaned_data['member_in'][0],
+                                                            savings_account_role=form.cleaned_data['savings_account_role']
+                                                            )
+            elif str(form.cleaned_data['member_in'][0]) == 'Productores':
+                beneficiary_in_program = BeneficiaryInProgram(
+                                                            beneficiary=beneficiary,
+                                                            program=form.cleaned_data['member_in'][0],
+                                                            curp=form.cleaned_data['curp'], # Productores
+                                                            house_address=form.cleaned_data['house_address'], # Productores
+                                                            house_references=form.cleaned_data['house_references'], # Productores
+                                                            huerto_coordinates=form.cleaned_data['huerto_coordinates']
+                                                            )
+            elif str(form.cleaned_data['member_in'][0]) == 'Cisternas':
+                beneficiary_in_program = BeneficiaryInProgram(
+                                                            beneficiary=beneficiary,
+                                                            program=form.cleaned_data['member_in'][0],
+                                                            water_capacity=water_capacity, # Cisternas
+                                                            cisterna_location = form.cleaned_data['cisterna_location'], # Cisternas
+                                                            cisterna_status = form.cleaned_data['cisterna_status']
+                                                            )
+            elif str(form.cleaned_data['member_in'][0]) == 'Ecónomas':
+                beneficiary_in_program = BeneficiaryInProgram(
+                                                            beneficiary=beneficiary,
+                                                            program=form.cleaned_data['member_in'][0],
+                                                            school = form.cleaned_data['school']
+                                                            )
+            elif str(form.cleaned_data['member_in'][0]) == 'Desayunos con amaranto':
+                beneficiary_in_program = BeneficiaryInProgram(
+                                                            beneficiary=beneficiary,
+                                                            program=form.cleaned_data['member_in'][0],
+                                                            school = form.cleaned_data['school'], # Desayunos con amaranto
+                                                            age = form.cleaned_data['age'], # Desayunos con amaranto
+                                                            initial_weight = form.cleaned_data['initial_weight'] # Desayunos con amaranto
+                                                            )
+            else:
+                return HttpResponseRedirect('/administrative/new_beneficiary/')
             beneficiary_in_program.save()
             return HttpResponseRedirect('/administrative/beneficiaries/0')
         else:
@@ -837,7 +864,7 @@ def edit_savings(request, pk=0):
                 #SavingsLog object
                 month = datetime.now().month
                 year = datetime.now().year
-                log = SavingsLog.objects.get_or_create(saving_account=account, month=month, year=year)
+                log, created = SavingsLog.objects.get_or_create(saving_account=account, month=month, year=year)
                 log.amount = account.total_saved_amount
                 log.save()
                 return HttpResponseRedirect('/administrative/saving_accounts/')
