@@ -131,6 +131,39 @@ def create_beneficiary():
                                              bank_name="Banamets")
     beneficiary.save()
     return beneficiary
+def create_beneficiary2():
+    community = Community.objects.create(
+                                            name='name',
+                                            municipality='municipality',
+                                            state='state'
+                                        )
+    user = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+    base_user = BaseUser.objects.create(user=user, name="name",
+                                        last_name_paternal="last_name_paternal",
+                                        last_name_maternal="last_name_maternal",
+                                        phone_number="phone_number",
+                                        email="email@email.com",
+                                        address="address")
+    base_user.save()
+    promoter = Promoter.objects.create(base_user=base_user,
+                                        contact_name = "Contacto",
+                                        contact_phone_number = "1234512312"
+                                        )
+    beneficiary = Beneficiary.objects.create(id=1,
+                                             name="Rodolfo",
+                                             last_name_paternal="Rodriguez",
+                                             last_name_maternal="Rocha",
+                                             community= community,
+                                             num_of_family_beneficiaries=16,
+                                             promoter=promoter,
+                                             contact_name="Juan",
+                                             contact_phone="4424325671",
+                                             account_number=123456,
+                                             bank_name="Banamets")
+    beneficiary.save()
+    return beneficiary
+
+
 
 class ProductionReportTest(TestCase):
     def test_new_report_only_selfconsumption(self):
@@ -996,7 +1029,7 @@ class TestPay(TestCase):
         #Payment did not update
         self.assertEqual(p.comment, '')
         """
-        
+
 class CommunityTests(TestCase):
     def test_view_uses_correct_template_for_administrative_assistant(self):
         """
@@ -2010,3 +2043,147 @@ class ChartsTests(TestCase):
         response = self.client.get('/administrative/reports/')
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
+class UpdateTrainingSessionTest(TestCase):
+    def test_edit_training_session_as_promoter(self):
+             user_promoter = User.objects.create_user('promoter1', 'promoter@testuser.com', 'testpassword')
+             base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                             last_name_paternal="last_name_paternal",
+                                                             last_name_maternal="last_name_maternal",
+                                                             phone_number="phone_number",
+                                                             email="email@email.com",
+                                                             address="address")
+             base_user_promoter.save()
+             community = Community.objects.create(name = 'Name',
+                                                 municipality = 'Municipality',
+                                                 state = 'State')
+             promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                                 contact_name = "Contacto",
+                                                 contact_phone_number = "1234514"
+                                                 )
+             promoter.communities.set([community.id])
+             promoter.save()
+             create_all_groups()
+             user2 = create_user_for_group('Técnico de Campo')
+             image = Image.open('gallery/images/mta_logo.png')
+             beneficiary = create_beneficiary2()
+             training_session = TrainingSession.objects.create(
+                                                                topic='Health',
+                                                                date='2010-10-10',
+                                                                start_time='10:00 AM',
+                                                                end_time='11:00 AM',
+                                                                comments='This is a comment',
+                                                                trainer_id=user2.id
+                                                                )
+             training_session.assistants.set([beneficiary.id])
+             training_session.save()
+             self.client.login(username="promoter1", password="testpassword")
+             response = self.client.post('/administrative/edit_training_session/1/', { "topic":"Health",
+                                                                                       "date":"15-10-2010",
+                                                                                       "start_time":"11:00 AM",
+                                                                                       "end_time":"12:00 PM",
+                                                                                       "comments":"This is a comment",
+                                                                                       "assistants": beneficiary.id,
+                                                                                      })
+             self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+    def test_edit_training_session_as_field_technician(self):
+               user = User.objects.create_user('field_tech', 'user@testuser.com', 'testpassword')
+               base_user = BaseUser.objects.create(user=user, name="name",
+                                                  last_name_paternal="last_name_paternal",
+                                                  last_name_maternal="last_name_maternal",
+                                                  phone_number="phone_number",
+                                                  email="email@email.com",
+                                                  address="address")
+               base_user.save()
+               create_all_groups()
+               user2 = create_user_for_group('Técnico de Campo')
+               image = Image.open('gallery/images/mta_logo.png')
+               beneficiary = create_beneficiary()
+               training_session = TrainingSession.objects.create(
+                                                                  topic='Health',
+                                                                  date='2010-10-10',
+                                                                  start_time='10:00 AM',
+                                                                  end_time='11:00 AM',
+                                                                  comments='This is a comment',
+                                                                  trainer_id=user2.id
+                                                                  )
+               training_session.save()
+               training_session.assistants.set([beneficiary.id])
+               training_session.save()
+               print(training_session.assistants)
+
+               user.groups.add(Group.objects.get(name='Técnico de Campo'))
+               self.client.login(username="field_tech", password="testpassword")
+               response = self.client.post('/administrative/edit_training_session/1/', { "topic":"Health",
+                                                                                         "date":"15-10-2010",
+                                                                                         "start_time":"11:00 AM",
+                                                                                         "end_time":"12:00 PM",
+                                                                                         "comments":"This is a comment",
+                                                                                         "assistants": beneficiary.id
+                                                                                        })
+               self.assertRedirects(response, '/administrative/training_sessions/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+class TrainingSessionIndexTest(TestCase):
+    def test_see_training_session_index_as_a_promoter(self):
+         user_promoter = User.objects.create_user('promoter1', 'promoter@testuser.com', 'testpassword')
+         base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                         last_name_paternal="last_name_paternal",
+                                                         last_name_maternal="last_name_maternal",
+                                                         phone_number="phone_number",
+                                                         email="email@email.com",
+                                                         address="address")
+         base_user_promoter.save()
+         community = Community.objects.create(name = 'Name',
+                                             municipality = 'Municipality',
+                                             state = 'State')
+         promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                             contact_name = "Contacto",
+                                             contact_phone_number = "1234514"
+                                             )
+         promoter.communities.set([community.id])
+         promoter.save()
+         create_all_groups()
+         user2 = create_user_for_group('Técnico de Campo')
+         beneficiary = create_beneficiary2()
+         training_session = TrainingSession.objects.create(
+                                                            topic='Health',
+                                                            date='2010-10-10',
+                                                            start_time='10:00 AM',
+                                                            end_time='11:00 AM',
+                                                            comments='This is a comment',
+                                                            trainer_id=user2.id
+                                                            )
+         training_session.assistants.set([beneficiary.id])
+         training_session.save()
+         self.client.login(username="promoter1", password="testpassword")
+         response = self.client.get('/administrative/training_sessions/')
+         self.assertEqual(response.status_code, 302)
+    def test_see_training_session_index_as_a_field_technician(self):
+         user = User.objects.create_user('field_tech', 'user@testuser.com', 'testpassword')
+         base_user = BaseUser.objects.create(user=user, name="name",
+                                            last_name_paternal="last_name_paternal",
+                                            last_name_maternal="last_name_maternal",
+                                            phone_number="phone_number",
+                                            email="email@email.com",
+                                            address="address")
+         base_user.save()
+         create_all_groups()
+         user2 = create_user_for_group('Técnico de Campo')
+         image = Image.open('gallery/images/mta_logo.png')
+         beneficiary = create_beneficiary()
+         training_session = TrainingSession.objects.create(
+                                                            topic='Health',
+                                                            date='2010-10-10',
+                                                            start_time='10:00 AM',
+                                                            end_time='11:00 AM',
+                                                            comments='This is a comment',
+                                                            trainer_id=user2.id
+                                                            )
+         training_session.save()
+         training_session.assistants.set([beneficiary.id])
+         training_session.save()
+         print(training_session.assistants)
+
+         user.groups.add(Group.objects.get(name='Técnico de Campo'))
+         self.client.login(username="field_tech", password="testpassword")
+         response = self.client.get('/administrative/training_sessions/')
+         self.assertEqual(response.status_code, 200)

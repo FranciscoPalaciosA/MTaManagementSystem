@@ -309,7 +309,7 @@ def edit_promoter(request, pk):
 
 
                     messages.success(request, 'Datos guardados exitosamente')
-                    return HttpResponseRedirect('/profiles/')
+                    return HttpResponseRedirect('/profiles/promoter_profile/%d/' %promoter.id)
                 else:
                     form = PromoterFormEdit()
                     context = {'form': form, 'promoter': promoter}
@@ -336,4 +336,4 @@ def edit_promoter(request, pk):
         else:
             print("NOT POST OR GET")
     else:
-        return HttpResponseRedirect('/logout/')
+        return HttpResponseRedirect('/administrative/')
