@@ -122,12 +122,21 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
-    $('.timepicker').timepicker();
+    $('.timepicker').timepicker({
+      container: 'body',
+    });
     var d = new Date();
     console.log(d);
     $('.datepicker').datepicker({
       minDate:d,
-      format:'dd-mm-yyyy'
+      format:'dd-mm-yyyy',
+      i18n: {
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"],
+                weekdays: ["Domingo","Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                weekdaysShort: ["Dom","Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+                weekdaysAbbrev: ["D","L", "M", "M", "J", "V", "S"]
+            }
     });
   });
 
@@ -160,6 +169,6 @@
       $("#image_div" + id).remove();
       $("#image_div" + id) = null;
     }
-  
+
 </script>
 {% endblock js %}

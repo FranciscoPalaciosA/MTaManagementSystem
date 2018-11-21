@@ -94,7 +94,8 @@ def index(request):
 
 @login_required
 def production_report(request):
-    """ Description: Renders the view to register a new productionn report on the system, when posted stores the data
+    """
+        Description: Renders the view to register a new productionn report on the system, when posted stores the data
         Parameters: request
         return: For POST request: redirect, For GET request: render
     """
