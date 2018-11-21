@@ -80,7 +80,13 @@ def is_counter(user):
 @login_required
 def index(request):
     if is_promoter(request.user):
-        return render(request, 'administrative/index/promoter.html')
+        base = BaseUser.objects.get(user=request.user)
+        try:
+            promoter = Promoter.objects.get(base_user=base)
+        except Promoter.DoesNotExist:
+            return render(request, 'administrative/index/promoter.html')
+
+        return render(request, 'administrative/index/promoter.html', {'promoterId': promoter.id})
     else:
         return render(request, 'administrative/index.html')
     return

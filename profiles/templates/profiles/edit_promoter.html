@@ -18,7 +18,7 @@
             <form action="/profiles/edit_promoter/{{promoter.id}}/" method="post">
               {% csrf_token %}
               <div class="row">
-                <h4 class="left">Información de la cuenta de {{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h4>
+                <h4 class="left">{{promoter.base_user.name}} {{promoter.base_user.last_name_paternal}}</h4>
               </div>
               <div class="row">
                 <div class="input-field col s12 m4">
