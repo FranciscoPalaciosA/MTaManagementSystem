@@ -9,7 +9,7 @@
 
 {% block content %}
 <main>
-  {% if request.user|is_promoter %}
+  {% if request.user|is_promoter or request.user|has_group:"Técnico de Campo" %}
   <div class="fixed-action-btn">
     <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:production_report' %}">
       <i class="large material-icons">add</i>
