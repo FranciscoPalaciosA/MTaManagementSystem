@@ -32,35 +32,35 @@
               </thead>
               <tbody>
                 {% for payment in upcoming_payments %}
-                  <tr>
-                    <td>
-                      {{payment.promoter}}
-                    </td>
-                    <td>
-                      {{payment.description}}
-                    </td>
-                    <td>
-                      $ {{payment.quantity}}
-                    </td>
-                    {% if payment.due_date > curdate %}
-                    <td>
-                      {{payment.due_date|date:"d / m / Y"}}
-                    </td>
-                    {% else %}
-                    <td class="red-text">
-                      {{payment.due_date|date:"d / m / Y"}}
-                    </td>
-                    {% endif %}
-                    <td>
-                      <a class="modal-trigger " onclick="ajaxCall({{payment.id}})">
-                        <i class="material-icons">check_circle_outline</i>
-                      </a>
-                    </td>
-                  </tr>
-                  {% empty %}
-                  <tr>
-                    <td>No hay pagos pendientes.</td>
-                  </tr>
+                <tr>
+                  <td>
+                    {{payment.promoter}}
+                  </td>
+                  <td>
+                    {{payment.description}}
+                  </td>
+                  <td>
+                    $ {{payment.quantity}}
+                  </td>
+                  {% if payment.due_date > curdate %}
+                  <td>
+                    {{payment.due_date|date:"d / m / Y"}}
+                  </td>
+                  {% else %}
+                  <td class="red-text">
+                    {{payment.due_date|date:"d / m / Y"}}
+                  </td>
+                  {% endif %}
+                  <td>
+                    <a class="modal-trigger " onclick="ajaxCall({{payment.id}})">
+                      <i class="material-icons">check_circle_outline</i>
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td>No hay pagos pendientes.</td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -68,39 +68,39 @@
           <div id="resolved" class="col s12">
             <table class="striped highlight">
               <thead>
+
                 <tr>
-                  <tr>
-                    <th>Promotora</th>
-                    <th>Descripcion</th>
-                    <th>Cantidad</th>
-                    <th>Comentarios</th>
-                    <th>Fecha de pago</th>
-                  </tr>
+                  <th>Promotora</th>
+                  <th>Descripcion</th>
+                  <th>Cantidad</th>
+                  <th>Comentarios</th>
+                  <th>Fecha de pago</th>
                 </tr>
+
               </thead>
               <tbody>
                 {% for payment in past_payments %}
-                  <tr>
-                    <td>
-                      {{payment.promoter}}
-                    </td>
-                    <td>
-                      {{payment.description}}
-                    </td>
-                    <td>
-                      $ {{payment.quantity}}
-                    </td>
-                    <td>
-                      {{payment.comment}}
-                    </td>
-                    <td>
-                      {{payment.pay_date|date:"d / m / Y"}}
-                    </td>
-                  </tr>
-                  {% empty %}
-                  <tr>
-                    <td>No hay pagos realizados</td>
-                  </tr>
+                <tr>
+                  <td>
+                    {{payment.promoter}}
+                  </td>
+                  <td>
+                    {{payment.description}}
+                  </td>
+                  <td>
+                    $ {{payment.quantity}}
+                  </td>
+                  <td>
+                    {{payment.comment}}
+                  </td>
+                  <td>
+                    {{payment.pay_date|date:"d / m / Y"}}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td>No hay pagos realizados</td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -110,7 +110,7 @@
     </div>
   </div>
   <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red modal-trigger"  href="#new_payment">
+    <a class="btn-floating btn-large red modal-trigger" href="#new_payment">
       <i class="large material-icons">add</i>
     </a>
   </div>
@@ -119,13 +119,13 @@
   <div class="modal-content">
     <h4>Pagar</h4>
     <div class="row">
-      <div class="col s12"><b>Promotora:  </b><span id="promoter-name">loremipsum</span></div>
+      <div class="col s12"><b>Promotora: </b><span id="promoter-name">loremipsum</span></div>
     </div>
     <div class="row">
-      <div class="col s12"><b>Descripción:  </b><span id="description-text">loremipsum</span></div>
+      <div class="col s12"><b>Descripción: </b><span id="description-text">loremipsum</span></div>
     </div>
     <div class="row">
-      <div class="col s12"><b>Cantidad:  </b><span id="quantity-text">loremipsum</span></div>
+      <div class="col s12"><b>Cantidad: </b><span id="quantity-text">loremipsum</span></div>
     </div>
     <form id="pay-form" method="post" action="/administrative/pay/">
       {% csrf_token %}
@@ -133,7 +133,7 @@
         <input id="{{form.comment.id_for_label}}" name="{{form.comment.html_name}}" type="text" class="validate" required>
         <label for="{{form.comment.id_for_label}}">No. Folio, Comentarios, etc.</label>
       </div>
-      <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Pagar
+      <button class="btn waves-effect waves-light right" type="submit" value="Submit" name="action">Pagar
         <i class="material-icons right">send</i>
       </button><br>
     </form>
@@ -151,7 +151,7 @@
           <select id="{{new_payment.promoter.id_for_label}}" name="{{new_payment.promoter.html_name}}" required>
             <option value="" disabled selected>Selecciona uno</option>
             {% for choice in new_payment.promoter.field.queryset %}
-              <option value="{{choice.id}}">{{choice}}</option>
+            <option value="{{choice.id}}">{{choice}}</option>
             {% endfor %}
           </select>
         </div>
@@ -161,14 +161,14 @@
         </div>
         <div class="input-field col s4 m4">
           <label for="{{new_payment.due_date.id_for_label}}" class="active">Pagar antes de</label>
-          <input required id="{{new_payment.due_date.id_for_label}}" name="{{new_payment.due_date.html_name}}" type="text" class="validate datepicker" max="{{curdate}}">
+          <input required id="{{new_payment.due_date.id_for_label}}" name="{{new_payment.due_date.html_name}}" type="text" class="validate datepicker" minDate="{{curdate}}">
         </div>
         <div class="input-field col s12 m12">
           <label for="{{new_payment.description.id_for_label}}" class="active">Descripcion</label>
           <input required id="{{new_payment.description.id_for_label}}" name="{{new_payment.description.html_name}}" type="text" class="validate">
         </div>
 
-        <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Guardar
+        <button class="btn waves-effect waves-light right" type="submit" value="Submit" name="action">Guardar
           <i class="material-icons right">send</i>
         </button>
       </div>
@@ -182,17 +182,19 @@
 {% endblock init_scripts %}
 {% block js %}
 <script type="text/javascript">
-  $(document).ready(function(){
+  $(document).ready(function() {
     //Inicializar componentes
     $('.datepicker').datepicker({
-      format:'dd-mm-yyyy'
+      format: 'dd-mm-yyyy',
+      minDate: new Date(),
+      container: 'body'
     });
     $('.tabs').tabs(
-      swipeable=true
+      swipeable = true
     );
   });
 
-  function ajaxCall(id){
+  function ajaxCall(id) {
     path = "/administrative/get_payment/" + id;
     $.ajax({
       method: "GET",
@@ -202,10 +204,9 @@
       $("#promoter-name").text(data['promoter']);
       $("#description-text").text(data['description']);
       $("#quantity-text").text("$" + data['quantity']);
-      $("#pay-form").attr("action", '/administrative/pay/'+data['pk']+'/');
+      $("#pay-form").attr("action", '/administrative/pay/' + data['pk'] + '/');
       $('#pay-modal').modal('open');
     });
   }
-
 </script>
 {% endblock js %}

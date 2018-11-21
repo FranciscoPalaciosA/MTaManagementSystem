@@ -291,6 +291,7 @@ def edit_promoter(request, pk):
 
                     if form.cleaned_data['password'] != "" and form.cleaned_data['password'] != None:
                         user.password = form.cleaned_data['password']
+                        
                     #Data from base_user
                     if form.cleaned_data['name'] != "" and form.cleaned_data['name'] != None:
                         base_user.name=form.cleaned_data['name']
