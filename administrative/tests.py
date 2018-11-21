@@ -1985,7 +1985,6 @@ class TrainingTests(TestCase):
         self.assertEqual(len(session), 0)
         self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
 
-
 class ChartsTests(TestCase):
     def test_check_charts_as_director(self):
         """
@@ -2187,3 +2186,4 @@ class TrainingSessionIndexTest(TestCase):
          self.client.login(username="field_tech", password="testpassword")
          response = self.client.get('/administrative/training_sessions/')
          self.assertEqual(response.status_code, 200)
+

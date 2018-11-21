@@ -45,8 +45,16 @@
                 </div>
                 <div class="col s4">
                   <div class="input-field">
-                    <input required id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" type="text" class="validate" value="{{account.community}}">
-                    <label for="{{form.community.id_for_label}}">Nombre de la comunidad:</label>
+                    <select id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" required>
+                      {% for choice in form.community.field.queryset %}
+                        {% if choice.id == acount.community.id %}
+                          <option value="{{choice.id}}" selected>{{choice}}</option>
+                        {% else %}
+                          <option value="{{choice.id}}">{{choice}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                    <label for="{{form.community_name.id_for_label}}">Comunidad</label>
                   </div>
                 </div>
                 <div class="col s4">

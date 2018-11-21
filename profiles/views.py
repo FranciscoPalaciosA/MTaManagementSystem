@@ -50,6 +50,14 @@ def is_field_technician(user):
         return user.groups.filter(name='Técnico de Campo').count() == 1
     return False
 
+def get_promoter(user):
+    base = BaseUser.objects.get(user=user)
+    try:
+        promoter = Promoter.objects.get(base_user=base)
+    except Promoter.DoesNotExist:
+        return False
+    return promoter
+
 # Create your views here.
 @login_required
 def index(request):
@@ -283,6 +291,7 @@ def edit_promoter(request, pk):
 
                     if form.cleaned_data['password'] != "" and form.cleaned_data['password'] != None:
                         user.password = form.cleaned_data['password']
+                        
                     #Data from base_user
                     if form.cleaned_data['name'] != "" and form.cleaned_data['name'] != None:
                         base_user.name=form.cleaned_data['name']
@@ -307,7 +316,6 @@ def edit_promoter(request, pk):
                     base_user.save()
                     promoter.save()
 
-
                     messages.success(request, 'Datos guardados exitosamente')
                     return HttpResponseRedirect('/profiles/promoter_profile/%d/' %promoter.id)
                 else:
@@ -326,13 +334,18 @@ def edit_promoter(request, pk):
                 communities = dict(zip(list[::1], list[::1]))
                 context = {'form': form, 'promoter': promoter, 'communities':communities}
                 return render(request, 'profiles/edit_promoter.html', context)
+
         elif request.method == 'GET':
-            form = PromoterFormEdit()
-            promoter = Promoter.objects.get(pk=pk)
-            list = Community.objects.values_list('id', flat=True).filter(deleted_at__isnull=True, promoter__id=pk)
-            communities = dict(zip(list[::1], list[::1]))
-            context = {'form': form, 'promoter': promoter, 'communities':communities}
-            return render(request, 'profiles/edit_promoter.html', context)
+            promoter = get_promoter(request.user)
+            if promoter.id == pk:
+                form = PromoterFormEdit()
+                promoter = Promoter.objects.get(pk=pk)
+                list = Community.objects.values_list('id', flat=True).filter(deleted_at__isnull=True, promoter__id=pk)
+                communities = dict(zip(list[::1], list[::1]))
+                context = {'form': form, 'promoter': promoter, 'communities':communities}
+                return render(request, 'profiles/edit_promoter.html', context)
+            else:
+                return HttpResponseRedirect('/profiles/promoter_profile/'+str(pk))
         else:
             print("NOT POST OR GET")
     else:

@@ -36,7 +36,7 @@
                         <td>{{ session.assistant_count }}</td>
                         <td>
                           <a class="modal-trigger view_session" onclick="ajaxCall({{session.id}})">
-                            <i class="material-icons">pageview</i>
+                            <i class="material-icons">remove_red_eye</i>
                           </a>
                         </td>
                       </tr>
@@ -165,9 +165,19 @@
   // Initialize Floating Action Button
   $(document).ready(function(){
     $('.fixed-action-btn').floatingActionButton();
-    $('.timepicker').timepicker();
+    $('.timepicker').timepicker({
+      container: 'body',
+    });
     $('.datepicker').datepicker({
-      format:'dd-mm-yyyy'
+      format:'dd-mm-yyyy',
+      container: 'body',
+      i18n: {
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"],
+                weekdays: ["Domingo","Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                weekdaysShort: ["Dom","Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+                weekdaysAbbrev: ["D","L", "M", "M", "J", "V", "S"]
+            }
     });
 
     $.fn.dataTable.ext.classes.sPageButton = 'waves-effect waves-teal btn-flat'; // Change Pagination Button Class

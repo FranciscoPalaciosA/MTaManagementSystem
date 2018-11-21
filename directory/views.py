@@ -117,6 +117,7 @@ def delete_contact(request, pk):
 
             contact.deleted_at = timezone.now()
             contact.save()
+            return HttpResponseRedirect('/directory/')
         else:
             return HttpResponseRedirect('/directory/')
     else:

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .models import *
+from directory.models import *
 
 def create_user():
     user = User.objects.create_user('test', 'test@testuser.com', 'testpassword')
