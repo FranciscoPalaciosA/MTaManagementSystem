@@ -19,15 +19,8 @@
               <h5>Información de la institución</h5>
               <br>
               <div class="row">
-                <div class="col s4">
-                  <div class="input-field">
-                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
-                    <label for="{{form.name.id_for_label}}">Nombre de la institución:</label>
-                  </div>
-                </div>
-
-                <div class="col s4">
-                  <label for="{{form.institution_tpe.id_for_label}}">Tipo de institución:</label>
+                <div class="col s6">
+                  <label for="{{form.institution_tpe.id_for_label}}">Tipo de institución</label>
                   <select id="{{form.type_of_institution.id_for_label}}" name="{{form.type_of_institution.html_name}}" onchange="showContactFields('{{form.type_of_institution.id_for_label}}')">
                     {% for id, val in form.type_of_institution.field.choices %}
                     {{choice.value}}
@@ -35,16 +28,26 @@
                     {% endfor %}
                   </select>
                 </div>
-                <div class="col s4">
+
+                <div class="col s6">
                   <div class="input-field">
-                    <input id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate">
-                    <label for="{{form.comments.id_for_label}}">Comentarios:</label>
+                    <input required id="{{form.name.id_for_label}}" name="{{form.name.html_name}}" type="text" class="validate">
+                    <label for="{{form.name.id_for_label}}">Nombre de la institución</label>
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col s12">
+                  <div class="input-field">
+                    <input id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate">
+                    <label for="{{form.comments.id_for_label}}">Comentarios</label>
+                  </div>
+                </div>
+              </div>
+
              <div class="row">
-                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Enviar
-                  <i class="material-icons right">send</i>
+                <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">Guardar
+                  <i class="material-icons right">lock</i>
                 </button>
                 <br><br>
             </div>

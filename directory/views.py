@@ -167,7 +167,7 @@ def add_institution(request):
                                 comments = form.cleaned_data['comments'],
                                 )
             newInstitution.save()
-            return HttpResponseRedirect('/directory/')
+            return HttpResponseRedirect('/directory/institution_directory/')
 
         else:
             print("-------------------")

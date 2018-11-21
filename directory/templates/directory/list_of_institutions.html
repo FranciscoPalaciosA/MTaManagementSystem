@@ -8,242 +8,238 @@
 {% endblock nav_tabs %}
 
 {% block content %}
-    <main class="">
-      <div class="row">
-        <div class="row valign-wrapper">
-          <div class="col s8">
-            <h2>Instituciones</h2>
-          </div>
-        </div>
-        {% if institution_list.foundations %}
-        <div class="col s12">
-          <div id="foundations" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Fundaciones</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.foundations %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+<main class="">
+  <ul class="tabs">
+    <li class="tab col"><a class="active" href="#foundations" style="font-size:13px;">Fundaciones</a></li>
+    <li class="tab col"><a href="#enterprise" style="font-size:13px;">Empresas</a></li>
+    <li class="tab col"><a href="#local_gob" style="font-size:13px;">Gobierno Local</a></li>
+    <li class="tab col"><a href="#fed_gob" style="font-size:13px;">Gobierno Federal</a></li>
+    <li class="tab col"><a href="#education" style="font-size:13px;">Educativas</a></li>
+    <li class="tab col"><a href="#scientific" style="font-size:13px;">Científicas</a></li>
+    <li class="tab col"><a href="#others" style="font-size:13px;">Otras</a></li>
+  </ul>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div id="foundations">
+          {% if institution_list.foundations %}
+          <div class="col s12">
+            <div class="row">
+              <h5>Fundaciones</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.foundations %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if institution_list.enterprise %}
-        <div class="col s12">
-          <div id="enterprise" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Empresas:</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.enterprise %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+        <div id="enterprise">
+          {% if institution_list.enterprise %}
+          <div class="col s12">
+
+            <div class="row">
+              <h5>Empresas</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.enterprise %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+          {% endif %}
+        </div>
+        <div id="local_gob">
+          {% if institution_list.local_gob %}
+          <div class="col s12">
+
+            <div class="row">
+              <h5>Gobierno local</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.ext_cons %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if institution_list.local_gob %}
-        <div class="col s12">
-          <div id="local_gob" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Gobierno local:</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.ext_cons %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+        <div id="fed_gob">
+          {% if institution_list.fed_gob %}
+          <div class="col s12">
+            <div class="row">
+              <h5>Gobierno Federal</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.fed_gob %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if institution_list.fed_gob %}
-        <div class="col s12">
-          <div id="fed_gob" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Gobierno Federal:</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.fed_gob %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+        <div id="education">
+          {% if institution_list.education %}
+          <div class="col s12">
+            <div class="row">
+              <h5>Educativas</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.education %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if institution_list.education %}
-        <div class="col s12">
-          <div id="education" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Educativas:</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.education %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+        <div id="scientific">
+          {% if institution_list.scientific %}
+          <div class="col s12">
+            <div class="row">
+              <h5>Científicas</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.scientific %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if institution_list.scientific %}
-        <div class="col s12">
-          <div id="scientific" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Científicas:</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.scientific %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+        <div id="others">
+          {% if institution_list.other %}
+          <div class="col s12">
+
+            <div class="row">
+              <h5>Otras instituciones</h5>
+              <table class="striped highlight">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for institution in institution_list.other %}
+                  <tr>
+                    <td>
+                      {{institution}}
+                    </td>
+                    <td>
+                      {{institution.comments}}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if institution_list.other %}
-        <div class="col s12">
-          <div id="other" class="card z-depth-3">
-            <div class="card-content pt-0">
-              <div class="row">
-                <h5>Otros</h5>
-                <table class="striped highlight">
-                  <thead>
-                    <tr>
-                      <th>Nombre:</th>
-                      <th>Notas:</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for institution in institution_list.other %}
-                      <tr>
-                        <td>
-                          {{institution}}
-                        </td>
-                        <td>
-                          {{institution.comments}}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
       </div>
       <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red modal-trigger"  href="{% url 'directory:new_institution' %}">
+        <a class="btn-floating btn-large red modal-trigger" href="{% url 'directory:new_institution' %}">
           <i class="large material-icons">add</i>
         </a>
       </div>
-    </main>
+</main>
 {% endblock content %}
 {% block js %}
 <script type="text/javascript">
   // Initialize Floating Action Button
-  $(document).ready(function(){
+  $(document).ready(function() {
     $('.fixed-action-btn').floatingActionButton();
   });
 </script>
