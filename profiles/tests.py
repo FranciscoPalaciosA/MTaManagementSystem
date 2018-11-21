@@ -296,14 +296,6 @@ class PromoterProfileTests(TestCase):
 
 class EditPromoterProfileTest(TestCase):
     def test_promoter_edit_promoter_profile(self):
-            user = User.objects.create_user('user', 'user@testuser.com', 'testpassword')
-            base_user = BaseUser.objects.create(user=user, name="name",
-                                                last_name_paternal="last_name_paternal",
-                                                last_name_maternal="last_name_maternal",
-                                                phone_number="phone_number",
-                                                email="email@email.com",
-                                                address="address")
-            base_user.save()
             user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
             base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
                                                             last_name_paternal="last_name_paternal",
@@ -322,16 +314,147 @@ class EditPromoterProfileTest(TestCase):
             promoter.communities.set([community.id])
             promoter.save()
             create_all_groups()
-            self.client.login(username="user", password="testpassword")
-            response = self.client.post('/profiles/edit_promoter/1/', {"previous_password":"testpassword",
+            self.client.login(username="promoter", password="testpassword")
+            response = self.client.post('/profiles/edit_promoter/%d/'%promoter.id, {"previous_password":"testpassword",
                                                                                     "name": "testAccount",
                                                                                     "last_name_paternal": "editPromoter",
                                                                                     "last_name_maternal": "Success",
                                                                                     "phone_number":"55555555",
-                                                                                    "email":"email2@email.com",
+                                                                                    "email":"promoter@testuser.com",
                                                                                     "address":"address2",
                                                                                     "communities": community.id,
                                                                                     "contact_name": "Contacto",
                                                                                     "contact_phone_number":"1234567"
                                                                                  })
-            self.assertRedirects(response, '/profiles/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+            self.assertRedirects(response, '/profiles/promoter_profile/%d/' %promoter.id, status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+            user1 = User.objects.get(email="promoter@testuser.com")
+            base_user1 = BaseUser.objects.get(user=user1)
+            promoter1 = Promoter.objects.get(base_user=base_user1)
+            self.assertEqual(base_user1.name, 'testAccount')
+            self.assertEqual(base_user1.last_name_paternal, 'editPromoter')
+            self.assertEqual(base_user1.last_name_maternal, 'Success')
+
+
+    def test_field_technician_edit_promoter_profile(self):
+            user = User.objects.create_user('field_tech', 'user@testuser.com', 'testpassword')
+            base_user = BaseUser.objects.create(user=user, name="name",
+                                                last_name_paternal="last_name_paternal",
+                                                last_name_maternal="last_name_maternal",
+                                                phone_number="phone_number",
+                                                email="email@email.com",
+                                                address="address")
+            base_user.save()
+            user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+            base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                                last_name_paternal="last_name_paternal",
+                                                                last_name_maternal="last_name_maternal",
+                                                                phone_number="phone_number",
+                                                                email="email@email.com",
+                                                                address="address")
+            base_user_promoter.save()
+            community = Community.objects.create(name = 'Name',
+                                                    municipality = 'Municipality',
+                                                    state = 'State')
+            promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                                    contact_name = "Contacto",
+                                                    contact_phone_number = "1234514"
+                                                    )
+            promoter.communities.set([community.id])
+            promoter.save()
+            create_all_groups()
+            user.groups.add(Group.objects.get(name='Técnico de Campo'))
+            self.client.login(username="field_tech", password="testpassword")
+            response = self.client.post('/profiles/edit_promoter/1/', {"previous_password":"testpassword",
+                                                                                        "name": "testAccount",
+                                                                                        "last_name_paternal": "editPromoter",
+                                                                                        "last_name_maternal": "Success",
+                                                                                        "phone_number":"55555555",
+                                                                                        "email":"email2@email.com",
+                                                                                        "address":"address2",
+                                                                                        "communities": community.id,
+                                                                                        "contact_name": "Contacto",
+                                                                                        "contact_phone_number":"1234567"
+                                                                                     })
+            self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+    def test_administrative_assistant_edit_promoter_profile(self):
+            user = User.objects.create_user('administrative_assistant', 'user@testuser.com', 'testpassword')
+            base_user = BaseUser.objects.create(user=user, name="name",
+                                                last_name_paternal="last_name_paternal",
+                                                last_name_maternal="last_name_maternal",
+                                                phone_number="phone_number",
+                                                email="email@email.com",
+                                                address="address")
+            base_user.save()
+            user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+            base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                                last_name_paternal="last_name_paternal",
+                                                                last_name_maternal="last_name_maternal",
+                                                                phone_number="phone_number",
+                                                                email="email@email.com",
+                                                                address="address")
+            base_user_promoter.save()
+            community = Community.objects.create(name = 'Name',
+                                                    municipality = 'Municipality',
+                                                    state = 'State')
+            promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                                    contact_name = "Contacto",
+                                                    contact_phone_number = "1234514"
+                                                    )
+            promoter.communities.set([community.id])
+            promoter.save()
+            create_all_groups()
+            user.groups.add(Group.objects.get(name='Asistente Administrativo'))
+            self.client.login(username="administrative_assistant", password="testpassword")
+            response = self.client.post('/profiles/edit_promoter/1/', {"previous_password":"testpassword",
+                                                                                        "name": "testAccount",
+                                                                                        "last_name_paternal": "editPromoter",
+                                                                                        "last_name_maternal": "Success",
+                                                                                        "phone_number":"55555555",
+                                                                                        "email":"email2@email.com",
+                                                                                        "address":"address2",
+                                                                                        "communities": community.id,
+                                                                                        "contact_name": "Contacto",
+                                                                                        "contact_phone_number":"1234567"
+                                                                                     })
+            self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+    def test_administrative_coordinator_edit_promoter_profile(self):
+             user = User.objects.create_user('administrative_coordinator', 'user@testuser.com', 'testpassword')
+             base_user = BaseUser.objects.create(user=user, name="name",
+                                                 last_name_paternal="last_name_paternal",
+                                                 last_name_maternal="last_name_maternal",
+                                                 phone_number="phone_number",
+                                                 email="email@email.com",
+                                                 address="address")
+             base_user.save()
+             user_promoter = User.objects.create_user('promoter', 'promoter@testuser.com', 'testpassword')
+             base_user_promoter = BaseUser.objects.create(user=user_promoter, name="PromotoraTest",
+                                                                 last_name_paternal="last_name_paternal",
+                                                                 last_name_maternal="last_name_maternal",
+                                                                 phone_number="phone_number",
+                                                                 email="email@email.com",
+                                                                 address="address")
+             base_user_promoter.save()
+             community = Community.objects.create(name = 'Name',
+                                                     municipality = 'Municipality',
+                                                     state = 'State')
+             promoter = Promoter.objects.create(base_user=base_user_promoter,
+                                                     contact_name = "Contacto",
+                                                     contact_phone_number = "1234514"
+                                                     )
+             promoter.communities.set([community.id])
+             promoter.save()
+             create_all_groups()
+             user.groups.add(Group.objects.get(name='Coordinador Administrativo'))
+             self.client.login(username="administrative_coordinator", password="testpassword")
+             response = self.client.post('/profiles/edit_promoter/1/', {"previous_password":"testpassword",
+                                                                                         "name": "testAccount",
+                                                                                         "last_name_paternal": "editPromoter",
+                                                                                         "last_name_maternal": "Success",
+                                                                                         "phone_number":"55555555",
+                                                                                         "email":"email2@email.com",
+                                                                                         "address":"address2",
+                                                                                         "communities": community.id,
+                                                                                         "contact_name": "Contacto",
+                                                                                         "contact_phone_number":"1234567"
+                                                                                      })
+             self.assertRedirects(response, '/administrative/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)

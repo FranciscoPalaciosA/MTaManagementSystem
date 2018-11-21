@@ -1089,7 +1089,7 @@ def edit_training_session(request, pk):
             context = {'form': form, 'session': session, 'assistants':assistants, 'evidences':evidences,'fechaString':fechaString}
             return render(request, 'administrative/edit_training_session.html', context)
     else:
-        return HttpResponseRedirect('/administrative/training_sessions/')
+        return HttpResponseRedirect('/administrative/')
 
 
 @login_required
