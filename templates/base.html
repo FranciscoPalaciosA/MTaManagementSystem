@@ -46,14 +46,21 @@
 
             {% if request.user|has_group:"Director" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
+                <div class="collapsible-body">
+                  <ul>
+                    <li><a href="{% url 'directory:index' %}">Contactos</a></li>
+                    <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
+                  </ul>
+                </div>
+              </li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:index' %}">Cuentas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
 
             {% elif request.user|has_group:"Capacitador" %}
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
 
             {% elif request.user|has_group:"Asistente Administrativo" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
