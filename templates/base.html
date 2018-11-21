@@ -40,6 +40,10 @@
         <li><a href="{% url 'administrative:index' %}" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
+            {% if request.user|is_promoter %}
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Inicio</a></li>
+            {% endif %}
+
             {% if request.user|has_group:"Director" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>

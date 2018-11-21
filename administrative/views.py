@@ -80,7 +80,13 @@ def is_counter(user):
 @login_required
 def index(request):
     if is_promoter(request.user):
-        return render(request, 'administrative/index/promoter.html')
+        base = BaseUser.objects.get(user=request.user)
+        try:
+            promoter = Promoter.objects.get(base_user=base)
+        except Promoter.DoesNotExist:
+            return render(request, 'administrative/index/promoter.html')
+
+        return render(request, 'administrative/index/promoter.html', {'promoterId': promoter.id})
     else:
         return render(request, 'administrative/index.html')
     return
@@ -741,7 +747,16 @@ def add_payment(request):
     """
     if not is_promoter(request.user):
         if request.method == 'POST':
-            form = PaymentForm(request.POST)
+            date = request.POST['due_date']
+            date_obj = datetime.strptime(date, "%d-%m-%Y")
+            data = {
+                        'promoter': request.POST['promoter'],
+                        'due_date': date_obj,
+                        'description':request.POST['description'],
+                        'quantity':request.POST['quantity'],
+                    }
+
+            form = PaymentForm(data)
             if form.is_valid():
                 new_payment = Payment(
                                     promoter=form.cleaned_data['promoter'],
@@ -752,6 +767,11 @@ def add_payment(request):
                 new_payment.save()
             else:
                 messages.warning(request,'No se pudo registrar el pago, intente de nuevo')
+                print("-------------------")
+                print("\n\n\n\n\n")
+                print("Form is not valid")
+                print(form.errors)
+                print("\n\n\n\n\n")
             return HttpResponseRedirect('/administrative/payments/')
     return HttpResponseRedirect('/administrative/')
 
