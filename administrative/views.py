@@ -16,6 +16,7 @@ from profiles.models import HelpAlert
 from django.http import Http404
 from .models import *
 from .forms import *
+from profiles.forms import AlertForm
 from datetime import datetime, time
 from django.utils import formats
 
@@ -84,9 +85,9 @@ def index(request):
         try:
             promoter = Promoter.objects.get(base_user=base)
         except Promoter.DoesNotExist:
-            return render(request, 'administrative/index/promoter.html')
-
-        return render(request, 'administrative/index/promoter.html', {'promoterId': promoter.id})
+            return render(request, 'administrative/index/promoter.html',)
+        alert_form = AlertForm()
+        return render(request, 'administrative/index/promoter.html', {'promoterId': promoter.id, 'alert_form': alert_form})
     else:
         return render(request, 'administrative/index.html')
     return
@@ -990,6 +991,7 @@ def training_session(request):
     else:
         return HttpResponseRedirect('/administrative/')
 
+@login_required
 def edit_training_session(request, pk):
     """
     Description: Edits a training session and updates information
@@ -1092,7 +1094,6 @@ def edit_training_session(request, pk):
     else:
         return HttpResponseRedirect('/administrative/')
 
-
 @login_required
 def community_report(request):
     if is_director(request.user):
@@ -1127,7 +1128,7 @@ def get_communities_savings(request):
         for e in qset:
             municipalities.append(e['municipality'])
         for m in municipalities:
-            qset = SavingsLog.objects.filter(saving_account__municipality=m, year=curyear).values('saving_account__municipality', 'year', 'month', 'amount').order_by('month')
+            qset = SavingsLog.objects.filter(saving_account__community__municipality=m, year=curyear).values('saving_account__community__municipality', 'year', 'month', 'amount').order_by('month')
             s = []
             i = 1
             for e in qset:
