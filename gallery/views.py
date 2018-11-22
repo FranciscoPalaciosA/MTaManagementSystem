@@ -97,12 +97,19 @@ def new_photo(request):
             form = PhotoForm(request.POST, request.FILES)
             if form.is_valid():
                 # print(images)
-                photo = Photo(
-                                title=form.cleaned_data['title'],
-                                description=form.cleaned_data['description'],
-                                image=form.cleaned_data['image']
-                            )
-                photo.save()
+                ext = str(form.cleaned_data['image'])
+                ext = ext.split(".")
+                ext = ext[-1].lower()
+                if ext in ['.png', 'jpg', '.jpeg', '.gif', 'tif']:
+                    photo = Photo(
+                                    title=form.cleaned_data['title'],
+                                    description=form.cleaned_data['description'],
+                                    image=form.cleaned_data['image']
+                                )
+                    photo.save()
+                else:
+                    print('--------')
+                    print("not an image file")
             return HttpResponseRedirect('/gallery/')
     else:
         return HttpResponseRedirect('/gallery/')

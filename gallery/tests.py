@@ -114,7 +114,7 @@ class PhotoTest(TestCase):
         user.user.groups.add(Group.objects.get(name='Técnico de Campo'))
         c = self.client
         c.login(username="test", password="testpassword")
-        image = Image.open('gallery/images/mta_logo.png')
+        image = Image.open('gallery/images/nimage.docx')
         response = c.post('/gallery/new_photo/', {'title': 'title', 'image': image})
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 1)
