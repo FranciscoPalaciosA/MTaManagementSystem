@@ -77,6 +77,8 @@
               </li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
 
             {% elif request.user|has_group:"Coordinador Administrativo" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
