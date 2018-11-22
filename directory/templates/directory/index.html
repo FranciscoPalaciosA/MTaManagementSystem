@@ -27,17 +27,17 @@
           </ul>
         </div>
         <div id="administratives">
-          {% if contact_list.admin %}
           <div class="card-content pt-0">
             <div class="row">
-              <table id="administrative_table" class="striped highlight">
+              <table id="administrative_table" class="striped highlight data-table">
                 <thead>
                   <tr>
                     <th>Nombre</th>
                     <th>Teléfono</th>
                     <th>Correo</th>
                     <th>Notas</th>
-                    <th></th>
+                    <th> </th>
+                    <th> </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -82,13 +82,11 @@
               </table>
             </div>
           </div>
-          {% endif %}
         </div>
         <div id="volunteers">
-          {% if contact_list.volunteer %}
           <div class="card-content pt-0">
             <div class="row">
-              <table id="volunteer_table" class="striped highlight">
+              <table id="volunteer_table" class="striped highlight data-table">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -96,7 +94,8 @@
                     <th>Correo</th>
                     <th>Insitución</th>
                     <th>Notas</th>
-                    <th></th>
+                    <th> </th>
+                    <th> </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -144,13 +143,11 @@
               </table>
             </div>
           </div>
-          {% endif %}
         </div>
         <div id="consultors">
-          {% if contact_list.ext_cons %}
           <div class="card-content pt-0">
             <div class="row">
-              <table id="consultors_table" class="striped highlight">
+              <table id="consultors_table" class="striped highlight data-table">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -158,7 +155,8 @@
                     <th>Correo</th>
                     <th>Insitución</th>
                     <th>Notas</th>
-                    <th></th>
+                    <th> </th>
+                    <th> </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -206,14 +204,11 @@
               </table>
             </div>
           </div>
-          {% endif %}
         </div>
         <div id="simpatizantes">
-          {% if contact_list.simp %}
           <div class="card-content pt-0">
             <div class="row">
-              <h5>Simpatizantes</h5>
-              <table id="simpatizantes_table" class="striped highlight">
+              <table id="simpatizantes_table" class="striped highlight data-table">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -221,7 +216,8 @@
                     <th>Correo</th>
                     <th>Insitución</th>
                     <th>Notas</th>
-                    <th></th>
+                    <th> </th>
+                    <th> </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -269,13 +265,11 @@
               </table>
             </div>
           </div>
-          {% endif %}
         </div>
         <div id="others">
-          {% if contact_list.other %}
           <div class="card-content pt-0">
             <div class="row">
-              <table id="others_table" class="striped highlight">
+              <table id="others_table" class="striped highlight data-table">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -283,7 +277,8 @@
                     <th>Correo</th>
                     <th>Insitución</th>
                     <th>Notas</th>
-                    <th></th>
+                    <th> </th>
+                    <th> </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -331,7 +326,6 @@
               </table>
             </div>
           </div>
-          {% endif %}
         </div>
       </div>
     </div>
@@ -348,8 +342,8 @@
   // Initialize Floating Action Button
   $(document).ready(function() {
     $('.fixed-action-btn').floatingActionButton();
-
-    $('#volunteer_table').DataTable({
+    $('.tabs').tabs();
+    $('table.data-table').DataTable({
       "language": {
         "decimal": "",
         "emptyTable": "No hay datos disponibles",
@@ -375,110 +369,111 @@
         }
       }
     });
-    $('#administrative_table').DataTable({
-      "language": {
-        "decimal": "",
-        "emptyTable": "No hay datos disponibles",
-        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
-        "infoEmpty": "Mostrando 0 a 0 de 0",
-        "infoFiltered": "",
-        "infoPostFix": "",
-        "thousands": ",",
-        "lengthMenu": "",
-        "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
-        "search": "Buscar:",
-        "zeroRecords": "No se encontraron registros",
-        "paginate": {
-          "first": "Primero",
-          "last": "Último",
-          "next": "Siguiente",
-          "previous": "Anterior"
-        },
-        "aria": {
-          "sortAscending": ": activate to sort column ascending",
-          "sortDescending": ": activate to sort column descending"
-        }
-      }
-    });
-    $('#simpatizantes_table').DataTable({
-      "language": {
-        "decimal": "",
-        "emptyTable": "No hay datos disponibles",
-        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
-        "infoEmpty": "Mostrando 0 a 0 de 0",
-        "infoFiltered": "",
-        "infoPostFix": "",
-        "thousands": ",",
-        "lengthMenu": "",
-        "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
-        "search": "Buscar:",
-        "zeroRecords": "No se encontraron registros",
-        "paginate": {
-          "first": "Primero",
-          "last": "Último",
-          "next": "Siguiente",
-          "previous": "Anterior"
-        },
-        "aria": {
-          "sortAscending": ": activate to sort column ascending",
-          "sortDescending": ": activate to sort column descending"
-        }
-      }
-    });
-    $('#consultors_table').DataTable({
-      "language": {
-        "decimal": "",
-        "emptyTable": "No hay datos disponibles",
-        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
-        "infoEmpty": "Mostrando 0 a 0 de 0",
-        "infoFiltered": "",
-        "infoPostFix": "",
-        "thousands": ",",
-        "lengthMenu": "",
-        "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
-        "search": "Buscar:",
-        "zeroRecords": "No se encontraron registros",
-        "paginate": {
-          "first": "Primero",
-          "last": "Último",
-          "next": "Siguiente",
-          "previous": "Anterior"
-        },
-        "aria": {
-          "sortAscending": ": activate to sort column ascending",
-          "sortDescending": ": activate to sort column descending"
-        }
-      }
-    });
-    $('#others_table').DataTable({
-      "language": {
-        "decimal": "",
-        "emptyTable": "No hay datos disponibles",
-        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
-        "infoEmpty": "Mostrando 0 a 0 de 0",
-        "infoFiltered": "",
-        "infoPostFix": "",
-        "thousands": ",",
-        "lengthMenu": "",
-        "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
-        "search": "Buscar:",
-        "zeroRecords": "No se encontraron registros",
-        "paginate": {
-          "first": "Primero",
-          "last": "Último",
-          "next": "Siguiente",
-          "previous": "Anterior"
-        },
-        "aria": {
-          "sortAscending": ": activate to sort column ascending",
-          "sortDescending": ": activate to sort column descending"
-        }
-      }
-    });
+    // $('#volunteer_table').DataTable({
+    //   "language": {
+    //     "decimal": "",
+    //     "emptyTable": "No hay datos disponibles",
+    //     "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+    //     "infoEmpty": "Mostrando 0 a 0 de 0",
+    //     "infoFiltered": "",
+    //     "infoPostFix": "",
+    //     "thousands": ",",
+    //     "lengthMenu": "",
+    //     "loadingRecords": "Cargando...",
+    //     "processing": "Procesando...",
+    //     "search": "Buscar:",
+    //     "zeroRecords": "No se encontraron registros",
+    //     "paginate": {
+    //       "first": "Primero",
+    //       "last": "Último",
+    //       "next": "Siguiente",
+    //       "previous": "Anterior"
+    //     },
+    //     "aria": {
+    //       "sortAscending": ": activate to sort column ascending",
+    //       "sortDescending": ": activate to sort column descending"
+    //     }
+    //   }
+    // });
+    // $('#administrative_table').DataTable({
+    //   "language": {
+    //     "decimal": "",
+    //     "emptyTable": "No hay datos disponibles",
+    //     "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+    //     "infoEmpty": "Mostrando 0 a 0 de 0",
+    //     "infoFiltered": "",
+    //     "infoPostFix": "",
+    //     "thousands": ",",
+    //     "lengthMenu": "",
+    //     "loadingRecords": "Cargando...",
+    //     "processing": "Procesando...",
+    //     "search": "Buscar:",
+    //     "zeroRecords": "No se encontraron registros",
+    //     "paginate": {
+    //       "first": "Primero",
+    //       "last": "Último",
+    //       "next": "Siguiente",
+    //       "previous": "Anterior"
+    //     },
+    //     "aria": {
+    //       "sortAscending": ": activate to sort column ascending",
+    //       "sortDescending": ": activate to sort column descending"
+    //     }
+    //   }
+    // });
+    // $('#simpatizantes_table').DataTable({
+    //   "language": {
+    //     "decimal": "",
+    //     "emptyTable": "No hay datos disponibles",
+    //     "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+    //     "infoEmpty": "Mostrando 0 a 0 de 0",
+    //     "infoFiltered": "",
+    //     "infoPostFix": "",
+    //     "thousands": ",",
+    //     "lengthMenu": "",
+    //     "loadingRecords": "Cargando...",
+    //     "processing": "Procesando...",
+    //     "search": "Buscar:",
+    //     "zeroRecords": "No se encontraron registros",
+    //     "paginate": {
+    //       "first": "Primero",
+    //       "last": "Último",
+    //       "next": "Siguiente",
+    //       "previous": "Anterior"
+    //     },
+    //     "aria": {
+    //       "sortAscending": ": activate to sort column ascending",
+    //       "sortDescending": ": activate to sort column descending"
+    //     }
+    //   }
+    // });
+    //
+    // $('#others_table').DataTable({
+    //   "language": {
+    //     "decimal": "",
+    //     "emptyTable": "No hay datos disponibles",
+    //     "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+    //     "infoEmpty": "Mostrando 0 a 0 de 0",
+    //     "infoFiltered": "",
+    //     "infoPostFix": "",
+    //     "thousands": ",",
+    //     "lengthMenu": "",
+    //     "loadingRecords": "Cargando...",
+    //     "processing": "Procesando...",
+    //     "search": "Buscar:",
+    //     "zeroRecords": "No se encontraron registros",
+    //     "paginate": {
+    //       "first": "Primero",
+    //       "last": "Último",
+    //       "next": "Siguiente",
+    //       "previous": "Anterior"
+    //     },
+    //     "aria": {
+    //       "sortAscending": ": activate to sort column ascending",
+    //       "sortDescending": ": activate to sort column descending"
+    //     }
+    //   }
+    // });
   });
 
   function showButtons(id){

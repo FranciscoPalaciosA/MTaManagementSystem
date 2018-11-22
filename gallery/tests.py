@@ -3,6 +3,7 @@ from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import User, Group
 from django.utils.six import BytesIO
+# from io import BytesIO
 from PIL import Image
 import os
 from django.core.files import File
@@ -72,20 +73,6 @@ def create_beneficiary():
     beneficiary.save()
     return beneficiary
 
-def create_image(storage, filename, size=(100, 100), image_mode='RGB', image_format='png'):
-    """
-    Generate a test image, returning the filename that it was saved as.
-
-    If ``storage`` is ``None``, the BytesIO containing the image data
-    will be passed instead.
-    """
-    data = BytesIO()
-    Image.new(image_mode, size).save(data, image_format)
-    data.seek(0)
-    if not storage:
-        return data
-    image_file = ContentFile(data.read())
-    return storage.save(filename, image_file)
 
 # Create your tests here.
 class PhotoTest(TestCase):
@@ -99,7 +86,7 @@ class PhotoTest(TestCase):
         user.user.groups.add(Group.objects.get(name='Director'))
         c = self.client
         c.login(username="test", password="testpassword")
-        image = Image.open('gallery/images/mta_logo.png')
+        image = open('gallery/images/mta_logo.png', 'rb')
         response = c.post('/gallery/new_photo/', {'title': 'title', 'image': image})
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 0)
@@ -114,8 +101,9 @@ class PhotoTest(TestCase):
         user.user.groups.add(Group.objects.get(name='Técnico de Campo'))
         c = self.client
         c.login(username="test", password="testpassword")
-        image = Image.open('gallery/images/nimage.docx')
-        response = c.post('/gallery/new_photo/', {'title': 'title', 'image': image})
+        img = open('gallery/images/mta_logo.png', 'rb')
+        # image = open('gallery/images/nimage.docx', 'rb')
+        response = c.post('/gallery/new_photo/', {'title': 'title', 'image': img})
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 1)
         self.assertEqual(response.status_code, 302)
@@ -129,7 +117,8 @@ class PhotoTest(TestCase):
         user.user.groups.add(Group.objects.get(name='Asistente Administrativo'))
         c = self.client
         c.login(username="test", password="testpassword")
-        image = Image.open('gallery/images/mta_logo.png')
+        image = open('gallery/images/mta_logo.png', 'rb')
+        # image = open('gallery/images/nimage.docx', 'rb')
         response = c.post('/gallery/new_photo/', {'title': 'title', 'image': image})
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 1)
@@ -144,7 +133,8 @@ class PhotoTest(TestCase):
         user.user.groups.add(Group.objects.get(name='Coordinador Administrativo'))
         c = self.client
         c.login(username="test", password="testpassword")
-        image = Image.open('gallery/images/mta_logo.png')
+        # image = open('gallery/images/mta_logo.png', 'rb')
+        image = open('gallery/images/nimage.docx', 'rb')
         response = c.post('/gallery/new_photo/', {'title': 'title', 'image': image})
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 1)
@@ -154,12 +144,15 @@ class PhotoTest(TestCase):
         """
         Adding a new photo to the gallery
         """
-        promoter = create_promoter()
+        # promoter = create_promoter()
+        # create_groups()
+        user = create_user()
         create_groups()
-        promoter.base_user.user.groups.add(Group.objects.get(name='Promoter'))
+        user.user.groups.add(Group.objects.get(name='Coordinador Administrativo'))
+        # promoter.base_user.user.groups.add(Group.objects.get(name='Promoter'))
         c = self.client
         c.login(username="test", password="testpassword")
-        image = Image.open('gallery/images/mta_logo.png')
+        image = open('gallery/images/mta_logo.png', 'rb')
         response = c.post('/gallery/new_photo/', {'title': 'title', 'image': image})
         photos = Photo.objects.all()
         self.assertEqual(len(photos), 0)
@@ -183,7 +176,7 @@ class PhotoTest(TestCase):
         photo.save()
         # Assert the template contains the photo
         response = self.client.get('/gallery/')
-        self.assertContains(response, '<img src="' + photo.image.url + '"')
+        self.assertContains(response, photo.image.url)
 
     def test_view_gallery_as_fieldtech(self):
         """
@@ -202,7 +195,7 @@ class PhotoTest(TestCase):
         photo.save()
         # Assert the template contains the photo
         response = self.client.get('/gallery/')
-        self.assertContains(response, '<img src="' + photo.image.url + '"')
+        self.assertContains(response,photo.image.url)
 
     def test_view_gallery_as_administrative_assistant(self):
         """
@@ -221,7 +214,7 @@ class PhotoTest(TestCase):
         photo.save()
         # Assert the template contains the photo
         response = self.client.get('/gallery/')
-        self.assertContains(response, '<img src="' + photo.image.url + '"')
+        self.assertContains(response, photo.image.url)
 
     def test_view_gallery_as_administrative_coordinator(self):
         """
@@ -240,7 +233,7 @@ class PhotoTest(TestCase):
         photo.save()
         # Assert the template contains the photo
         response = self.client.get('/gallery/')
-        self.assertContains(response, '<img src="' + photo.image.url + '"')
+        self.assertContains(response, photo.image.url)
 
     def test_view_gallery_as_promoter(self):
         """
