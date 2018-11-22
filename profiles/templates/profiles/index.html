@@ -38,8 +38,8 @@
                       </td>
                       <td>
                         <div style="width:24px; height:24px;">
-                          <a hidden id="button{{account.id}}" href="{% url 'profiles:delete_account' account.id %}">
-                            <i class="material-icons" style="color:pink;">delete</i>
+                          <a hidden id="button{{account.id}}" onclick="confirmDelete({{account.id}})">
+                            <i class="material-icons" style="color:pink; cursor:pointer">delete</i>
                           </a>
                         </div>
                       </td>
@@ -97,5 +97,11 @@
     });
   });
 
+  function confirmDelete(id){
+    if (confirm('¿Seguro que deseas eliminar esta cuenta?')) {
+      console.log("Sí");
+      window.location.href = `delete_account/${id}`;
+    }
+  }
 </script>
 {% endblock js %}

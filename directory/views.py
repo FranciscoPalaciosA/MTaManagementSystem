@@ -159,27 +159,31 @@ def edit_contact(request,pk):
 @login_required
 def add_institution(request):
     if request.method == 'POST':
-        form = InstitutionForm(request.POST)
-        if form.is_valid():
-            newInstitution = Institution(
-                                name = form.cleaned_data['name'],
-                                type_of_institution = form.cleaned_data['type_of_institution'],
-                                comments = form.cleaned_data['comments'],
-                                )
-            newInstitution.save()
-            return HttpResponseRedirect('/directory/')
-
+        if(is_administrative_assistant(request.user) or is_administrative_coordinator(request.user) or is_director(request.user)):
+            form = InstitutionForm(request.POST)
+            if form.is_valid():
+                newInstitution = Institution(
+                                    name = form.cleaned_data['name'],
+                                    type_of_institution = form.cleaned_data['type_of_institution'],
+                                    comments = form.cleaned_data['comments'],
+                                    )
+                newInstitution.save()
+                return HttpResponseRedirect('/directory/institution_directory/')
+            else:
+                print("-------------------")
+                print("\n\n\n\n\n")
+                print("Form is not valid")
+                print(form.errors)
+                print("\n\n\n\n\n")
         else:
-            print("-------------------")
-            print("\n\n\n\n\n")
-            print("Form is not valid")
-            print(form.errors)
-            print("\n\n\n\n\n")
-
+            return HttpResponseRedirect('/directory/institution_directory/')
     elif request.method == 'GET':
-        form = InstitutionForm()
-        context = {'form': form}
-        return render(request, 'directory/new_institution.html', context)
+        if not is_promoter(request.user):
+            form = InstitutionForm()
+            context = {'form': form}
+            return render(request, 'directory/new_institution.html', context)
+        else:
+            return HttpResponseRedirect('/administrative/')
 
 @login_required
 def institution_directory(request):

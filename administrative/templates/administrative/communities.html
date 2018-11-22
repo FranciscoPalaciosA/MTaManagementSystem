@@ -13,6 +13,40 @@
       <i class="large material-icons">add</i>
     </a>
   </div>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12">
+            <table id="communities" class="striped highlight">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Estado</th>
+                  <th>Municipio</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for community in communities %}
+                <tr>
+                  <td>
+                    {{community.name}}
+                  </td>
+                  <td>
+                    {{community.municipality}}
+                  </td>
+                  <td>
+                    {{community.state}}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Modal Structure -->
   <div id="newCommunity" class="modal">
     <div class="modal-content">
@@ -39,9 +73,7 @@
       </form>
     </div>
   </div>
-  <!-- <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div> -->
+
 </main>
 {% endblock content %}
 {% block init_scripts %}
@@ -52,6 +84,32 @@
   // Initialize Floating Action Button
   $(document).ready(function() {
     $('.fixed-action-btn').floatingActionButton();
+    $('#communities').DataTable({
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay datos disponibles",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ totales",
+        "infoEmpty": "Mostrando 0 a 0 de 0",
+        "infoFiltered": "",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+          "first": "Primero",
+          "last": "Último",
+          "next": "Siguiente",
+          "previous": "Anterior"
+        },
+        "aria": {
+          "sortAscending": ": activate to sort column ascending",
+          "sortDescending": ": activate to sort column descending"
+        }
+      }
+    });
   });
 </script>
 {% endblock js %}

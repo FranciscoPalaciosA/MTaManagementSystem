@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Perfiles{% endblock %}
 
-{% block nav_title %}Perfiles{% endblock %}
+{% block nav_title %}Cuentas{% endblock %}
 {% block nav_tabs %}
 {% endblock nav_tabs %}
 
@@ -72,7 +72,7 @@
               <input name="{{form.created_at.html_name}}" type="hidden" value="{{base_user.created_at}}">
               <input name="{{form.created_at.html_name}}" type="hidden" value="{{base_user.updated_at}}">
               <button class="btn waves-effect waves-light right" type="submit"value="Submit" name="action">
-                <i class="material-icons">send</i>
+                <i class="material-icons">lock</i>
               </button>
               <br><br>
             </form>
