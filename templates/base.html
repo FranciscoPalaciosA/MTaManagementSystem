@@ -83,7 +83,8 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Sesiones de entrenamiento</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de ahorro</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
               <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
                 <div class="collapsible-body">
                   <ul>
@@ -92,8 +93,10 @@
                   </ul>
                 </div>
               </li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
             {% endif %}
             {% if request.user|has_group:"Técnico de Campo" %}
             <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report_list' %}">Reportes de producción</a></li>

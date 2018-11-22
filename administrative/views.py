@@ -546,7 +546,7 @@ def weekly_sessions(request):
                                                         )
                     newEvidence.save()
 
-                return HttpResponseRedirect('/administrative/weekly_sessions/')
+            return HttpResponseRedirect('/administrative/weekly_sessions/')
         else:
             base_user = BaseUser.objects.get(user = request.user.id)
             promoter = Promoter.objects.get(base_user = base_user.id)
@@ -1096,7 +1096,7 @@ def edit_training_session(request, pk):
 
 @login_required
 def community_report(request):
-    if is_director(request.user):
+    if is_director(request.user) or is_administrative_coordinator(request.user):
         data = []
         municipalities = Community.objects.values('municipality').annotate(
                                                                             communities=Count('municipality'),
@@ -1120,7 +1120,7 @@ def community_report(request):
 
 @login_required
 def get_communities_savings(request):
-    if is_director(request.user):
+    if is_director(request.user) or is_administrative_coordinator(request.user):
         savings_data = []
         municipalities = []
         curyear = timezone.now().year
@@ -1148,7 +1148,7 @@ def get_communities_savings(request):
 
 @login_required
 def get_communities_beneficiaries(request):
-    if is_director(request.user):
+    if is_director(request.user) or is_administrative_coordinator(request.user):
         data = []
         municipalities = Community.objects.values('municipality').annotate(
                                                                             communities=Count('municipality'),
@@ -1173,7 +1173,7 @@ def get_communities_beneficiaries(request):
 
 @login_required
 def get_program_beneficiaries(request):
-    if is_director(request.user):
+    if is_director(request.user) or is_administrative_coordinator(request.user):
         data = []
         names = []
         qset = BeneficiaryInProgram.objects.values('program').annotate(beneficiaries=Count('beneficiary'))

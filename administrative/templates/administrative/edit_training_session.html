@@ -87,13 +87,12 @@
                   </div>
                 </div>
                 <div class="row">
-                  {% load static %}
                   {% for evidence in evidences %}
                   {% with name=evidence.image_url %}
                     <div class="card col s12 m4 l4" id="image_div{{evidence.id}}">
                       <input type="hidden" name="image_keep" value="{{evidence.id}}">
                       <!--<a class="btn-floating btn-small waves-effect waves-light red right"><i class="material-icons">add</i></a>-->
-                      <img class="" height="200px" width="100%" src="/{{ name }}">
+                      <img class="" height="200px" width="100%" src="{{ evidence.evidence.url }}">
                       <a class="waves-effect waves-teal btn-flat right" onclick="delete_image({{evidence.id}})">Eliminar</a>
                     </div>
                     <input type="hidden" name="image_total" value="{{evidence.id}}">
