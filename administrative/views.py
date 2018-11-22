@@ -80,7 +80,12 @@ def is_counter(user):
 @login_required
 def index(request):
     if is_promoter(request.user):
-        return render(request, 'administrative/index/promoter.html')
+        current_user = request.user
+        print(current_user.id)
+        base_user = BaseUser.objects.get(user=current_user)
+        promoter = Promoter.objects.get(base_user=base_user)
+
+        return render(request, 'administrative/index/promoter.html',{'promoter': promoter})
     else:
         return render(request, 'administrative/index.html')
     return
