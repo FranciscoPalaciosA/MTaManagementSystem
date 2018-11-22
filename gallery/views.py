@@ -100,7 +100,7 @@ def new_photo(request):
                 ext = str(form.cleaned_data['image'])
                 ext = ext.split(".")
                 ext = ext[-1].lower()
-                if ext in ['.png', 'jpg', '.jpeg', '.gif', 'tif']:
+                if ext in ['png', 'jpg', 'jpeg', 'gif', 'tif']:
                     photo = Photo(
                                     title=form.cleaned_data['title'],
                                     description=form.cleaned_data['description'],

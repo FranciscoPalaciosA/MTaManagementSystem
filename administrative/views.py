@@ -89,7 +89,7 @@ def index(request):
         alert_form = AlertForm()
         return render(request, 'administrative/index/promoter.html', {'promoterId': promoter.id, 'alert_form': alert_form})
     else:
-        return render(request, 'administrative/index.html')
+        return HttpResponseRedirect('/gallery/')
     return
 
 
@@ -833,7 +833,7 @@ def resolve_alert(request, pk):
         alert.resolved_at=timezone.now()
         alert.updated_at=timezone.now()
         alert.save()
-    return HttpResponseRedirect('/administrative/')
+    return HttpResponseRedirect('/administrative/alerts')
 
 @login_required
 def saving_accounts(request):
