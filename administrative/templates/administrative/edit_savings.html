@@ -44,17 +44,18 @@
                   </div>
                 </div>
                 <div class="col s4">
-                  <select required id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" class="validate">
-                    <option value="" disabled selected> Seleccione una comunidad </option>
-                    {% for choice in form.community.field.queryset %}
-                    {% if choice == account.community %}
-                    <option value="{{choice.id}}" selected>{{choice}}</option>
-                    {% else %}
-                    <option value="{{choice.id}}">{{choice}}</option>
-                    {% endif %}
-                    {% endfor %}
-                  </select>
-                  <label for="{{form.community.id_for_label}}">Comunidad</label>
+                  <div class="input-field">
+                    <select id="{{form.community.id_for_label}}" name="{{form.community.html_name}}" required>
+                      {% for choice in form.community.field.queryset %}
+                        {% if choice.id == acount.community.id %}
+                          <option value="{{choice.id}}" selected>{{choice}}</option>
+                        {% else %}
+                          <option value="{{choice.id}}">{{choice}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                    <label for="{{form.community_name.id_for_label}}">Comunidad</label>
+                  </div>
                 </div>
                 <div class="col s4">
                   <div class="input-field">

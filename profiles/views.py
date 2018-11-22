@@ -125,6 +125,9 @@ def users(request):
 def add_alert(request):
     if is_promoter(request.user):
         if request.method == 'POST':
+            print('-------------------------')
+            print(request.POST)
+            print('-------------------------')
             form = AlertForm(request.POST)
             if form.is_valid():
                 base_user = BaseUser.objects.get(user = request.user.id)
@@ -136,6 +139,8 @@ def add_alert(request):
                                     )
                 newAlert.save()
                 print(newAlert.id)
+            else:
+                print(form.errors)
             return HttpResponseRedirect('/profiles/')
     else:
         return HttpResponseRedirect('/profiles/')
@@ -321,7 +326,7 @@ def edit_promoter(request, pk):
                     promoter.save()
 
                     messages.success(request, 'Datos guardados exitosamente')
-                    return HttpResponseRedirect('/profiles/')
+                    return HttpResponseRedirect('/profiles/promoter_profile/%d/' %promoter.id)
                 else:
                     form = PromoterFormEdit()
                     context = {'form': form, 'promoter': promoter}
@@ -353,4 +358,4 @@ def edit_promoter(request, pk):
         else:
             print("NOT POST OR GET")
     else:
-        return HttpResponseRedirect('/logout/')
+        return HttpResponseRedirect('/administrative/')
