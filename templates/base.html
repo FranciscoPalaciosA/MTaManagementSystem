@@ -67,7 +67,14 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
+                <div class="collapsible-body">
+                  <ul>
+                    <li><a href="{% url 'directory:index' %}">Contactos</a></li>
+                    <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
+                  </ul>
+                </div>
+              </li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
 
@@ -77,7 +84,14 @@
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Sesiones de entrenamiento</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Cajas de ahorro</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'directory:index' %}">Directorio</a></li>
+              <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
+                <div class="collapsible-body">
+                  <ul>
+                    <li><a href="{% url 'directory:index' %}">Contactos</a></li>
+                    <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
+                  </ul>
+                </div>
+              </li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
             {% endif %}

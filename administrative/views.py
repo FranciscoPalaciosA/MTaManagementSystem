@@ -447,7 +447,8 @@ def communities(request):
                 return HttpResponseRedirect('/administrative/communities/')
         elif request.method == 'GET':
             community_form = CommunityForm()
-            context = {'community_form': community_form}
+            communities = Community.objects.all()
+            context = {'community_form': community_form, 'communities': communities}
             return render(request, 'administrative/communities.html', context)
     else:
         return HttpResponseRedirect('/administrative/')

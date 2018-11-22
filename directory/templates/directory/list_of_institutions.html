@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Directorio de Instituciones{% endblock %}
+{% load administrative_extras %}
 
+{% block title %}Directorio de Instituciones{% endblock %}
 {% block nav_title %}Directorio de Instituciones{% endblock %}
 {% block nav_tabs %}
-
 {% endblock nav_tabs %}
-
 {% block content %}
 <main class="">
   <ul class="tabs">
@@ -229,11 +228,13 @@
           {% endif %}
         </div>
       </div>
-      <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red modal-trigger" href="{% url 'directory:new_institution' %}">
-          <i class="large material-icons">add</i>
-        </a>
-      </div>
+      {% if request.user|has_group:"Director" or request.user|has_group:"Asistente Administrativo" or request.user|has_group:"Coordinador Administrativo"  %}
+        <div class="fixed-action-btn">
+          <a class="btn-floating btn-large red modal-trigger" href="{% url 'directory:new_institution' %}">
+            <i class="large material-icons">add</i>
+          </a>
+        </div>
+      {% endif %}
 </main>
 {% endblock content %}
 {% block js %}
