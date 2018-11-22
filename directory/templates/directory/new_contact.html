@@ -29,19 +29,19 @@
                 <div class="col s4">
                   <div class="input-field">
                     <input required id="{{form.first_name.id_for_label}}" name="{{form.first_name.html_name}}" type="text" class="validate">
-                    <label for="{{form.first_name.id_for_label}}">Nombre:</label>
+                    <label for="{{form.first_name.id_for_label}}">Nombre</label>
                   </div>
                 </div>
                 <div class="col s4">
                   <div class="input-field">
                     <input required id="{{form.last_name_paternal.id_for_label}}" name="{{form.last_name_paternal.html_name}}" type="text" class="validate">
-                    <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno:</label>
+                    <label for="{{form.last_name_paternal.id_for_label}}">Apellido paterno</label>
                   </div>
                 </div>
                 <div class="col s4">
                   <div class="input-field">
                     <input required id="{{form.last_name_maternal.id_for_label}}" name="{{form.last_name_maternal.html_name}}" type="text" class="validate">
-                    <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno:</label>
+                    <label for="{{form.last_name_maternal.id_for_label}}">Apellido materno</label>
                   </div>
                 </div>
               </div>
@@ -49,18 +49,18 @@
                 <div class="col s6">
                   <div class="input-field">
                     <input required id="{{form.phone_number.id_for_label}}" name="{{form.phone_number.html_name}}" type="number" class="validate">
-                    <label for="{{form.phone_number.id_for_label}}">Teléfono:</label>
+                    <label for="{{form.phone_number.id_for_label}}">Teléfono</label>
                   </div>
                 </div>
                 <div class="col s6">
                   <div class="input-field">
                     <input required id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" type="text" class="validate">
-                    <label for="{{form.email.id_for_label}}">Correo electrónico:</label>
+                    <label for="{{form.email.id_for_label}}">Correo electrónico</label>
                   </div>
                 </div>
                 <br>
                 <div class="col s6">
-                  <label for="{{form.comments.id_for_label}}">Tipo de contacto:</label>
+                  <label for="{{form.comments.id_for_label}}">Tipo de contacto</label>
                   <select id="{{form.contact_type.id_for_label}}" name="{{form.contact_type.html_name}}" onchange="showContactFields('{{form.contact_type.id_for_label}}')">
                     {% for id, val in form.contact_type.field.choices %}
                     {{choice.value}}
@@ -71,7 +71,7 @@
                     <div id="fields_for_volunteers" hidden>
                       <div class="input-field">
                         <input id="{{form.institution.id_for_label}}" name="{{form.institution.html_name}}" type="text" class="validate">
-                        <label for="{{form.institution.id_for_label}}">Nombre de la Institución:</label>
+                        <label for="{{form.institution.id_for_label}}">Nombre de la Institución</label>
                       </div>
                     </div>
                   </div>
@@ -80,7 +80,7 @@
                 <div class="col s6">
                   <div class="input-field">
                     <input id="{{form.comments.id_for_label}}" name="{{form.comments.html_name}}" type="text" class="validate">
-                    <label for="{{form.comments.id_for_label}}">Comentarios:</label>
+                    <label for="{{form.comments.id_for_label}}">Comentarios</label>
                   </div>
                 </div>
               </div>

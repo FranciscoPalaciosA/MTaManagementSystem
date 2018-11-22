@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}MTA - Beneficiarios{% endblock %}
-{% block nav_title %} Beneficiarios{% endblock %}
+{% block title %}MTA - Cajas de ahorro{% endblock %}
+{% block nav_title %} Cajas de ahorro{% endblock %}
 {% block nav_tabs %}
 {% endblock nav_tabs %}
 {% block content %}
-<main>s
+<main>
   <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:new_beneficiary' %}">
+    <a class="btn-floating btn-large red modal-trigger" href="{% url 'administrative:new_saving_account' %}">
       <i class="large material-icons">add</i>
     </a>
   </div>
@@ -24,7 +24,6 @@
                   <th>Comunidad</th>
                   <th>Presidente</th>
                   <th>Tesorero</th>
-                  <th>Socio</th>
                   <th>Monto</th>
                   <th>Editar</th>
                 </tr>
@@ -46,9 +45,6 @@
                   </td>
                   <td>
                     {{account.treasurer_beneficiary}}
-                  </td>
-                  <td>
-                    {{account.partner_beneficiary}}
                   </td>
                   <td>
                     {{account.total_saved_amount}}
