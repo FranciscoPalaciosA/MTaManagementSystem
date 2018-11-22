@@ -107,7 +107,6 @@ class SavingAccount(models.Model):
     total_saved_amount = models.IntegerField(default=0)
     president_beneficiary = models.ForeignKey(Beneficiary,related_name='president', on_delete=models.CASCADE)
     treasurer_beneficiary = models.ForeignKey(Beneficiary, related_name='treasurer',on_delete=models.CASCADE)
-    partner_beneficiary = models.ForeignKey(Beneficiary, related_name='partner',on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     deleted_at = models.DateTimeField(blank=True, null=True)

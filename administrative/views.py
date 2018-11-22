@@ -881,7 +881,6 @@ def edit_savings(request, pk=0):
                 account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])
                 account.president_beneficiary = form.cleaned_data['president_beneficiary']
                 account.treasurer_beneficiary = form.cleaned_data['treasurer_beneficiary']
-                account.partner_beneficiary = form.cleaned_data['partner_beneficiary']
                 account.updated_at = timezone.now()
                 account.save()
                 #SavingsLog object
@@ -911,9 +910,6 @@ def add_saving_account(request):
         if request.method == 'POST':
             form = SavingAccountForm(request.POST)
             if form.is_valid():
-                print("-----------------------------")
-                print("form is valid")
-                print("-----------------------------")
                 saving_account = SavingAccount(
                                         name=form.cleaned_data['name'],
                                         community=form.cleaned_data['community'][0],
@@ -922,7 +918,6 @@ def add_saving_account(request):
                                         total_saved_amount=form.cleaned_data['total_saved_amount'],
                                         president_beneficiary=form.cleaned_data['president_beneficiary'],
                                         treasurer_beneficiary=form.cleaned_data['treasurer_beneficiary'],
-                                        partner_beneficiary=form.cleaned_data['partner_beneficiary']
                                     )
                 saving_account.save()
                 saving_account.list_of_beneficiaries.set(form.cleaned_data['list_of_beneficiaries'])

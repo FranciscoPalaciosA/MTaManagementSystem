@@ -129,7 +129,6 @@ class SavingAccountForm(forms.Form):
     total_saved_amount = forms.IntegerField()
     president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
     treasurer_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
-    partner_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
 
 class UpdateSavingsForm(forms.Form):
     """
@@ -137,13 +136,12 @@ class UpdateSavingsForm(forms.Form):
     """
     pk = forms.IntegerField()
     name = forms.CharField(max_length=50)
-    community = forms.ModelChoiceField(queryset=Community.objects)
+    community = forms.ModelChoiceField(queryset = Community.objects.all())
     municipality = forms.CharField(max_length=50)
     location = forms.CharField(max_length=50)
     list_of_beneficiaries = forms.ModelMultipleChoiceField(queryset = Beneficiary.objects.all())
     president_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
     treasurer_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
-    partner_beneficiary = forms.ModelChoiceField(queryset = Beneficiary.objects.all())
     amount = forms.DecimalField(max_digits=12)
 
 #For to check a payment as "paid" and add a comment

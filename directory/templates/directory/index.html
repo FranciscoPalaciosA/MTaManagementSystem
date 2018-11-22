@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load administrative_extras %}
 {% block title %}Directorio{% endblock %}
 
 {% block nav_title %}Directorio{% endblock %}
@@ -41,7 +42,7 @@
                 </thead>
                 <tbody>
                   {% for contact in contact_list.admin %}
-                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                  <tr onmouseover="showButtons({{contact.id}})" onmouseout="hideButtons({{contact.id}})">
                     <td>
                       {{contact}}
                     </td>
@@ -53,6 +54,13 @@
                     </td>
                     <td>
                       {{contact.comments}}
+                    </td>
+                    <td>
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="buttonEdit{{contact.id}}" href="{% url 'directory:edit_contact' contact.id %}">
+                          <i class="material-icons" style="color:#7987ac;">create</i>
+                        </a>
+                      </div>
                     </td>
                     <td>
                       {% if director %}
@@ -67,7 +75,6 @@
                         </a>
                       </div>
                       {% endif %}
-
                     </td>
                   </tr>
                   {% endfor %}
@@ -94,7 +101,7 @@
                 </thead>
                 <tbody>
                   {% for contact in contact_list.volunteer %}
-                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                  <tr onmouseover="showButtons({{contact.id}})" onmouseout="hideButtons({{contact.id}})">
                     <td>
                       {{contact}}
                     </td>
@@ -112,10 +119,24 @@
                     </td>
                     <td>
                       <div style="width:24px; height:24px;">
+                        <a hidden id="buttonEdit{{contact.id}}" href="{% url 'directory:edit_contact' contact.id %}">
+                          <i class="material-icons" style="color:#7987ac;">create</i>
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      {% if director %}
+                      <div style="width:24px; height:24px;">
                         <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
                           <i class="material-icons" style="color:pink;">delete</i>
                         </a>
                       </div>
+                      {% else %}
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}">
+                        </a>
+                      </div>
+                      {% endif %}
                     </td>
                   </tr>
                   {% endfor %}
@@ -142,7 +163,7 @@
                 </thead>
                 <tbody>
                   {% for contact in contact_list.ext_cons %}
-                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                  <tr onmouseover="showButtons({{contact.id}})" onmouseout="hideButtons({{contact.id}})">
                     <td>
                       {{contact}}
                     </td>
@@ -160,10 +181,24 @@
                     </td>
                     <td>
                       <div style="width:24px; height:24px;">
+                        <a hidden id="buttonEdit{{contact.id}}" href="{% url 'directory:edit_contact' contact.id %}">
+                          <i class="material-icons" style="color:#7987ac;">create</i>
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      {% if director %}
+                      <div style="width:24px; height:24px;">
                         <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
                           <i class="material-icons" style="color:pink;">delete</i>
                         </a>
                       </div>
+                      {% else %}
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}">
+                        </a>
+                      </div>
+                      {% endif %}
                     </td>
                   </tr>
                   {% endfor %}
@@ -191,7 +226,7 @@
                 </thead>
                 <tbody>
                   {% for contact in contact_list.simp %}
-                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                  <tr onmouseover="showButtons({{contact.id}})" onmouseout="hideButtons({{contact.id}})">
                     <td>
                       {{contact}}
                     </td>
@@ -209,10 +244,24 @@
                     </td>
                     <td>
                       <div style="width:24px; height:24px;">
+                        <a hidden id="buttonEdit{{contact.id}}" href="{% url 'directory:edit_contact' contact.id %}">
+                          <i class="material-icons" style="color:#7987ac;">create</i>
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      {% if director %}
+                      <div style="width:24px; height:24px;">
                         <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
                           <i class="material-icons" style="color:pink;">delete</i>
                         </a>
                       </div>
+                      {% else %}
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}">
+                        </a>
+                      </div>
+                      {% endif %}
                     </td>
                   </tr>
                   {% endfor %}
@@ -239,7 +288,7 @@
                 </thead>
                 <tbody>
                   {% for contact in contact_list.other %}
-                  <tr onmouseover="document.getElementById('button{{contact.id}}').hidden = false" onmouseout="document.getElementById('button{{contact.id}}').hidden = true">
+                  <tr onmouseover="showButtons({{contact.id}})" onmouseout="hideButtons({{contact.id}})">
                     <td>
                       {{contact}}
                     </td>
@@ -257,10 +306,24 @@
                     </td>
                     <td>
                       <div style="width:24px; height:24px;">
+                        <a hidden id="buttonEdit{{contact.id}}" href="{% url 'directory:edit_contact' contact.id %}">
+                          <i class="material-icons" style="color:#7987ac;">create</i>
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      {% if director %}
+                      <div style="width:24px; height:24px;">
                         <a hidden id="button{{contact.id}}" href="{% url 'directory:delete_contact' contact.id %}">
                           <i class="material-icons" style="color:pink;">delete</i>
                         </a>
                       </div>
+                      {% else %}
+                      <div style="width:24px; height:24px;">
+                        <a hidden id="button{{contact.id}}">
+                        </a>
+                      </div>
+                      {% endif %}
                     </td>
                   </tr>
                   {% endfor %}
@@ -417,5 +480,15 @@
       }
     });
   });
+
+  function showButtons(id){
+    document.getElementById(`button${id}`).hidden = false;
+    document.getElementById(`buttonEdit${id}`).hidden = false;
+  }
+
+  function hideButtons(id){
+    document.getElementById(`button${id}`).hidden = true;
+    document.getElementById(`buttonEdit${id}`).hidden = true
+  }
 </script>
 {% endblock js %}

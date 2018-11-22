@@ -38,15 +38,15 @@
                       </td>
                       <td>
                         <div style="width:24px; height:24px;">
-                          <a hidden id="button{{account.id}}" onclick="confirmDelete({{account.id}})">
-                            <i class="material-icons" style="color:pink; cursor:pointer">delete</i>
+                          <a hidden id="buttonEdit{{account.id}}" href="{% url 'profiles:edit_user' account.id %}">
+                            <i class="material-icons" style="color:#7987ac;">create</i>
                           </a>
                         </div>
                       </td>
                       <td>
                         <div style="width:24px; height:24px;">
-                          <a hidden id="buttonEdit{{account.id}}" href="{% url 'profiles:edit_user' account.id %}">
-                            <i class="material-icons" style="color:#7987ac;">create</i>
+                          <a hidden id="button{{account.id}}" onclick="confirmDelete({{account.id}})">
+                            <i class="material-icons" style="color:pink; cursor:pointer">delete</i>
                           </a>
                         </div>
                       </td>
