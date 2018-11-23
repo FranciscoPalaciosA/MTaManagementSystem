@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.dispatch import receiver
 import os
 
-from profiles.models import *
+# from profiles.models import *
 
 # Create your models here.
 class Program(models.Model):
@@ -37,7 +37,7 @@ class Beneficiary(models.Model):
     contact_phone = models.CharField(max_length=50, default=0)
     account_number = models.CharField(max_length=50, default=0)
     bank_name = models.CharField(max_length=100)
-    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    promoter = models.ForeignKey('profiles.Promoter', on_delete=models.CASCADE)
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
     member_in = models.ManyToManyField(Program, through='BeneficiaryInProgram')
     created_at = models.DateTimeField(default=timezone.now)
@@ -87,7 +87,7 @@ class ProductionReport(models.Model):
         return "Production Report " + str(self.id)
 
 class WeeklySession(models.Model):
-    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    promoter = models.ForeignKey('profiles.Promoter', on_delete=models.CASCADE)
     date = models.DateField()
     type = models.CharField(max_length=50)
     topic = models.CharField(max_length=50)
@@ -144,7 +144,7 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
             os.remove(instance.evidence.path)
 
 class Payment(models.Model):
-    promoter = models.ForeignKey(Promoter, on_delete=models.CASCADE)
+    promoter = models.ForeignKey('profiles.Promoter', on_delete=models.CASCADE)
     description = models.CharField(max_length=100)
     quantity = models.IntegerField()
     due_date = models.DateTimeField()
@@ -167,7 +167,7 @@ class TrainingSession(models.Model):
                         ('Entrepeneur', 'Emprendedurismo'),
                         ('Other', 'Otro')
                     )
-    trainer = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+    trainer = models.ForeignKey('profiles.BaseUser', on_delete=models.CASCADE)
     assistants = models.ManyToManyField(Beneficiary, verbose_name='list of beneficiaries')
     date = models.DateField()
     start_time = models.CharField(max_length=10)
