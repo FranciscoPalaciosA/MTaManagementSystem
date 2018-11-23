@@ -2,177 +2,192 @@
 {% load administrative_extras %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="description" content="">
-    <title>{% block title %}{% endblock title %}</title>
-    <link href="{% static 'css/jqvmap.css' %}" rel="stylesheet">
-    <link href="{% static 'css/flag-icon-css/css/flag-icon.min.css' %}" rel="stylesheet">
-    <!-- Fullcalendar-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.min.css" rel="stylesheet">
-    <!-- Materialize-->
-    <link href="{% static 'css/admin-materialize.min.cs' %}s" rel="stylesheet">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <link href="{% static 'css/dataTables.css' %}" rel="stylesheet">
-    <!-- Material Icons-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="description" content="">
+  <title>{% block title %}{% endblock title %}</title>
+  <link href="{% static 'css/jqvmap.css' %}" rel="stylesheet">
+  <link href="{% static 'css/flag-icon-css/css/flag-icon.min.css' %}" rel="stylesheet">
+  <!-- Fullcalendar-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.min.css" rel="stylesheet">
+  <!-- Materialize-->
+  <link href="{% static 'css/admin-materialize.min.cs' %}s" rel="stylesheet">
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+  <link href="{% static 'css/dataTables.css' %}" rel="stylesheet">
+  <!-- Material Icons-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   {% block addhead %}{% endblock addhead %}
-  </head>
-  <body class="has-fixed-sidenav">
-    <header>
-      <div class="navbar-fixed">
-        <nav class="navbar white">
-          <div class="nav-wrapper">
-            <a href="#" data-target="sidenav-left" class="sidenav-trigger"><i class="material-icons" style="color:pink">menu</i></a>
-            <a class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
-            <div style="float:right;">
-              <a href="{% url 'profiles:logout' %}">
-                <i class="material-icons" style="color:black; font-size:36px;">logout</i>
-              </a>
-            </div>
+</head>
+
+<body class="has-fixed-sidenav">
+  <header>
+    <div class="navbar-fixed">
+      <nav class="navbar white">
+        <div class="nav-wrapper">
+          <a href="#" data-target="sidenav-left" class="sidenav-trigger"><i class="material-icons" style="color:pink">menu</i></a>
+          <a class="brand-logo grey-text text-darken-4">{% block nav_title %}{% endblock nav_title %}</a>
+          <div style="float:right;">
+            <a href="{% url 'profiles:logout' %}">
+              <i class="material-icons" style="color:black; font-size:36px;">logout</i>
+            </a>
           </div>
-        </nav>
-      </div>
-      <ul id="sidenav-left" class="sidenav sidenav-fixed">
-        <li><a href="{% url 'administrative:index' %}" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
-        <li class="no-padding">
-          <ul class="collapsible collapsible-accordion">
-            {% if request.user|is_promoter %}
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Inicio</a></li>
-            {% endif %}
+        </div>
+      </nav>
+    </div>
+    <ul id="sidenav-left" class="sidenav sidenav-fixed">
+      <li><a href="{% url 'administrative:index' %}" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
+      <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+          {% if request.user|is_promoter %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Inicio</a></li>
+          {% endif %}
 
-            {% if request.user|has_group:"Director" %}
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
-                <div class="collapsible-body">
-                  <ul>
-                    <li><a href="{% url 'directory:index' %}">Contactos</a></li>
-                    <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
-                  </ul>
-                </div>
-              </li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:index' %}">Cuentas</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
+          {% if request.user|has_group:"Director" %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="{% url 'directory:index' %}">Contactos</a></li>
+                <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:index' %}">Cuentas</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
 
-            {% elif request.user|has_group:"Capacitador" %}
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
+          {% elif request.user|has_group:"Capacitador" %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Capacitaciones</a></li>
 
-            {% elif request.user|has_group:"Asistente Administrativo" %}
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de ahorro</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
-                <div class="collapsible-body">
-                  <ul>
-                    <li><a href="{% url 'directory:index' %}">Contactos</a></li>
-                    <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
-                  </ul>
-                </div>
-              </li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
+          {% elif request.user|has_group:"Asistente Administrativo" %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de ahorro</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="{% url 'directory:index' %}">Contactos</a></li>
+                <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
 
-            {% elif request.user|has_group:"Coordinador Administrativo" %}
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Sesiones de entrenamiento</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de ahorro</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
-                <div class="collapsible-body">
-                  <ul>
-                    <li><a href="{% url 'directory:index' %}">Contactos</a></li>
-                    <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
-                  </ul>
-                </div>
-              </li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
-              <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
-            {% endif %}
-            {% if request.user|has_group:"Técnico de Campo" %}
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report_list' %}">Reportes de producción</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de Ahorro</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:new_promoter' %}">Registrar Promotora</a></li>
-            <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galeria</a></li>
-            {% endif %}
-            {% block nav_tabs %}
-            {% endblock nav_tabs %}
-          </ul>
-        </li>
-      </ul>
-    </header>
-    <main class="main">
-      {% block content %}
-      {% endblock content %}
-    </main>
-    {% block bottom_nav %}{% endblock bottom_nav %}
-<!-- Scripts -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="{%static 'js/materialize.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
+          {% elif request.user|has_group:"Coordinador Administrativo" %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:weekly_sessions' %}">Sesiones semanales</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:training_session' %}">Sesiones de entrenamiento</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de ahorro</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="{% url 'directory:index' %}">Contactos</a></li>
+                <li><a href="{% url 'directory:institution_directory' %}">Instituciones</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:communities' %}">Comunidades</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galería</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:community_report' %}">Reporte Mensual</a></li>
 
-<!-- External libraries -->
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+          {% elif request.user|has_group:"Contador" %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:alerts' %}">Alertas</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:payments' %}">Pagos</a></li>
 
+          {% endif %}
 
-<!-- jqvmap -->
-    <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.min.js' %}"></script>
-    <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.world.js' %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.sampledata.js' %}"></script>
+          {% if request.user|has_group:"Técnico de Campo" %}
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report_list' %}">Reportes de producción</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:saving_accounts' %}">Cajas de Ahorro</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:beneficiaries_list' %}">Beneficiarios</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'profiles:new_promoter' %}">Registrar Promotora</a></li>
+          <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'gallery:index' %}">Galeria</a></li>
+          {% endif %}
+          {% block nav_tabs %}
+          {% endblock nav_tabs %}
+        </ul>
+      </li>
+    </ul>
+  </header>
+  <main class="main">
+    {% block content %}
+    {% endblock content %}
+  </main>
+  {% block bottom_nav %}{% endblock bottom_nav %}
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="{%static 'js/materialize.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
 
-<!-- ChartJS -->
-    <script type="text/javascript" src="{%static 'js/Chart.js' %}"></script>
-    <script type="text/javascript" src="{%static 'js/Chart.Financial.js' %}"></script>
+  <!-- External libraries -->
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
-    <script src="{%static 'js/imagesloaded.pkgd.min.js' %}"></script>
-    <script src="{%static 'js/masonry.pkgd.min.js' %}"></script>
+  <!-- jqvmap -->
+  <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.min.js' %}"></script>
+  <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.world.js' %}" charset="utf-8"></script>
+  <script type="text/javascript" src="{%static 'js/jqvmap/jquery.vmap.sampledata.js' %}"></script>
+
+  <!-- ChartJS -->
+  <script type="text/javascript" src="{%static 'js/Chart.js' %}"></script>
+  <script type="text/javascript" src="{%static 'js/Chart.Financial.js' %}"></script>
 
 
-<!-- Initialization script -->
-    <script src="{%static 'js/admin.js' %}"></script>
-    {% block init_scripts %}{% endblock init_scripts %}
-    <script src="{%static 'js/init.js' %}"></script>
-    {% block js %}{% endblock js %}
-    <script type="text/javascript">
-    $(document).ready(function(){
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+  <script src="{%static 'js/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{%static 'js/masonry.pkgd.min.js' %}"></script>
+
+
+  <!-- Initialization script -->
+  <script src="{%static 'js/admin.js' %}"></script>
+  {% block init_scripts %}{% endblock init_scripts %}
+  <script src="{%static 'js/init.js' %}"></script>
+  {% block js %}{% endblock js %}
+  <script type="text/javascript">
+    $(document).ready(function() {
       //CSRF Token para peticiones POST
       var csrftoken = $.cookie('csrftoken');
+
       function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
       }
-        $.ajaxSetup({
-          beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
           }
-        });
+        }
       });
-    </script>
-    {% if messages %}
-    <script type="text/javascript">
-      {%for message in messages %}
-          {% if message.level != 40 %}
-            M.toast({html: '{{message}}'})
-          {% endif %}
-      {% endfor %}
-    </script>
-    {% endif %}
-  </body>
+    });
+  </script>
+  {% if messages %}
+  <script type="text/javascript">
+    { %
+      for message in messages %
+    } { %
+      if message.level != 40 %
+    }
+    M.toast({
+      html: '{{message}}'
+    }) { % endif %
+    } { % endfor %
+    }
+  </script>
+  {% endif %}
+</body>
+
 </html>
