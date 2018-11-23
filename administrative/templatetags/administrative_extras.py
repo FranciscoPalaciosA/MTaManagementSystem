@@ -1,6 +1,7 @@
 from django import template
 from django.contrib.auth.models import Group
 from ..models import *
+from profiles.models import *
 
 register = template.Library()
 @register.filter(name='has_group')

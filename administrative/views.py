@@ -19,7 +19,7 @@ from .forms import *
 from profiles.forms import AlertForm
 from datetime import datetime, time
 from django.utils import formats
-from profiles.models import *
+from profiles.models import BaseUser
 
 #Helper functions
 def is_promoter(user):

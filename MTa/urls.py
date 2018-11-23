@@ -19,10 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('administrative.urls', namespace='administrative')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('directory/', include('directory.urls')),
     path('profiles/', include('profiles.urls')),
     path('administrative/', include('administrative.urls')),
     path('gallery/', include('gallery.urls')),
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
