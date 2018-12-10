@@ -1,9 +1,9 @@
 .sidenav{
-  background-color: #faaca8
+  background-color: #BCC859
 }
 
 .tabs .tab a, .tabs .tab a.active {
-  color: #faaca8;
+  color: #BCC859;
   background.color: blue;
 }
 
@@ -36,4 +36,11 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.img-responsive {
+   min-width: 100vw;
+   width: 100%;
+   height: 10vh;
+   object-fit: cover;
 }
