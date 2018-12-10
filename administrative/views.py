@@ -38,7 +38,7 @@ def is_director(user):
     #Parameter: user
     #Return: True if user is director
     if user:
-        return user.groups.filter(name='Director').count() == 1
+        return user.groups.filter(name='Fundadora').count() == 1
     return False
 
 def is_trainer(user):

@@ -37,14 +37,14 @@
         </nav>
       </div>
       <ul id="sidenav-left" class="sidenav sidenav-fixed">
-        <li><a href="{% url 'administrative:index' %}" class="logo-container">MTa<i class="material-icons left">spa</i></a></li>
+        <li><a href="{% url 'administrative:index' %}" class="logo-container"><img src="{% static 'img/logo_mta_2.png' %}" alt="" height="100%">Menú</a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
             {% if request.user|is_promoter %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:index' %}">Inicio</a></li>
             {% endif %}
 
-            {% if request.user|has_group:"Director" %}
+            {% if request.user|has_group:"Fundadora" %}
               <li class="bold waves-effect"><a class="collapsible-header" href="{% url 'administrative:production_report' %}">Reportes de producción</a></li>
               <li class="bold waves-effect"><a class="collapsible-header">Directorio</a>
                 <div class="collapsible-body">

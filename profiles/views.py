@@ -27,7 +27,7 @@ def is_promoter(user):
 
 def is_director(user):
     if user:
-        return user.groups.filter(name='Director').count() == 1
+        return user.groups.filter(name='Fundadora').count() == 1
     return False
 
 def is_trainer(user):
