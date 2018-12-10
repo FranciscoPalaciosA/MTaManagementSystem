@@ -1093,20 +1093,26 @@ def edit_training_session(request, pk):
 @login_required
 def community_report(request):
     if is_director(request.user) or is_administrative_coordinator(request.user):
+
         data = []
-        municipalities = Community.objects.values('municipality').annotate(
-                                                                            communities=Count('municipality'),
-                                                                            promoters=Count('promoter'),
-                                                                            beneficiaries=Count('beneficiary')
-                                                                        )
+        municipalities = Community.objects.values('municipality').annotate(communities=Count('municipality'))
+        promoterscount = Community.objects.values('municipality').annotate(promoters=Count('promoter'))
+        beneficiariescount = Community.objects.values('municipality').annotate(beneficiaries=Count('beneficiary'))
+
         names = []
         promoters = []
         beneficiaries = []
-        for mun in municipalities:
-            data.append(mun)
-            names.append(mun['municipality'])
-            promoters.append(mun['promoters'])
-            beneficiaries.append(mun['beneficiaries'])
+
+        for i in range(len(municipalities)):
+            names.append(municipalities[i]['municipality'])
+            promoters.append(promoterscount[i]['promoters'])
+            beneficiaries.append(beneficiariescount[i]['beneficiaries'])
+            d = {
+                    'municipality': municipalities[i]['municipality'],
+                    'promoters': promoterscount[i]['promoters'],
+                    'beneficiaries': beneficiariescount[i]['beneficiaries'],
+                    'communities': municipalities[i]['communities']}
+            data.append(d)
 
         # Promoters per municipality
         context = {'dataset': data, 'names':names, 'promoters':promoters, 'beneficiaries':beneficiaries}
@@ -1128,10 +1134,10 @@ def get_communities_savings(request):
             s = []
             i = 1
             for e in qset:
-                while i < e['month']:
+                while i < e['month'] -1:
                     s.append(0)
                     i+=1
-                i = 100
+                i +=1
                 s.append(float(e['amount']))
             savings_data.append(s)
         j = {
